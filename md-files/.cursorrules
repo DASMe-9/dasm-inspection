@@ -1,0 +1,136 @@
+# Cursor AI Rules - DASM Inspection Project
+
+## Project Context
+You are working on DASM Inspection - a comprehensive automotive inspection management system built with React + TypeScript + Vite.
+
+## Primary Directive
+**READ CURSOR_INSTRUCTIONS.md FIRST** - All detailed instructions, patterns, and standards are there.
+
+## Critical Files
+- `CURSOR_INSTRUCTIONS.md` - Your complete guide
+- `TODO.md` - Current tasks
+- `PROJECT_ANALYSIS.md` - Project overview
+- `COLLABORATION_GUIDE.md` - Working with Claude
+
+## Key Rules
+
+### 1. TypeScript
+- ALWAYS use TypeScript, never `any`
+- Import types from `src/types/index.ts`
+- Add return types to all functions
+- Use strict mode
+
+### 2. Components
+- Functional components only
+- Use `interface` for props
+- Export with named exports
+- Add JSDoc comments
+
+### 3. Styling
+- Use Tailwind CSS classes
+- Follow design system in `lib/theme.ts`
+- Use `cn()` utility for conditional classes
+- Mobile-first responsive design
+
+### 4. File Structure
+```
+src/
+├── components/
+│   ├── shared/     # Reusable components
+│   ├── ui/         # shadcn/ui
+│   └── [role]/     # Role-specific
+├── screens/        # Pages
+├── lib/            # Utilities
+├── hooks/          # Custom hooks
+├── types/          # TypeScript types
+└── styles/         # Global styles
+```
+
+### 5. Imports Order
+```typescript
+// 1. External libraries
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+// 2. Internal components
+import { Button } from '@/components/ui/button'
+import { useTheme } from '@/hooks'
+
+// 3. Types
+import type { User } from '@/types'
+
+// 4. Styles
+import './styles.css'
+```
+
+### 6. Error Handling
+- Wrap screens in ErrorBoundary
+- Use Suspense for lazy loading
+- Add try-catch for async operations
+- Show LoadingSpinner during loading
+
+### 7. Git Commits
+Format: `type: description`
+- feat: New feature
+- fix: Bug fix
+- refactor: Code refactoring
+- docs: Documentation
+- style: Formatting
+- chore: Maintenance
+
+## When to Ask for Guidance
+
+ASK THE HUMAN TO CONSULT CLAUDE WHEN:
+- Making architectural decisions
+- Changing core structure
+- Choosing between design patterns
+- Unsure about best practices
+- Need database schema design
+
+PROCEED INDEPENDENTLY FOR:
+- Implementing planned features
+- Fixing TypeScript errors
+- Refactoring code
+- Adding types
+- Writing components per spec
+
+## Code Quality Standards
+
+### ✅ Do:
+- Follow DRY principle
+- Write self-documenting code
+- Use semantic HTML
+- Add ARIA labels
+- Optimize performance
+- Test locally before commit
+
+### ❌ Don't:
+- Use `any` type
+- Create duplicate code
+- Ignore TypeScript errors
+- Skip error handling
+- Use class components
+- Hard-code values
+
+## Current Phase
+**Phase 1: Frontend Optimization**
+Focus on:
+1. Design System unification
+2. Component consolidation
+3. TypeScript improvements
+4. Error handling
+5. Code cleanup
+
+Check TODO.md for specific tasks.
+
+## Remember
+- Quality over speed
+- Type everything
+- Keep it DRY
+- Mobile first
+- Document as you go
+- Test locally
+
+---
+
+**For detailed instructions, ALWAYS refer to CURSOR_INSTRUCTIONS.md**
