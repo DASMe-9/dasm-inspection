@@ -113,3 +113,4 @@
 - `enum-alignment-strategy.md` — مطابقة الأدوار مع `inspection_app_role`
 - `rls-policies.md` — سياسات SQL مرجعية
 - `EXECUTION_PLAN.md` — تسلسل التنفيذ
+- **`phase2b-dasm-jwt-middleware.md`** — تنفيذ middleware + رؤوس موثوقة + قالب RLS لـ staging (اختياري عبر `DASM_JWT_ENFORCE`)
