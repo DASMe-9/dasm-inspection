@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# DASM Inspection
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+تطبيق **فحص سيارات / ورش** مبني على **Next.js 14** (`frontend/`) و**Supabase** (Postgres + RLS).
 
-Currently, two official plugins are available:
+## التشغيل السريع
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd frontend
+cp .env.example .env.local
+# املأ NEXT_PUBLIC_SUPABASE_URL و SUPABASE_SERVICE_ROLE_KEY
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+من جذر الريبو يمكن استخدام `npm run dev` (يستدعي `frontend`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## قاعدة البيانات
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- الهجرات: `supabase/migrations/`
+- طبّقها على مشروع Supabase (CLI أو لوحة التحكم). جداول المجال تبدأ بـ `inspection_`.
+- بذور تجريبية للورش والمفتشين: `supabase/seed.sql`
+
+## أرشيف Vite
+
+المشروع القديم **Vite + React** نُقل إلى `legacy/vite-prototype/` ولا يُستخدم للمنتج.
+
+## التوثيق (`docs/`)
+
+| الملف | الغرض |
+|-------|--------|
+| [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | معمارية Phase 1 (وثيقة الحوكمة *architecture*): وحدات، حدود، تدفق بيانات/هوية، site map |
+| [`domain-model.md`](docs/domain-model.md) | مخطط مجال، علاقات، فهارس، RLS مستهدف |
+| [`DOMAIN_MODEL.md`](docs/DOMAIN_MODEL.md) | فهرس سريع → `domain-model.md` |
+| [`identity-integration.md`](docs/identity-integration.md) | Phase 2: هوية DASM، JWT، نموذج ثقة، fallback |
+| [`enum-alignment-strategy.md`](docs/enum-alignment-strategy.md) | Phase 2: enum آمن، توافق مع التاريخ |
+| [`rls-policies.md`](docs/rls-policies.md) | Phase 2: تصميم RLS لكل جدول + rollout |
+| [`api-contract.md`](docs/api-contract.md) | Server Actions الحالية + عقود HTTP مقترحة |
+| [`permissions-matrix.md`](docs/permissions-matrix.md) | أدوار DASM المعتمدة مقابل DB والوصول المستهدف |
+| [`EXECUTION_PLAN.md`](docs/EXECUTION_PLAN.md) | مراحل 1–4 وحوكمة PR |
+| [`V1_SCOPE.md`](docs/V1_SCOPE.md) | حدود المنتج |
+| [`DASM_INTEGRATION.md`](docs/DASM_INTEGRATION.md) | تكامل المنصة |
