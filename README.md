@@ -32,6 +32,7 @@ npm run dev
 | [`domain-model.md`](docs/domain-model.md) | مخطط مجال، علاقات، فهارس، RLS مستهدف |
 | [`DOMAIN_MODEL.md`](docs/DOMAIN_MODEL.md) | فهرس سريع → `domain-model.md` |
 | [`identity-integration.md`](docs/identity-integration.md) | Phase 2: هوية DASM، JWT، نموذج ثقة، fallback |
+| [`phase2b-dasm-jwt-middleware.md`](docs/phase2b-dasm-jwt-middleware.md) | Phase 2b: middleware JWT، رؤوس موثوقة، قالب RLS لـ staging |
 | [`enum-alignment-strategy.md`](docs/enum-alignment-strategy.md) | Phase 2: enum آمن، توافق مع التاريخ |
 | [`rls-policies.md`](docs/rls-policies.md) | Phase 2: تصميم RLS لكل جدول + rollout |
 | [`api-contract.md`](docs/api-contract.md) | Server Actions الحالية + عقود HTTP مقترحة |

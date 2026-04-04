@@ -33,9 +33,15 @@
 - هجرة additive: `supabase/migrations/20260404220000_phase2_inspection_app_role_extend.sql`
 - TypeScript: `AppRole` يتضمن القيم الجديدة
 
-**المتبقي (Phase 2b / بداية Phase 3):** Middleware لـ JWT DASM، تبادل جلسة Supabase، استبدال سياسات `USING (true)` على staging ثم الإنتاج، اختبارات عدم تسريب.
+**Phase 2b — تنفيذ خادمي (اختياري بالتفعيل):**
 
-**مخرجات مرحلة حالية:** PR منفصل؛ RLS **غير** مُفعَّل كسياسات إنتاجية جديدة في الهجرة (تصميم فقط) لتفادي كسر عملاء `authenticated` الحاليين.
+- [`phase2b-dasm-jwt-middleware.md`](./phase2b-dasm-jwt-middleware.md)
+- `frontend/src/middleware.ts` + `frontend/src/lib/auth/*` (تحقق iss/aud/exp + توقيع؛ توحيد مطالبات `user_id` / `dasm_roles` / `inspection_role` / `workshop_id`)
+- `supabase/staging/phase2b_rls_template.sql` — **staging فقط** (خارج `migrations/`)
+
+**المتبقي نحو الإنتاج:** تبادل جلسة Supabase، تطبيق سياسات RLS كاملة على staging ثم إنتاج بعد اختبار، ربط `assertInspectionRoles` بالـ Server Actions عند الجاهزية.
+
+**مخرجات Phase 2 (تصميم):** PR منفصل؛ RLS الإنتاج **لم** يُستبدل من مجلد الهجرات.
 
 ---
 
