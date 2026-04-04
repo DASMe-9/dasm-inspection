@@ -1,0 +1,12 @@
+// Prisma 6 + Supabase: اتصال عبر pooler (DATABASE_URL) وهجرات عبر DIRECT_URL.
+// الهجرات الرسمية للمشروع قد تبقى في ../../supabase/migrations — استخدم db pull لمزامنة النماذج عند الحاجة.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
