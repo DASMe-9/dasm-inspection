@@ -22,15 +22,20 @@
 
 ---
 
-## Phase 2 — Auth integration
+## Phase 2 — Auth integration (جزء التصميم + أساس DB غير كاسر — مُنجَز توثيقياً)
 
-- Middleware / server session لقراءة JWT من DASM
-- عميل Supabase `anon` + تمرير JWT أو `dasm_user_id` في السياق
-- ترحيل تدريجي من `requireAdminClient()` للكتابات الحساسة فقط
-- توسيع `inspection_app_role` أو طبقة تعيين أدوار (مع ترحيل بيانات تاريخ الحالة)
-- اختبار: لا تسريب صفوف بين المستخدمين
+**مُسلَّم في الريبو:**
 
-**مخرجات مرحلة:** PR منفصل، `permissions-matrix.md` محدّث بحالة «مفعّل»، اختبارات يدوية/تلقائية للـ RLS.
+- [`identity-integration.md`](./identity-integration.md) — مصدر الهوية، نموذج الثقة، عقد JWT، fallback
+- [`enum-alignment-strategy.md`](./enum-alignment-strategy.md) — استراتيجية enum بدون كسر التاريخ
+- [`rls-policies.md`](./rls-policies.md) — تصميم سياسات RLS لكل جدول + خطة rollout
+- [`permissions-matrix.md`](./permissions-matrix.md) — خريطة DASM ↔ scoped ↔ enum
+- هجرة additive: `supabase/migrations/20260404220000_phase2_inspection_app_role_extend.sql`
+- TypeScript: `AppRole` يتضمن القيم الجديدة
+
+**المتبقي (Phase 2b / بداية Phase 3):** Middleware لـ JWT DASM، تبادل جلسة Supabase، استبدال سياسات `USING (true)` على staging ثم الإنتاج، اختبارات عدم تسريب.
+
+**مخرجات مرحلة حالية:** PR منفصل؛ RLS **غير** مُفعَّل كسياسات إنتاجية جديدة في الهجرة (تصميم فقط) لتفادي كسر عملاء `authenticated` الحاليين.
 
 ---
 

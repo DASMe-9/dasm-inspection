@@ -154,8 +154,11 @@ Request Created (draft | submitted)
 | الملف | المحتوى |
 |-------|---------|
 | `domain-model.md` | كيانات، مخطط منطقي، فهارس، RLS المستهدفة |
+| `identity-integration.md` | Phase 2: تكامل الهوية مع DASM، JWT، حدود الثقة |
+| `enum-alignment-strategy.md` | Phase 2: محاذاة `inspection_app_role` دون كسر التاريخ |
+| `rls-policies.md` | Phase 2: تصميم سياسات RLS وخطة rollout |
 | `api-contract.md` | عقود API داخلية/خارجية مقترحة |
-| `permissions-matrix.md` | أدوار DASM المعتمدة مقابل التطبيق الحالي |
+| `permissions-matrix.md` | أدوار DASM ↔ enum ↔ وصول |
 | `EXECUTION_PLAN.md` | مراحل 1–4 وملخصات التسليم |
 | `V1_SCOPE.md` | حدود المنتج والجداول المعتمدة |
 | `DASM_INTEGRATION.md` | افتراضات التكامل مع المنصة |
@@ -165,7 +168,7 @@ Request Created (draft | submitted)
 ## 11. Rollback / PR
 
 - **تراجع وثائقي:** `git revert` على commit الوثائق.
-- **لا تغييرات مخطط في Phase 1** في هذا التسليم: الإنتاج غير متأثر.
+- **هجرة Phase 2 (enum):** تراجع بـ `git revert`؛ إزالة قيم enum من PostgreSQL غير مباشرة — تخطيط استعادة عبر نسخ احتياطي DB إن طُبِّق على إنتاج.
 
 ---
 
