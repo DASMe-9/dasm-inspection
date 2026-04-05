@@ -93,9 +93,13 @@ export default async function RequestDetailPage({
         </p>
       </SectionCard>
 
-      {(req.status === "in_progress" || req.status === "assigned") && (
-        <SectionCard title="قائمة الفحص (مسودة واجهة)">
-          <ChecklistForm />
+      {report && (req.status === "in_progress" || req.status === "assigned" || req.status === "pending_review") && (
+        <SectionCard title="قائمة الفحص">
+          <ChecklistForm
+            reportId={report.id}
+            items={report.items}
+            editable={req.status === "in_progress"}
+          />
         </SectionCard>
       )}
 

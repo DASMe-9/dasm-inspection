@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdminClient } from "@/lib/supabase/admin";
-import type { InspectionRequestStatus } from "@/types";
+import type { InspectionRequestStatus, ReportItemStatus } from "@/types";
 
 const ACTOR = "inspection_admin" as const;
 
@@ -248,6 +248,39 @@ export async function approveReportAction(requestId: string): Promise<ActionResu
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath(`/reports/${req.report_id}`);
+    return { ok: true };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
+    return { ok: false, message: msg };
+  }
+}
+
+export async function updateReportItemAction(
+  itemId: string,
+  status: ReportItemStatus,
+  notes?: string
+): Promise<ActionResult> {
+  try {
+    if (!itemId) {
+      return { ok: false, message: "معرّف البند مطلوب." };
+    }
+    const validStatuses: ReportItemStatus[] = ["pass", "warn", "fail", "na"];
+    if (!validStatuses.includes(status)) {
+      return { ok: false, message: "حالة غير صالحة." };
+    }
+
+    const sb = requireAdminClient();
+    const { error } = await sb
+      .from("inspection_report_items")
+      .update({
+        status,
+        notes: notes ?? null,
+      })
+      .eq("id", itemId);
+
+    if (error) return { ok: false, message: error.message };
+    revalidatePath("/reports");
+    revalidatePath("/requests");
     return { ok: true };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
