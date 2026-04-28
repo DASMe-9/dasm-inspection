@@ -18,6 +18,12 @@ const NAV_GROUPS = [
     ],
   },
   {
+    label: "الاشتراك",
+    items: [
+      { href: "/subscription", label: "الاشتراك الشهري", icon: "💳" },
+    ],
+  },
+  {
     label: "النظام",
     items: [
       { href: "/settings", label: "الإعدادات", icon: "⚙️" },
