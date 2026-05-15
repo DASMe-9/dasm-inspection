@@ -18,6 +18,7 @@ import type {
   Inspector,
   Workshop,
 } from "@/types";
+import type { ListInspectionRequestsQueryOptions } from "@/lib/inspection-request-list-options";
 
 export async function isSupabaseConfigured(): Promise<boolean> {
   return Boolean(
@@ -79,29 +80,40 @@ export async function getInspectorsForWorkshop(
   return all.filter((i) => i.workshopId === workshopId);
 }
 
-export async function listInspectionRequests(): Promise<InspectionRequest[]> {
+export async function listInspectionRequests(
+  options?: ListInspectionRequestsQueryOptions
+): Promise<InspectionRequest[]> {
   const sb = getAdminClient();
   if (!sb) return [];
-  const { data, error } = await sb
-    .from("inspection_requests")
-    .select("*")
-    .order("updated_at", { ascending: false });
+  let q = sb.from("inspection_requests").select("*");
+  if (options?.status) {
+    q = q.eq("status", options.status);
+  }
+  const orderCol =
+    options?.sort === "created_desc" ? "created_at" : "updated_at";
+  const { data, error } = await q.order(orderCol, { ascending: false });
   if (error || !data) return [];
   return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
 }
 
 /** طلبات مرتبطة بمستخدم منصّة DASM (لصفحة «طلباتي»). */
 export async function listInspectionRequestsForDasmUser(
-  dasmUserId: string
+  dasmUserId: string,
+  options?: ListInspectionRequestsQueryOptions
 ): Promise<InspectionRequest[]> {
   if (!dasmUserId?.trim()) return [];
   const sb = getAdminClient();
   if (!sb) return [];
-  const { data, error } = await sb
+  let q = sb
     .from("inspection_requests")
     .select("*")
-    .eq("dasm_user_id", dasmUserId.trim())
-    .order("updated_at", { ascending: false });
+    .eq("dasm_user_id", dasmUserId.trim());
+  if (options?.status) {
+    q = q.eq("status", options.status);
+  }
+  const orderCol =
+    options?.sort === "created_desc" ? "created_at" : "updated_at";
+  const { data, error } = await q.order(orderCol, { ascending: false });
   if (error || !data) return [];
   return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
 }
