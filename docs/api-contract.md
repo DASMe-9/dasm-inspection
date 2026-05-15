@@ -1,6 +1,6 @@
 # API Contract — DASM Inspection
 
-**الحالة:** Phase 1 — عقد **مرجعي**؛ التنفيذ الحالي يعتمد Server Actions؛ واجهات HTTP الخارجية تُفعَّل عند ربط DASM.
+**الحالة:** Phase 2 جزئياً — Server Actions للسير الداخلي؛ **بوابة DASM + REST v1** للإنشاء والقراءة المملوكة؛ webhook وباقي التوسعة لاحقاً.
 
 ---
 
@@ -34,50 +34,78 @@
 
 ---
 
-## 2.1 بوابة DASM المنفَّذة (Route Handler — ليس نفس مسار REST v1)
+## 2.1 بوابة DASM و REST v1 — المنفَّذ
+
+المكتبة المشتركة للمصادقة والتحقق من مستخدم المنصّة: `frontend/src/lib/api/inspection-http-auth.ts`  
+إدراج الطلب المشترك: `frontend/src/lib/api/inspection-request-http.ts`
 
 | الملف | الطرق | الغرض |
 |-------|-------|-------|
-| `frontend/src/app/api/gateway/route.ts` | **GET** | `?token=` مستخدم DASM → تحقق عبر `{DASM_API_URL}/api/user/profile` → إعادة توجيه إلى `/requests` مع query params + **كوكي httpOnly** `inspection_dasm_user_id` لتصفية **صفحة `/my-inspections`** |
-| نفس الملف | **POST** | `X-Dasm-Api-Key` (قائمة `DASM_GATEWAY_API_KEYS`) + `Authorization: Bearer` مستخدم؛ body `dasm_car_id`, `vehicle_label`, اختياري `title`, `auction_reference` → إدراج طلب `submitted` |
+| `frontend/src/app/api/gateway/route.ts` | **GET** | `?token=` مستخدم DASM → `verifyDasmUserToken` (نفس نقطة `{DASM_API_URL}/api/user/profile`) → إعادة توجيه إلى `/requests` مع query params + **كوكي httpOnly** `inspection_dasm_user_id` لتصفية **صفحة `/my-inspections`** |
+| نفس الملف | **POST** | `X-Dasm-Api-Key` أو `Authorization: ApiKey …` + `Authorization: Bearer` مستخدم؛ body كما في §3.1 → إدراج طلب `submitted`؛ استجابة `{ success, data, message }` للتوافق الخلفي |
+| `frontend/src/app/api/v1/inspection-requests/route.ts` | **POST** | نفس المصادقة والجسم؛ استجابة **201** JSON حسب §3.1 |
+| `frontend/src/app/api/v1/inspection-requests/[id]/route.ts` | **GET** | مفتاح خدمة + Bearer؛ **404** إن لم يكن الطلب للمستخدم |
 
-يُكمِّل جزءاً من نية **`POST /api/v1/inspection-requests`** المقترجة أعلاه بتوقيع مختلف (مفتاح خدمة + توكن مستخدم).
+يُفضّل للتكامل الجديد استخدام **`POST /api/v1/inspection-requests`** بدل **`POST /api/gateway`** (المساران متكافئان منطقياً).
 
 ---
 
-## 3. واجهات HTTP مقترحة (مستقبل — DASM → Inspection)
+## 3. واجهات HTTP REST v1 (DASM ↔ Inspection)
 
-لا تُنشر في الإنتاج دون **Phase 2+** وبوابة API (Edge / Route Handler) وتحقق JWT.
+**المصادقة على الإنشاء والقراءة:** **`X-Dasm-Api-Key`** (أو `Authorization: ApiKey …`) مع **`Authorization: Bearer <توكن مستخدم المنصّة>`**.
 
-### 3.1 إنشاء طلب فحص (من المنصة)
+**لا يُقبل `dasm_user_id` في الجسم لانتحال الهوية:** المالك يُستنتج من توكن المنصّة.
 
-`POST /api/v1/inspection-requests`  
-**Headers:** `Authorization: Bearer <dasm_jwt>`
+### 3.1 إنشاء طلب فحص
 
-**Body (مثال):**
+`POST /api/v1/inspection-requests`
+
+**Body:**
 
 ```json
 {
   "dasm_car_id": "string",
   "vehicle_label": "string",
   "title": "string",
-  "dasm_user_id": "string | null",
   "auction_reference": "string | null"
 }
 ```
 
-**201:** `{ "id": "uuid", "status": "submitted" }`  
+**201:**
+
+```json
+{
+  "id": "uuid",
+  "status": "submitted",
+  "title": "string",
+  "vehicle_label": "string",
+  "tracking_url": "https://…/requests/{id}"
+}
+```
+
 **4xx:** `{ "error": "code", "message": "string" }`
 
-### 3.2 جلب طلب (للعميل أو الورشة حسب الصلاحية)
+**التنفيذ:** `frontend/src/app/api/v1/inspection-requests/route.ts`.
+
+### 3.2 جلب طلب (مالك المنصّة)
 
 `GET /api/v1/inspection-requests/:id`
 
-**200:** نفس شكل `InspectionRequest` + روابط تقرير/مرفقات حسب الصلاحية.
+**200:** حقول الطلب من الجدول (`id`, `title`, `status`, `dasm_car_id`, `vehicle_label`, …) إذا كان **`dasm_user_id`** للطلب يطابق مستخدم Bearer.
 
-### 3.3 Webhook (اختياري)
+**404:** الطلب غير موجود أو لا يخصّ المستخدم.
 
-`POST /api/v1/webhooks/dasm` — أحداث من المنصة (مثلاً إلغاء مزاد) لتحديث `cancelled` أو تعليق؛ **يتطلب** توقيع سرّي مشترك.
+**التنفيذ:** `frontend/src/app/api/v1/inspection-requests/[id]/route.ts`.
+
+### 3.3 مسار البوابة (استمرارية)
+
+| الملف | الطرق | الغرض |
+|-------|-------|-------|
+| `frontend/src/app/api/gateway/route.ts` | **POST** | نفس المنطق؛ استجابة `{ success, data, message }` |
+
+### 3.4 Webhook (اختياري — لم يُنفَّذ)
+
+`POST /api/v1/webhooks/dasm` — أحداث من المنصّة؛ **يتطلب** توقيع سرّي مشترك.
 
 ---
 
