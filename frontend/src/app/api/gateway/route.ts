@@ -13,6 +13,10 @@ import {
   verifyDasmUserToken,
 } from "@/lib/api/inspection-http-auth";
 import { insertInspectionRequestSubmitted } from "@/lib/api/inspection-request-http";
+import {
+  consumeInspectionCreateRateLimit,
+  inspectionCreateRateLimitResponse,
+} from "@/lib/api/inspection-create-rate-limit";
 
 /**
  * GET — توجيه المستخدم من DASM إلى منصة الفحص
@@ -64,6 +68,11 @@ export async function GET(request: NextRequest) {
  * Body: { dasm_car_id, vehicle_label, title?, auction_reference? }
  */
 export async function POST(request: NextRequest) {
+  const rl = consumeInspectionCreateRateLimit(request);
+  if (!rl.ok) {
+    return inspectionCreateRateLimitResponse("gateway", rl.retryAfterSec);
+  }
+
   if (!verifyGatewayApiKey(request)) {
     return NextResponse.json(
       { success: false, message: "مفتاح API غير صالح" },
