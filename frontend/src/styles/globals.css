@@ -12,11 +12,10 @@
   --admin-primary: #dc2626;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* لا نقلب الألوان تلقائياً مع prefers-color-scheme: الواجهة بطاقات فاتحة؛
+   كان ذلك يجعل النص يَرِث لوناً فاتحاً على خلفيات بيضاء فيصفِ النص. */
+html {
+  color-scheme: light;
 }
 
 body {
