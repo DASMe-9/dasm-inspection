@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAdminClient } from "@/lib/supabase/admin";
+import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import {
   mapAttachment,
   mapHistory,
@@ -128,6 +129,12 @@ export async function getAttachmentsWithSignedUrls(
   const list = await getAttachmentsForRequest(requestId);
   const sb = getAdminClient();
   if (!sb) {
+    if (list.length > 0) {
+      inspectionOpsLog("warn", "attachment_signed_url_skip_no_client", {
+        request_id: requestId,
+        attachment_count: list.length,
+      });
+    }
     return list.map((a) => ({ ...a, signedUrl: null }));
   }
   const bucket =
@@ -147,6 +154,12 @@ export async function getAttachmentsWithSignedUrls(
       .from(bucket)
       .createSignedUrl(path, duration);
     if (error || !data?.signedUrl) {
+      inspectionOpsLog("warn", "attachment_signed_url_failed", {
+        request_id: requestId,
+        attachment_id: a.id,
+        storage_path: path,
+        message: error?.message ?? "no_signed_url",
+      });
       out.push({ ...a, signedUrl: null });
     } else {
       out.push({ ...a, signedUrl: data.signedUrl });
