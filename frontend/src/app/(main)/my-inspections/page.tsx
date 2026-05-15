@@ -1,24 +1,30 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { RequestCard } from "@/components/inspection";
+import { RequestCard, RequestListFilters } from "@/components/inspection";
 import { EmptyState, SectionCard } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
+import { parseInspectionRequestListQuery } from "@/lib/inspection-request-list-options";
 import { listInspectionRequestsForDasmUser } from "@/lib/data/inspection";
 
-export default async function MyInspectionsPage() {
+export default async function MyInspectionsPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const c = cookies();
   const uid = c.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ?? "";
+  const listOpts = parseInspectionRequestListQuery(searchParams);
   const list = uid
-    ? [...(await listInspectionRequestsForDasmUser(uid))].sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )
+    ? await listInspectionRequestsForDasmUser(uid, listOpts)
     : [];
 
   return (
-    <div className="space-y-5" dir="rtl">
+    <div className="space-y-5 md:space-y-6" dir="rtl">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">طلباتي</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
+          طلباتي
+        </h2>
         <p className="text-sm text-gray-500 mt-1">
           الطلبات المرتبطة بحسابك عند الدخول عبر بوابة منصّة داسم.
         </p>
@@ -39,27 +45,42 @@ export default async function MyInspectionsPage() {
             }
           />
         </SectionCard>
-      ) : list.length === 0 ? (
-        <SectionCard>
-          <EmptyState
-            title="لا طلبات بعد"
-            description="أنشئ طلب فحص جديد من صفحة الطلبات ليرتبط بحسابك."
-            action={
-              <Link
-                href="/requests"
-                className="inline-flex min-h-[44px] items-center rounded-xl bg-indigo-600 px-5 text-sm font-medium text-white hover:bg-indigo-700"
-              >
-                إنشاء طلب فحص
-              </Link>
-            }
-          />
-        </SectionCard>
       ) : (
-        <div className="space-y-3">
-          {list.map((r) => (
-            <RequestCard key={r.id} request={r} />
-          ))}
-        </div>
+        <>
+          <Suspense
+            fallback={
+              <div
+                className="h-14 animate-pulse rounded-xl bg-gray-100/80"
+                aria-hidden
+              />
+            }
+          >
+            <RequestListFilters />
+          </Suspense>
+
+          {list.length === 0 ? (
+            <SectionCard>
+              <EmptyState
+                title="لا طلبات بهذه الحالة"
+                description="غيّر الفلتر أو أنشئ طلب فحص جديد من صفحة الطلبات ليرتبط بحسابك."
+                action={
+                  <Link
+                    href="/requests"
+                    className="inline-flex min-h-[44px] items-center rounded-xl bg-indigo-600 px-5 text-sm font-medium text-white hover:bg-indigo-700"
+                  >
+                    إنشاء طلب فحص
+                  </Link>
+                }
+              />
+            </SectionCard>
+          ) : (
+            <div className="space-y-3">
+              {list.map((r) => (
+                <RequestCard key={r.id} request={r} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
