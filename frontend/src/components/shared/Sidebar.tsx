@@ -36,10 +36,10 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:right-0 bg-white border-l border-gray-200 z-40">
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:right-0 bg-white/95 backdrop-blur-sm border-l border-gray-200/90 shadow-[4px_0_32px_-16px_rgba(15,23,42,0.18)] z-40">
       {/* Logo */}
-      <div className="h-16 flex items-center gap-3 px-5 border-b border-gray-200">
-        <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center">
+      <div className="h-16 flex items-center gap-3 px-5 border-b border-gray-100">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-sm">
           <span className="text-white font-bold text-sm">فحص</span>
         </div>
         <div>

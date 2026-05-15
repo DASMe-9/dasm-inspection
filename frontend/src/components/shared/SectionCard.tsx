@@ -15,16 +15,22 @@ export function SectionCard({ title, children, className }: SectionCardProps) {
 
   return (
     <div
-      className={cn("rounded-lg border overflow-hidden bg-white", className)}
+      className={cn(
+        "rounded-xl border overflow-hidden bg-white shadow-sm ring-1 ring-black/[0.04]",
+        className
+      )}
       style={{ borderColor: colors.secondary }}
       dir="rtl"
     >
       {title && (
-        <div className="border-b border-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-900 bg-gray-50">
+        <div
+          className="border-b px-4 py-3 text-sm font-semibold text-gray-900 bg-gradient-to-l from-gray-50/90 to-white"
+          style={{ borderColor: `${colors.secondary}33` }}
+        >
           {title}
         </div>
       )}
-      <div className="p-4">{children}</div>
+      <div className="p-4 md:p-5">{children}</div>
     </div>
   );
 }

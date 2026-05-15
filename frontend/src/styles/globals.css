@@ -45,4 +45,9 @@ textarea:focus-visible {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* سطح التطبيق الرئيسي — يكمّل تدرّج الـ layout */
+  .inspection-app-surface {
+    @apply antialiased;
+  }
 }
