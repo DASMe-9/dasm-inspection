@@ -7,11 +7,17 @@ import {
   INSPECTION_REQUEST_STATUS_VALUES,
 } from "@/lib/inspection-request-list-options";
 
+export type WorkshopFilterOption = { id: string; name: string };
+
 /**
- * تحكم في query: `status`، `sort` (updated افتراضي، أو created).
+ * تحكم في query: `status`، `sort` (updated افتراضي، أو created)، و`workshop` (معرف ورشة).
  * يحافظ على باقي المعاملات (مثل gateway و dasm_user_id).
  */
-export function RequestListFilters() {
+export function RequestListFilters({
+  workshopOptions = [],
+}: {
+  workshopOptions?: WorkshopFilterOption[];
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -31,6 +37,7 @@ export function RequestListFilters() {
 
   const status = searchParams.get("status") ?? "";
   const sort = searchParams.get("sort") === "created" ? "created" : "updated";
+  const workshop = searchParams.get("workshop") ?? "";
 
   const statusOptions = useMemo(
     () =>
@@ -95,6 +102,33 @@ export function RequestListFilters() {
           <option value="created">تاريخ الإنشاء</option>
         </select>
       </div>
+
+      {workshopOptions.length > 0 ? (
+        <div className="flex min-w-[160px] flex-1 flex-col gap-1">
+          <label
+            htmlFor="inspection-filter-workshop"
+            className="text-xs font-medium text-gray-500"
+          >
+            الورشة
+          </label>
+          <select
+            id="inspection-filter-workshop"
+            value={workshop}
+            onChange={(e) => {
+              const v = e.target.value;
+              replaceQuery({ workshop: v ? v : null });
+            }}
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="">كل الورش</option>
+            {workshopOptions.map((w) => (
+              <option key={w.id} value={w.id}>
+                {w.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
     </div>
   );
 }

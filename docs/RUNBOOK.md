@@ -42,6 +42,7 @@ WHERE schemaname = 'storage'
   - **`attachment_signed_url_failed`** / **`attachment_signed_url_skip_no_client`** — توليد روابط التحميل الموقّعة في `getAttachmentsWithSignedUrls`.
   - **`gateway_create_request_no_db_client`** / **`gateway_create_request_insert_failed`** / **`gateway_create_request_history_failed`** — إنشاء الطلب عبر البوابة أو REST v1.
 - كل سطر يتضمن `"inspection_ops": true` و`event` و`ts`. على **Vercel**: Deployments → Logs → ابحث عن `inspection_ops` أو اسم الحدث.
+- **تنبيهات إنتاجية:** انظر **[`INSPECTION_OPS_ALERTING.md`](./INSPECTION_OPS_ALERTING.md)** (Log Drains، فلترة `level:error`).
 
 ## حادثة أمان مشبوهة
 

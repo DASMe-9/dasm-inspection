@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { SupabaseSetupWarning } from "@/components/shared";
+import {
+  resolveInspectionPersona,
+  visibleNavKeys,
+  type InspectionNavKey,
+} from "@/lib/auth/resolve-inspection-persona";
 import { isSupabaseConfigured } from "@/lib/data/inspection";
 
 export const dynamic = "force-dynamic";
@@ -24,35 +29,66 @@ export default async function MainShellLayout({
 
   const configured = await isSupabaseConfigured();
 
+  const headersList = await headers();
+  const personaCtx = resolveInspectionPersona(headersList, cookieStore);
+  const allowedNavKeys = Array.from(visibleNavKeys(personaCtx.persona));
+
   return (
     <div
       className="flex min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_55%,#eef2f7_100%)]"
       dir="rtl"
     >
-      <Sidebar />
+      <Sidebar allowedNavKeys={allowedNavKeys} />
       <main className="flex-1 min-h-screen lg:mr-64">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
           {!configured && <SupabaseSetupWarning />}
           {children}
         </div>
-        <MobileNav />
+        <MobileNav allowedNavKeys={allowedNavKeys} />
       </main>
     </div>
   );
 }
 
-function MobileNav() {
+function MobileNav({
+  allowedNavKeys,
+}: {
+  allowedNavKeys: InspectionNavKey[];
+}) {
+  const allowed = new Set(allowedNavKeys);
+  const items: { href: string; label: string; icon: string; key: InspectionNavKey }[] =
+    [
+      { key: "dashboard", href: "/", label: "الرئيسية", icon: "🏠" },
+      { key: "requests", href: "/requests", label: "الطلبات", icon: "📋" },
+      {
+        key: "my_inspections",
+        href: "/my-inspections",
+        label: "طلباتي",
+        icon: "👤",
+      },
+      { key: "workshops", href: "/workshops", label: "الورش", icon: "🔧" },
+      {
+        key: "subscription",
+        href: "/subscription",
+        label: "الاشتراك",
+        icon: "💳",
+      },
+      { key: "settings", href: "/settings", label: "الإعدادات", icon: "⚙️" },
+    ].filter((x) => allowed.has(x.key));
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 lg:hidden z-50 flex items-stretch justify-around gap-0 border-t border-gray-100 bg-white/95 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.06)] pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] px-1"
       aria-label="التنقّل السفلي"
     >
-      <NavLink href="/" label="الرئيسية" icon="🏠" />
-      <NavLink href="/requests" label="الطلبات" icon="📋" />
-      <NavLink href="/my-inspections" label="طلباتي" icon="👤" />
-      <NavLink href="/workshops" label="الورش" icon="🔧" />
-      <NavLink href="/subscription" label="الاشتراك" icon="💳" />
-      <NavLink href="/settings" label="الإعدادات" icon="⚙️" />
+      {items.map((item) => (
+        <NavLink
+          key={item.href}
+          href={item.href}
+          label={item.label}
+          icon={item.icon}
+        />
+      ))}
     </nav>
   );
 }

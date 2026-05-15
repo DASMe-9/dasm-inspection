@@ -30,7 +30,12 @@ export const INSPECTION_REQUEST_STATUS_LABELS: Record<
 export type ListInspectionRequestsQueryOptions = {
   status?: InspectionRequestStatus;
   sort?: "updated_desc" | "created_desc";
+  /** فلترة اختيارية بالورشة (معرف UUID). */
+  workshopId?: string;
 };
+
+const WORKSHOP_UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function singleParam(
   sp: Record<string, string | string[] | undefined> | undefined,
@@ -58,5 +63,13 @@ export function parseInspectionRequestListQuery(
     status = statusRaw as InspectionRequestStatus;
   }
 
-  return { sort, ...(status ? { status } : {}) };
+  const workshopRaw = singleParam(sp, "workshop")?.trim();
+  const workshopId =
+    workshopRaw && WORKSHOP_UUID_RE.test(workshopRaw) ? workshopRaw : undefined;
+
+  return {
+    sort,
+    ...(status ? { status } : {}),
+    ...(workshopId ? { workshopId } : {}),
+  };
 }

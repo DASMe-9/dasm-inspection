@@ -2,18 +2,35 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { applyInspectionHeaders } from "@/lib/auth/apply-inspection-headers";
 import { extractDasmBearerToken } from "@/lib/auth/extract-token";
+import { INSPECTION_INTERNAL_HEADERS } from "@/lib/auth/inspection-headers";
 import { verifyDasmJwt } from "@/lib/auth/verify-dasm-jwt";
 import { updateSession } from "@/utils/supabase/middleware";
 
+function forwardSupabaseCookies(from: NextResponse, to: NextResponse): void {
+  from.cookies.getAll().forEach(({ name, value }) => {
+    to.cookies.set(name, value);
+  });
+}
+
 /**
- * 1) تحديث جلسة Supabase (كوكيز).
- * 2) عند DASM_JWT_ENFORCE=true: التحقق من JWT DASM وحقن رؤوس الطلب الداخلية.
+ * 1) إزالة أي رؤوس inspection داخلية واردة من العميل (منع الانتحال عندما لا يُفرَض JWT).
+ * 2) تحديث جلسة Supabase (كوكيز).
+ * 3) عند DASM_JWT_ENFORCE=true: التحقق من JWT DASM وحقن رؤوس الطلب الداخلية.
  */
 export async function middleware(request: NextRequest) {
   const sessionResponse = await updateSession(request);
 
+  const sanitizedHeaders = new Headers(request.headers);
+  for (const name of INSPECTION_INTERNAL_HEADERS) {
+    sanitizedHeaders.delete(name);
+  }
+
   if (process.env.DASM_JWT_ENFORCE !== "true") {
-    return sessionResponse;
+    const res = NextResponse.next({
+      request: { headers: sanitizedHeaders },
+    });
+    forwardSupabaseCookies(sessionResponse, res);
+    return res;
   }
 
   const token = extractDasmBearerToken(request);
@@ -28,16 +45,14 @@ export async function middleware(request: NextRequest) {
     return new NextResponse(`Unauthorized: ${result.message}`, { status: 401 });
   }
 
-  const requestHeaders = new Headers(request.headers);
+  const requestHeaders = new Headers(sanitizedHeaders);
   applyInspectionHeaders(requestHeaders, result.normalized);
 
   const merged = NextResponse.next({
     request: { headers: requestHeaders },
   });
 
-  sessionResponse.cookies.getAll().forEach(({ name, value }) => {
-    merged.cookies.set(name, value);
-  });
+  forwardSupabaseCookies(sessionResponse, merged);
 
   return merged;
 }
