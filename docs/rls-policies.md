@@ -135,7 +135,7 @@ $$;
 | INSERT | inspector، dasm_user (رفع لطلبه)، admin |
 | DELETE | admin؛ صاحب الطلب حسب سياسة المنتج |
 
-**Storage:** سياسات الحاوية يجب أن تعكس نفس منطق `request_id`.
+**Storage:** سياسات الحاوية يجب أن تعكس نفس منطق `request_id`. في المستودع: هجرة **`20260517120000_storage_objects_inspection_attachments_lockdown.sql`** — سياسات **RESTRICTIVE** على `storage.objects` لمنع الوصول المباشر من `authenticated` و`anon` إلى دلو **`inspection-attachments`** (الرفع والقراءة عبر الخادم بمفتاح الخدمة فقط).
 
 ---
 
