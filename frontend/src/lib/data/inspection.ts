@@ -90,6 +90,59 @@ export async function listInspectionRequests(): Promise<InspectionRequest[]> {
   return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
 }
 
+/** طلبات مرتبطة بمستخدم منصّة DASM (لصفحة «طلباتي»). */
+export async function listInspectionRequestsForDasmUser(
+  dasmUserId: string
+): Promise<InspectionRequest[]> {
+  if (!dasmUserId?.trim()) return [];
+  const sb = getAdminClient();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("inspection_requests")
+    .select("*")
+    .eq("dasm_user_id", dasmUserId.trim())
+    .order("updated_at", { ascending: false });
+  if (error || !data) return [];
+  return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
+}
+
+export type AttachmentWithUrl = InspectionAttachment & {
+  signedUrl: string | null;
+};
+
+export async function getAttachmentsWithSignedUrls(
+  requestId: string
+): Promise<AttachmentWithUrl[]> {
+  const list = await getAttachmentsForRequest(requestId);
+  const sb = getAdminClient();
+  if (!sb) {
+    return list.map((a) => ({ ...a, signedUrl: null }));
+  }
+  const bucket =
+    process.env.INSPECTION_ATTACHMENTS_BUCKET?.trim() ||
+    "inspection-attachments";
+  const ttl = Number(process.env.INSPECTION_ATTACHMENT_SIGNED_URL_TTL_SEC ?? 3600);
+  const duration = Number.isFinite(ttl) && ttl > 60 ? ttl : 3600;
+
+  const out: AttachmentWithUrl[] = [];
+  for (const a of list) {
+    const path = a.urlPlaceholder?.trim();
+    if (!path) {
+      out.push({ ...a, signedUrl: null });
+      continue;
+    }
+    const { data, error } = await sb.storage
+      .from(bucket)
+      .createSignedUrl(path, duration);
+    if (error || !data?.signedUrl) {
+      out.push({ ...a, signedUrl: null });
+    } else {
+      out.push({ ...a, signedUrl: data.signedUrl });
+    }
+  }
+  return out;
+}
+
 export async function getInspectionRequest(
   id: string
 ): Promise<InspectionRequest | null> {

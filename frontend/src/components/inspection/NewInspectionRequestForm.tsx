@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { createInspectionRequestAction } from "@/app/actions/inspection-workflow";
 import { useTheme } from "@/hooks";
 
-export function NewInspectionRequestForm() {
+export function NewInspectionRequestForm({
+  defaultDasmUserId,
+}: {
+  defaultDasmUserId?: string;
+}) {
   const { colors } = useTheme({ role: "workshop" });
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -51,11 +55,20 @@ export function NewInspectionRequestForm() {
         placeholder="وصف المركبة (للعرض)"
         className="w-full border rounded-lg px-3 py-2"
       />
-      <input
-        name="dasm_user_id"
-        placeholder="dasm_user_id (اختياري)"
-        className="w-full border rounded-lg px-3 py-2 font-mono text-xs"
-      />
+      {defaultDasmUserId ? (
+        <>
+          <input type="hidden" name="dasm_user_id" value={defaultDasmUserId} />
+          <p className="rounded-lg border border-emerald-100 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
+            تم ربط الطلب بحسابك من منصّة داسم.
+          </p>
+        </>
+      ) : (
+        <input
+          name="dasm_user_id"
+          placeholder="dasm_user_id (اختياري)"
+          className="w-full border rounded-lg px-3 py-2 font-mono text-xs"
+        />
+      )}
       <input
         name="auction_reference"
         placeholder="مرجع مزاد (اختياري)"

@@ -46,8 +46,12 @@ export const config = {
   matcher: [
     "/",
     "/requests/:path*",
+    "/my-inspections",
+    "/track/:path*",
     "/workshops/:path*",
     "/reports/:path*",
     "/settings/:path*",
+    "/subscription",
+    "/subscription/:path*",
   ],
 };

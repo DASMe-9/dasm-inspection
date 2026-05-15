@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   assignInspectionRequestAction,
   approveReportAction,
+  cancelInspectionRequestAction,
   rejectReportAction,
   startInspectionAction,
   submitReportForReviewAction,
@@ -26,8 +27,13 @@ export function RequestWorkflowPanel({
   const [pending, startTransition] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [cancelReason, setCancelReason] = useState("");
   const [workshopId, setWorkshopId] = useState(request.workshopId ?? "");
   const [inspectorId, setInspectorId] = useState(request.inspectorId ?? "");
+
+  const canCancel =
+    ["submitted", "assigned", "in_progress"].includes(request.status) &&
+    !request.reportId;
 
   const inspectorsFiltered = useMemo(() => {
     if (!workshopId) return inspectors;
@@ -174,6 +180,58 @@ export function RequestWorkflowPanel({
           تم اعتماد التقرير؛ تنتهي دورة الفحص هنا. متابعة الشحن أو التسليم تتم في
           النظام المخصص لذلك وليس في هذا التطبيق.
         </p>
+      )}
+
+      {request.status === "cancelled" && (
+        <p className="text-sm text-amber-800 rounded-lg border border-amber-200 p-3 bg-amber-50">
+          تم إلغاء هذا الطلب؛ لن يُستأنف الفحص ضمن نفس السجل.
+        </p>
+      )}
+
+      {request.status === "rejected" && (
+        <p className="text-sm text-gray-600 rounded-lg border border-dashed p-3 bg-gray-50">
+          وُسِم التقرير بالرفض؛ راجع الملاحظات في سجل الحالة أو افتح التقرير.
+        </p>
+      )}
+
+      {canCancel && (
+        <div
+          className="rounded-lg border border-red-100 bg-red-50/80 p-4 space-y-2"
+          style={{ borderColor: "#fecaca" }}
+        >
+          <p className="font-medium text-sm text-red-900">إلغاء الطلب</p>
+          <p className="text-xs text-red-800/90">
+            يُسمَح الإلغاء قبل اعتماد التقرير وفقط إن لم يُنشأ تقرير مرتبط بعد.
+          </p>
+          <textarea
+            className="w-full rounded-lg border border-red-100 bg-white px-3 py-2 text-sm min-h-[72px]"
+            placeholder="سبب الإلغاء (اختياري)"
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+          />
+          <button
+            type="button"
+            disabled={pending}
+            className="w-full min-h-[48px] py-2.5 rounded-lg text-white text-sm font-medium bg-red-600 hover:bg-red-700 disabled:opacity-50"
+            onClick={() => {
+              if (
+                !window.confirm(
+                  "تأكيد إلغاء طلب الفحص؟ لا يمكن التراجع عن ذلك من هذه الشاشة."
+                )
+              ) {
+                return;
+              }
+              run(() =>
+                cancelInspectionRequestAction(
+                  request.id,
+                  cancelReason.trim() || undefined
+                )
+              );
+            }}
+          >
+            إلغاء الطلب
+          </button>
+        </div>
       )}
 
       {msg && (

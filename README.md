@@ -1,5 +1,7 @@
 # DASM Inspection
 
+> **⚠️ تسميات:** اسم الريبو ومستودع GitHub **`dasm-inspection`**؛ **الدومين العام للإنتاج** **`https://inspect.dasm.com.sa`** (بادئة **`inspect`**). الفرق عن كلمة «inspection» في الجداول (`inspection_requests`، إلخ) مقصود — لا تعتمد دوميناً باسم `inspection.dasm.com.sa` في الـ env أو الاختبارات دون قرار منتج صريح.
+
 تطبيق **فحص سيارات / ورش** مبني على **Next.js 14** (`frontend/`) و**Supabase** (Postgres + RLS).
 
 ## التشغيل السريع
@@ -39,4 +41,5 @@ npm run dev
 | [`permissions-matrix.md`](docs/permissions-matrix.md) | أدوار DASM المعتمدة مقابل DB والوصول المستهدف |
 | [`EXECUTION_PLAN.md`](docs/EXECUTION_PLAN.md) | مراحل 1–4 وحوكمة PR |
 | [`V1_SCOPE.md`](docs/V1_SCOPE.md) | حدود المنتج |
+| [`IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md) | مقارنة كود اليوم مقابل المراحل و`V1` (يُحدَّث عند التدقيق الدوري) |
 | [`DASM_INTEGRATION.md`](docs/DASM_INTEGRATION.md) | تكامل المنصة |

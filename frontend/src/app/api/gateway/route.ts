@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminClient } from "@/lib/supabase/admin";
+import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 
 const VALID_API_KEYS = (process.env.DASM_GATEWAY_API_KEYS || "")
   .split(",")
@@ -65,7 +66,18 @@ export async function GET(request: NextRequest) {
   redirectUrl.searchParams.set("user_name", user.name || "");
   if (returnUrl) redirectUrl.searchParams.set("return_url", returnUrl);
 
-  return NextResponse.redirect(redirectUrl);
+  const res = NextResponse.redirect(redirectUrl);
+  const isProd = process.env.NODE_ENV === "production";
+  res.cookies.set({
+    name: INSPECTION_DASM_USER_COOKIE,
+    value: String(user.id),
+    httpOnly: true,
+    secure: isProd,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 14,
+  });
+  return res;
 }
 
 /**
