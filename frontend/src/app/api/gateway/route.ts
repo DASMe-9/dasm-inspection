@@ -2,39 +2,17 @@
  * بوابة الفحص من DASM Platform
  *
  * GET /api/gateway?token=xxx → يوجه المستخدم لصفحة طلب الفحص
- * POST /api/gateway → ينشئ طلب فحص عبر API key
+ * POST /api/gateway → ينشئ طلب فحص عبر API key (يُفضّل للمنصّات الجديدة استخدام POST /api/v1/inspection-requests)
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminClient } from "@/lib/supabase/admin";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
-
-const VALID_API_KEYS = (process.env.DASM_GATEWAY_API_KEYS || "")
-  .split(",")
-  .filter(Boolean);
-
-const DASM_API_URL = process.env.DASM_API_URL || "https://api.dasm.com.sa";
-
-function verifyApiKey(request: NextRequest): boolean {
-  const apiKey =
-    request.headers.get("X-Dasm-Api-Key") ||
-    request.headers.get("Authorization")?.replace("ApiKey ", "");
-  if (!apiKey) return false;
-  return VALID_API_KEYS.includes(apiKey);
-}
-
-async function verifyDasmToken(token: string) {
-  try {
-    const res = await fetch(`${DASM_API_URL}/api/user/profile`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data?.data || data;
-  } catch {
-    return null;
-  }
-}
+import {
+  verifyGatewayApiKey,
+  getBearerToken,
+  verifyDasmUserToken,
+} from "@/lib/api/inspection-http-auth";
+import { insertInspectionRequestSubmitted } from "@/lib/api/inspection-request-http";
 
 /**
  * GET — توجيه المستخدم من DASM إلى منصة الفحص
@@ -51,7 +29,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const user = await verifyDasmToken(token);
+  const user = await verifyDasmUserToken(token);
   if (!user) {
     return NextResponse.json(
       { success: false, message: "توكن غير صالح" },
@@ -59,7 +37,6 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // توجيه لصفحة الطلبات مع بيانات المستخدم
   const redirectUrl = new URL("/requests", request.url);
   redirectUrl.searchParams.set("gateway", "dasm");
   redirectUrl.searchParams.set("dasm_user_id", String(user.id));
@@ -87,24 +64,22 @@ export async function GET(request: NextRequest) {
  * Body: { dasm_car_id, vehicle_label, title?, auction_reference? }
  */
 export async function POST(request: NextRequest) {
-  if (!verifyApiKey(request)) {
+  if (!verifyGatewayApiKey(request)) {
     return NextResponse.json(
       { success: false, message: "مفتاح API غير صالح" },
       { status: 403 }
     );
   }
 
-  const userToken = request.headers
-    .get("Authorization")
-    ?.replace("Bearer ", "");
+  const userToken = getBearerToken(request);
   if (!userToken) {
     return NextResponse.json(
-      { success: false, message: "Authorization header مطلوب" },
+      { success: false, message: "Authorization Bearer مطلوب" },
       { status: 401 }
     );
   }
 
-  const user = await verifyDasmToken(userToken);
+  const user = await verifyDasmUserToken(userToken);
   if (!user) {
     return NextResponse.json(
       { success: false, message: "توكن المستخدم غير صالح" },
@@ -116,60 +91,39 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { dasm_car_id, vehicle_label, title, auction_reference } = body;
 
-    if (!dasm_car_id || !vehicle_label) {
+    const result = await insertInspectionRequestSubmitted(
+      {
+        dasm_car_id: String(dasm_car_id ?? ""),
+        vehicle_label: String(vehicle_label ?? ""),
+        title: title != null ? String(title) : undefined,
+        auction_reference:
+          auction_reference != null ? String(auction_reference) : undefined,
+      },
+      user,
+      request.nextUrl.origin
+    );
+
+    if (!result.ok) {
+      const status =
+        result.code === "validation_error"
+          ? 400
+          : result.code === "database_error"
+            ? 500
+            : 500;
       return NextResponse.json(
-        {
-          success: false,
-          message: "dasm_car_id و vehicle_label مطلوبان",
-        },
-        { status: 400 }
+        { success: false, message: result.message },
+        { status }
       );
     }
-
-    const sb = getAdminClient();
-    if (!sb) {
-      return NextResponse.json(
-        { success: false, message: "خطأ في الاتصال بقاعدة البيانات" },
-        { status: 500 }
-      );
-    }
-
-    const { data, error } = await sb
-      .from("inspection_requests")
-      .insert({
-        title: title || `فحص ${vehicle_label}`,
-        dasm_car_id,
-        vehicle_label,
-        dasm_user_id: String(user.id),
-        auction_reference: auction_reference || null,
-        status: "submitted",
-      })
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json(
-        { success: false, message: error.message },
-        { status: 500 }
-      );
-    }
-
-    // إضافة سجل الحالة
-    await sb.from("inspection_status_history").insert({
-      request_id: data.id,
-      status: "submitted",
-      note: `طلب فحص من منصة داسم — ${user.name}`,
-      actor_role: "dasm_user",
-    });
 
     return NextResponse.json({
       success: true,
       data: {
-        id: data.id,
-        title: data.title,
-        status: data.status,
-        vehicle_label: data.vehicle_label,
-        tracking_url: `${request.nextUrl.origin}/requests/${data.id}`,
+        id: result.row.id,
+        title: result.row.title,
+        status: result.row.status,
+        vehicle_label: result.row.vehicle_label,
+        tracking_url: result.tracking_url,
       },
       message: "تم إنشاء طلب الفحص بنجاح",
     });
