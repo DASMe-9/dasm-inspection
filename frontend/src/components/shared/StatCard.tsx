@@ -14,14 +14,17 @@ export function StatCard({ value, label, className }: StatCardProps) {
 
   return (
     <div
-      className={cn("rounded-lg border p-4 bg-white", className)}
+      className={cn(
+        "rounded-xl border p-4 md:p-5 bg-white shadow-sm ring-1 ring-black/[0.04]",
+        className
+      )}
       style={{ borderColor: colors.secondary }}
       dir="rtl"
     >
-      <div className="text-2xl font-bold" style={{ color: colors.primary }}>
+      <div className="text-2xl md:text-3xl font-bold tabular-nums" style={{ color: colors.primary }}>
         {value}
       </div>
-      <div className="text-sm text-gray-600 mt-1">{label}</div>
+      <div className="text-sm text-gray-600 mt-1.5 leading-snug">{label}</div>
     </div>
   );
 }

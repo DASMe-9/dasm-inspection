@@ -25,10 +25,13 @@ export default async function MainShellLayout({
   const configured = await isSupabaseConfigured();
 
   return (
-    <div className="flex min-h-screen bg-gray-50" dir="rtl">
+    <div
+      className="flex min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_55%,#eef2f7_100%)]"
+      dir="rtl"
+    >
       <Sidebar />
       <main className="flex-1 min-h-screen lg:mr-64">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-6">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
           {!configured && <SupabaseSetupWarning />}
           {children}
         </div>

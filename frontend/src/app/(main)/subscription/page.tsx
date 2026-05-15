@@ -135,7 +135,7 @@ export default function SubscriptionPage() {
           اشتراك داسم فحص
         </h2>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center space-y-4">
+        <div className="bg-white rounded-xl border border-gray-200/90 shadow-sm ring-1 ring-black/[0.04] p-8 text-center space-y-4">
           <div className="w-16 h-16 mx-auto rounded-full bg-indigo-50 flex items-center justify-center">
             <CreditCard className="w-8 h-8 text-indigo-600" />
           </div>
@@ -174,7 +174,7 @@ export default function SubscriptionPage() {
 
       {/* Status card */}
       {sub && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200/90 shadow-sm ring-1 ring-black/[0.04] overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
             <span className="font-semibold text-gray-800">حالة الاشتراك</span>
             {statusBadge(sub.status)}
@@ -248,7 +248,7 @@ export default function SubscriptionPage() {
       <TierTable currentTier={sub?.tier} />
 
       {history.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200/90 shadow-sm ring-1 ring-black/[0.04] overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100">
             <h3 className="font-semibold text-gray-800 flex items-center gap-2">
               <Receipt className="w-4 h-4" />
@@ -289,7 +289,7 @@ export default function SubscriptionPage() {
 
 function TierTable({ currentTier }: { currentTier?: number }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-200/90 shadow-sm ring-1 ring-black/[0.04] overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
         <h3 className="font-semibold text-gray-800 flex items-center gap-2">
           <TrendingUp className="w-4 h-4" />

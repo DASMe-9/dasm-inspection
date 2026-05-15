@@ -6,6 +6,21 @@ import { useRouter } from "next/navigation";
 const DASM_API = process.env.NEXT_PUBLIC_API_URL || "https://api.dasm.com.sa";
 const ALLOWED_TYPES = ["admin", "super_admin"];
 
+type LoginDeniedUser = { type: string };
+
+function messageFromUnknown(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "message" in err &&
+    typeof (err as { message: unknown }).message === "string"
+  ) {
+    return (err as { message: string }).message;
+  }
+  return "تعذّر تسجيل الدخول";
+}
+
 function AccessDenied({ type }: { type: string }) {
   return (
     <div dir="rtl" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(145deg, #020509, #0a1020)", padding: "1.5rem" }}>
@@ -33,7 +48,7 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy]     = useState(false);
   const [error, setError]   = useState<string | null>(null);
-  const [denied, setDenied] = useState<any>(null);
+  const [denied, setDenied] = useState<LoginDeniedUser | null>(null);
 
   if (denied) return <AccessDenied type={denied.type} />;
 
@@ -52,14 +67,17 @@ export default function LoginPage() {
       const token = body.data?.access_token ?? body.access_token;
       const user  = body.data?.user ?? body.user;
       if (!token || !user) throw new Error("استجابة غير متوقعة من الخادم");
-      if (!ALLOWED_TYPES.includes(user.type)) { setDenied(user); return; }
+      if (!ALLOWED_TYPES.includes(user.type)) {
+        setDenied({ type: user.type });
+        return;
+      }
       // حفظ التوكن في cookie + localStorage ليتوافق مع middleware المنصة
       document.cookie = `dasm_access_token=${token}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
       document.cookie = `inspection_token=${token}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
       localStorage.setItem("inspection_user", JSON.stringify(user));
       router.replace("/");
-    } catch (err: any) {
-      setError(err?.message || "تعذّر تسجيل الدخول");
+    } catch (err: unknown) {
+      setError(messageFromUnknown(err));
     } finally {
       setBusy(false);
     }

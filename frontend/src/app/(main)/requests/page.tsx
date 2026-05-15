@@ -21,8 +21,13 @@ export default async function RequestsListPage({
   );
 
   return (
-    <div className="space-y-4" dir="rtl">
-      <h2 className="text-lg font-bold text-gray-800">طلبات الفحص</h2>
+    <div className="space-y-5 md:space-y-6" dir="rtl">
+      <div>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">طلبات الفحص</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          أنشئ طلباً جديداً أو تابع المسار من القائمة أدناه.
+        </p>
+      </div>
 
       <SectionCard>
         <NewInspectionRequestForm defaultDasmUserId={presetDasmUserId} />
