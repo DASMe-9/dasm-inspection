@@ -24,8 +24,24 @@
 | `submitReportForReviewAction` | requestId |同上 | ينشئ تقريراً + بنوداً افتراضية؛ `pending_review` |
 | `approveReportAction` | requestId |同上 | من `pending_review` |
 | `rejectReportAction` | requestId, reason |同上 | من `pending_review` |
+| `updateReportItemAction` | itemId, status, notes? |同上 | تحديث بند (`pass`/`warn`/`fail`/`na`) في `inspection_report_items` |
+| `cancelInspectionRequestAction` | requestId, reason? |同上 | من `submitted` / `assigned` / `in_progress` فقط؛ يرفض إن وُجد `report_id` |
+| `uploadInspectionAttachmentAction` | requestId, `FormData` بمفتاح `file` |同上 | رفع إلى حاوية Storage (اسم الدلو من `INSPECTION_ATTACHMENTS_BUCKET`، افتراضياً `inspection-attachments`) ثم إدراج `inspection_attachments` |
 
 **العقد الضمني:** `ActionResult = { ok: true } | { ok: false; message: string }`.
+
+**ملاحظات:** عرض المرفقات للمستخدم يتم عبر **روابط موقّعة** تولَّد في طبقة البيانات (`getAttachmentsWithSignedUrls`) — لا تُعرَض مسارات التخزين الخام.
+
+---
+
+## 2.1 بوابة DASM المنفَّذة (Route Handler — ليس نفس مسار REST v1)
+
+| الملف | الطرق | الغرض |
+|-------|-------|-------|
+| `frontend/src/app/api/gateway/route.ts` | **GET** | `?token=` مستخدم DASM → تحقق عبر `{DASM_API_URL}/api/user/profile` → إعادة توجيه إلى `/requests` مع query params + **كوكي httpOnly** `inspection_dasm_user_id` لتصفية **صفحة `/my-inspections`** |
+| نفس الملف | **POST** | `X-Dasm-Api-Key` (قائمة `DASM_GATEWAY_API_KEYS`) + `Authorization: Bearer` مستخدم؛ body `dasm_car_id`, `vehicle_label`, اختياري `title`, `auction_reference` → إدراج طلب `submitted` |
+
+يُكمِّل جزءاً من نية **`POST /api/v1/inspection-requests`** المقترجة أعلاه بتوقيع مختلف (مفتاح خدمة + توكن مستخدم).
 
 ---
 

@@ -1,10 +1,29 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertInspectionMutationAllowed } from "@/lib/auth/access-layer.server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import type { InspectionRequestStatus, ReportItemStatus } from "@/types";
 
 const ACTOR = "inspection_admin" as const;
+
+const CANCELLABLE: InspectionRequestStatus[] = [
+  "submitted",
+  "assigned",
+  "in_progress",
+];
+
+function mapAccessError(e: unknown): string {
+  if (e instanceof Error) {
+    if (e.message === "INSPECTION_AUTH_REQUIRED") {
+      return "انتهت الجلسة أو غير مصرّح — سجّل الدخول من جديد.";
+    }
+    if (e.message === "INSPECTION_FORBIDDEN") {
+      return "ليس لديك صلاحية لتنفيذ هذا الإجراء.";
+    }
+  }
+  return e instanceof Error ? e.message : "خطأ غير متوقع";
+}
 
 async function insertHistory(
   requestId: string,
@@ -26,6 +45,7 @@ export type ActionResult =
 
 export async function createInspectionRequestAction(formData: FormData): Promise<ActionResult> {
   try {
+    await assertInspectionMutationAllowed();
     const title = String(formData.get("title") ?? "").trim();
     const dasm_car_id = String(formData.get("dasm_car_id") ?? "").trim();
     const vehicle_label = String(formData.get("vehicle_label") ?? "").trim();
@@ -58,10 +78,10 @@ export async function createInspectionRequestAction(formData: FormData): Promise
     await insertHistory(data.id, "submitted");
     revalidatePath("/");
     revalidatePath("/requests");
+    revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
-    return { ok: false, message: msg };
+    return { ok: false, message: mapAccessError(e) };
   }
 }
 
@@ -71,6 +91,7 @@ export async function assignInspectionRequestAction(
   inspectorId: string
 ): Promise<ActionResult> {
   try {
+    await assertInspectionMutationAllowed();
     if (!workshopId || !inspectorId) {
       return { ok: false, message: "اختر الورشة والمفتش." };
     }
@@ -97,15 +118,16 @@ export async function assignInspectionRequestAction(
     await insertHistory(requestId, "assigned", "تم الإسناد");
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
-    return { ok: false, message: msg };
+    return { ok: false, message: mapAccessError(e) };
   }
 }
 
 export async function startInspectionAction(requestId: string): Promise<ActionResult> {
   try {
+    await assertInspectionMutationAllowed();
     const sb = requireAdminClient();
     const { data: req, error: fetchErr } = await sb
       .from("inspection_requests")
@@ -124,10 +146,10 @@ export async function startInspectionAction(requestId: string): Promise<ActionRe
     await insertHistory(requestId, "in_progress");
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
-    return { ok: false, message: msg };
+    return { ok: false, message: mapAccessError(e) };
   }
 }
 
@@ -141,6 +163,7 @@ const DEFAULT_REPORT_ITEMS = [
 
 export async function submitReportForReviewAction(requestId: string): Promise<ActionResult> {
   try {
+    await assertInspectionMutationAllowed();
     const sb = requireAdminClient();
     const { data: req, error: fetchErr } = await sb
       .from("inspection_requests")
@@ -206,15 +229,16 @@ export async function submitReportForReviewAction(requestId: string): Promise<Ac
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath(`/reports/${rep.id}`);
+    revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
-    return { ok: false, message: msg };
+    return { ok: false, message: mapAccessError(e) };
   }
 }
 
 export async function approveReportAction(requestId: string): Promise<ActionResult> {
   try {
+    await assertInspectionMutationAllowed();
     const sb = requireAdminClient();
     const { data: req, error: fetchErr } = await sb
       .from("inspection_requests")
@@ -248,10 +272,10 @@ export async function approveReportAction(requestId: string): Promise<ActionResu
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath(`/reports/${req.report_id}`);
+    revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
-    return { ok: false, message: msg };
+    return { ok: false, message: mapAccessError(e) };
   }
 }
 
@@ -261,6 +285,7 @@ export async function updateReportItemAction(
   notes?: string
 ): Promise<ActionResult> {
   try {
+    await assertInspectionMutationAllowed();
     if (!itemId) {
       return { ok: false, message: "معرّف البند مطلوب." };
     }
@@ -283,8 +308,7 @@ export async function updateReportItemAction(
     revalidatePath("/requests");
     return { ok: true };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
-    return { ok: false, message: msg };
+    return { ok: false, message: mapAccessError(e) };
   }
 }
 
@@ -293,6 +317,7 @@ export async function rejectReportAction(
   reason: string
 ): Promise<ActionResult> {
   try {
+    await assertInspectionMutationAllowed();
     const r = reason.trim();
     if (!r) return { ok: false, message: "اذكر سبب الرفض." };
     const sb = requireAdminClient();
@@ -327,9 +352,153 @@ export async function rejectReportAction(
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath(`/reports/${req.report_id}`);
+    revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "خطأ غير متوقع";
-    return { ok: false, message: msg };
+    return { ok: false, message: mapAccessError(e) };
+  }
+}
+
+const ATTACH_MAX_BYTES = 8 * 1024 * 1024;
+const ATTACH_ALLOWED_MIME = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+]);
+
+function safeFileSegment(name: string): string {
+  const base = name.replace(/[^a-zA-Z0-9._\u0600-\u06FF-]/g, "_");
+  return (base || "file").slice(0, 160);
+}
+
+export async function cancelInspectionRequestAction(
+  requestId: string,
+  reason?: string
+): Promise<ActionResult> {
+  try {
+    await assertInspectionMutationAllowed();
+    if (!requestId?.trim()) {
+      return { ok: false, message: "معرّف الطلب غير صالح." };
+    }
+    const sb = requireAdminClient();
+    const { data: req, error: fetchErr } = await sb
+      .from("inspection_requests")
+      .select("status, report_id")
+      .eq("id", requestId)
+      .single();
+
+    if (fetchErr || !req) {
+      return { ok: false, message: "الطلب غير موجود." };
+    }
+    if (!CANCELLABLE.includes(req.status as InspectionRequestStatus)) {
+      return {
+        ok: false,
+        message: "لا يمكن الإلغاء في هذه الحالة (بعد المراجعة أو الإغلاق).",
+      };
+    }
+    if (req.report_id) {
+      return {
+        ok: false,
+        message: "لا يمكن إلغاء طلب مرتبط بتقرير — استخدم مسار الرفض إن وُجد.",
+      };
+    }
+
+    const { error } = await sb
+      .from("inspection_requests")
+      .update({ status: "cancelled" })
+      .eq("id", requestId);
+
+    if (error) return { ok: false, message: error.message };
+
+    const note = reason?.trim() || "أُلغي الطلب";
+    await insertHistory(requestId, "cancelled", note);
+    revalidatePath("/");
+    revalidatePath("/requests");
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/my-inspections");
+    revalidatePath(`/track/${requestId}`);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapAccessError(e) };
+  }
+}
+
+export async function uploadInspectionAttachmentAction(
+  requestId: string,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await assertInspectionMutationAllowed();
+    if (!requestId?.trim()) {
+      return { ok: false, message: "معرّف الطلب مطلوب." };
+    }
+
+    const file = formData.get("file");
+    if (!(file instanceof File) || file.size === 0) {
+      return { ok: false, message: "اختر ملفاً صالحاً." };
+    }
+    if (file.size > ATTACH_MAX_BYTES) {
+      return { ok: false, message: "الحد الأقصى 8 ميغابايت." };
+    }
+    const mime = file.type || "application/octet-stream";
+    if (!ATTACH_ALLOWED_MIME.has(mime)) {
+      return {
+        ok: false,
+        message: "يُسمح بصور JPEG/PNG/WebP أو PDF فقط.",
+      };
+    }
+
+    const sb = requireAdminClient();
+    const { data: req, error: reqErr } = await sb
+      .from("inspection_requests")
+      .select("id")
+      .eq("id", requestId)
+      .maybeSingle();
+    if (reqErr || !req) {
+      return { ok: false, message: "الطلب غير موجود." };
+    }
+
+    const bucket =
+      process.env.INSPECTION_ATTACHMENTS_BUCKET?.trim() ||
+      "inspection-attachments";
+    const safeName = safeFileSegment(file.name);
+    const storagePath = `${requestId}/${Date.now()}-${safeName}`;
+
+    const buf = Buffer.from(await file.arrayBuffer());
+    const { error: upErr } = await sb.storage
+      .from(bucket)
+      .upload(storagePath, buf, {
+        contentType: mime,
+        upsert: false,
+      });
+
+    if (upErr) {
+      return {
+        ok: false,
+        message:
+          upErr.message ||
+          "فشل الرفع — تأكد من إنشاء الحاوية في Supabase (انظر الهجرة).",
+      };
+    }
+
+    const { error: insErr } = await sb.from("inspection_attachments").insert({
+      request_id: requestId,
+      report_id: null,
+      file_name: file.name.slice(0, 255),
+      mime_type: mime,
+      storage_path: storagePath,
+    });
+
+    if (insErr) {
+      await sb.storage.from(bucket).remove([storagePath]);
+      return { ok: false, message: insErr.message };
+    }
+
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/requests");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapAccessError(e) };
   }
 }

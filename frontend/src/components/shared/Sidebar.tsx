@@ -14,6 +14,7 @@ const NAV_GROUPS = [
     label: "إدارة الفحص",
     items: [
       { href: "/requests", label: "طلبات الفحص", icon: "📋" },
+      { href: "/my-inspections", label: "طلباتي", icon: "👤" },
       { href: "/workshops", label: "الورش المعتمدة", icon: "🔧" },
     ],
   },

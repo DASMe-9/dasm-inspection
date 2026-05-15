@@ -7,3 +7,4 @@ export { ChecklistForm } from "./ChecklistForm";
 export { InspectorAssignmentPanel } from "./InspectorAssignmentPanel";
 export { RequestWorkflowPanel } from "./RequestWorkflowPanel";
 export { NewInspectionRequestForm } from "./NewInspectionRequestForm";
+export { RequestAttachmentsSection } from "./RequestAttachmentsSection";

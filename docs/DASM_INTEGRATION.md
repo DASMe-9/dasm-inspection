@@ -1,5 +1,7 @@
 # DASM Integration — Assumptions
 
+**دومين الإنتاج:** **`https://inspect.dasm.com.sa`** — اسم مستودع GitHub **`dasm-inspection`**؛ لا يُستنتج الدومين من اسم الريبو (انظر أيضاً **`V1_SCOPE.md`**).
+
 ## مبدأ
 
 - **dasm-inspection** ريبو مستقل؛ لا يُبنى بديل لمنصة DASM (مزادات، ملفات مستخدمين، إدارة مركبات).

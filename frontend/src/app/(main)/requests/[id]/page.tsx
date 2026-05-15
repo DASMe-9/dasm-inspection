@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -5,10 +6,10 @@ import {
   StatusTimeline,
   ChecklistForm,
   RequestWorkflowPanel,
+  RequestAttachmentsSection,
 } from "@/components/inspection";
-import { SectionCard, EmptyState } from "@/components/shared";
+import { SectionCard } from "@/components/shared";
 import {
-  getAttachmentsForRequest,
   getHistoryForRequest,
   getInspector,
   getReport,
@@ -19,6 +20,21 @@ import {
   listWorkshops,
 } from "@/lib/data/inspection";
 import { TOKENS } from "@/lib/theme";
+
+function AttachmentsSectionSkeleton() {
+  return (
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+      <div
+        className="h-4 w-28 bg-gray-200 rounded animate-pulse mb-4"
+        aria-hidden
+      />
+      <div className="space-y-2 animate-pulse">
+        <div className="h-12 rounded-xl bg-gray-100" />
+        <div className="h-12 rounded-xl bg-gray-100 w-11/12 max-w-full" />
+      </div>
+    </div>
+  );
+}
 
 export default async function RequestDetailPage({
   params,
@@ -41,7 +57,14 @@ export default async function RequestDetailPage({
     ? await getReport(req.reportId)
     : await getReportByRequestId(req.id);
   const history = await getHistoryForRequest(req.id);
-  const attachments = await getAttachmentsForRequest(req.id);
+
+  const canUploadAttachment = [
+    "submitted",
+    "assigned",
+    "in_progress",
+    "pending_review",
+  ].includes(req.status);
+
   return (
     <div className="space-y-6" dir="rtl">
       <div className="flex flex-wrap items-center gap-2 justify-between">
@@ -61,12 +84,12 @@ export default async function RequestDetailPage({
         <dl className="text-sm space-y-1">
           <div>
             <dt className="text-gray-500">dasm_car_id</dt>
-            <dd className="font-mono">{req.dasm_car_id}</dd>
+            <dd className="font-mono break-all">{req.dasm_car_id}</dd>
           </div>
           {req.dasm_user_id && (
             <div>
               <dt className="text-gray-500">dasm_user_id</dt>
-              <dd className="font-mono">{req.dasm_user_id}</dd>
+              <dd className="font-mono break-all">{req.dasm_user_id}</dd>
             </div>
           )}
           {req.auction_reference && (
@@ -93,43 +116,29 @@ export default async function RequestDetailPage({
         </p>
       </SectionCard>
 
-      {report && (req.status === "in_progress" || req.status === "assigned" || req.status === "pending_review") && (
-        <SectionCard title="قائمة الفحص">
-          <ChecklistForm
-            reportId={report.id}
-            items={report.items}
-            editable={req.status === "in_progress"}
-          />
-        </SectionCard>
-      )}
+      {report &&
+        (req.status === "in_progress" ||
+          req.status === "assigned" ||
+          req.status === "pending_review") && (
+          <SectionCard title="قائمة الفحص">
+            <ChecklistForm
+              reportId={report.id}
+              items={report.items}
+              editable={req.status === "in_progress"}
+            />
+          </SectionCard>
+        )}
 
       <SectionCard title="خط زمني للحالة">
         <StatusTimeline items={history} />
       </SectionCard>
 
-      <SectionCard title="المرفقات">
-        {attachments.length === 0 ? (
-          <EmptyState
-            title="لا مرفقات"
-            description="اربط حاوية التخزين لاحقاً لرفع الملفات."
-          />
-        ) : (
-          <ul className="text-sm space-y-1">
-            {attachments.map((a) => (
-              <li key={a.id} className="font-mono text-gray-700">
-                {a.fileName}
-              </li>
-            ))}
-          </ul>
-        )}
-        <button
-          type="button"
-          className="mt-3 w-full py-2 rounded-lg border border-dashed text-gray-500 text-sm"
-          disabled
-        >
-          رفع (قريباً)
-        </button>
-      </SectionCard>
+      <Suspense fallback={<AttachmentsSectionSkeleton />}>
+        <RequestAttachmentsSection
+          requestId={req.id}
+          canUpload={canUploadAttachment}
+        />
+      </Suspense>
 
       {report && (
         <SectionCard title="التقرير">

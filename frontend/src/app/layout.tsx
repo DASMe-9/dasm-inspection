@@ -18,6 +18,12 @@ export const metadata: Metadata = {
   description: "نظام فحص السيارات والورش — تكامل مع منصة DASM",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#4f46e5",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

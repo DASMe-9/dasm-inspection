@@ -1,5 +1,7 @@
 # Dasm Inspection — نظرة عامة
 
+> **تسميات:** مستودع الكود **`dasm-inspection`**؛ الدومين الذي يخدم المستخدمين المعتمد **`inspect.dasm.com.sa`** (اختصار **`inspect`**) — وليس بالضرورة `inspection…` رغم تشابه الاسم مع كلمة «inspection» في التصميم والجداول.
+
 **المصدر:** [Figma - Dasm inspection](https://www.figma.com/make/JMy9NbYePcREd3RWrdZzYy/Dasm-inspection)
 
 ---
