@@ -15,6 +15,14 @@
 - بوابة: `DASM_GATEWAY_API_KEYS`, `DASM_API_URL`
 - JWT إن فُعّل: `DASM_JWT_ENFORCE=true` + متغيرات التحقق في `.env.example`
 
+## سجلات التشغيل (`inspection_ops`)
+
+- الخادم يطبع أسطر **JSON** على stderr عند أعطال تشغيلية محددة (بدون محتوى ملفات وبدون أسرار):
+  - **`attachment_upload_failed`** / **`attachment_db_insert_failed`** / **`attachment_upload_exception`** — رفع المرفقات من Server Action.
+  - **`attachment_signed_url_failed`** / **`attachment_signed_url_skip_no_client`** — توليد روابط التحميل الموقّعة في `getAttachmentsWithSignedUrls`.
+  - **`gateway_create_request_no_db_client`** / **`gateway_create_request_insert_failed`** / **`gateway_create_request_history_failed`** — إنشاء الطلب عبر البوابة أو REST v1.
+- كل سطر يتضمن `"inspection_ops": true` و`event` و`ts`. على **Vercel**: Deployments → Logs → ابحث عن `inspection_ops` أو اسم الحدث.
+
 ## حادثة أمان مشبوهة
 
 - إذا سُرّب مفتاح **publishable**: لا يزال مسار الجداول محميًا بعد هجرة **إغلاق authenticated المباشر**؛ غيّر المفتاح من لوحة Supabase وراقب السجلات.

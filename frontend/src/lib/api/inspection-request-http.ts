@@ -2,6 +2,7 @@ import "server-only";
 
 import { getAdminClient } from "@/lib/supabase/admin";
 import type { DasmProfileUser } from "@/lib/api/inspection-http-auth";
+import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 
 export type CreateInspectionBody = {
   dasm_car_id: string;
@@ -47,6 +48,9 @@ export async function insertInspectionRequestSubmitted(
 
   const sb = getAdminClient();
   if (!sb) {
+    inspectionOpsLog("error", "gateway_create_request_no_db_client", {
+      dasm_user_id: String(user.id),
+    });
     return {
       ok: false,
       message: "خطأ في الاتصال بقاعدة البيانات",
@@ -70,6 +74,10 @@ export async function insertInspectionRequestSubmitted(
     .single();
 
   if (error || !data) {
+    inspectionOpsLog("error", "gateway_create_request_insert_failed", {
+      dasm_user_id: String(user.id),
+      message: error?.message ?? "unknown",
+    });
     return {
       ok: false,
       message: error?.message ?? "فشل الإنشاء",
@@ -84,12 +92,18 @@ export async function insertInspectionRequestSubmitted(
     vehicle_label: data.vehicle_label,
   };
 
-  await sb.from("inspection_status_history").insert({
+  const { error: histErr } = await sb.from("inspection_status_history").insert({
     request_id: row.id,
     status: "submitted",
     note: `طلب فحص من منصّة داسم — ${user.name ?? user.id}`,
     actor_role: "dasm_user",
   });
+  if (histErr) {
+    inspectionOpsLog("warn", "gateway_create_request_history_failed", {
+      request_id: row.id,
+      message: histErr.message,
+    });
+  }
 
   const tracking_url = `${originForTrackingUrl.replace(/\/$/, "")}/requests/${row.id}`;
 

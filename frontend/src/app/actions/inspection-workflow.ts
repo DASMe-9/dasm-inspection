@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { assertInspectionMutationAllowed } from "@/lib/auth/access-layer.server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import type { InspectionRequestStatus, ReportItemStatus } from "@/types";
+import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 
 const ACTOR = "inspection_admin" as const;
 
@@ -474,6 +475,12 @@ export async function uploadInspectionAttachmentAction(
       });
 
     if (upErr) {
+      inspectionOpsLog("error", "attachment_upload_failed", {
+        request_id: requestId,
+        bucket,
+        storage_path: storagePath,
+        message: upErr.message,
+      });
       return {
         ok: false,
         message:
@@ -491,6 +498,12 @@ export async function uploadInspectionAttachmentAction(
     });
 
     if (insErr) {
+      inspectionOpsLog("error", "attachment_db_insert_failed", {
+        request_id: requestId,
+        bucket,
+        storage_path: storagePath,
+        message: insErr.message,
+      });
       await sb.storage.from(bucket).remove([storagePath]);
       return { ok: false, message: insErr.message };
     }
@@ -499,6 +512,10 @@ export async function uploadInspectionAttachmentAction(
     revalidatePath("/requests");
     return { ok: true };
   } catch (e) {
+    inspectionOpsLog("error", "attachment_upload_exception", {
+      request_id: requestId,
+      message: e instanceof Error ? e.message : String(e),
+    });
     return { ok: false, message: mapAccessError(e) };
   }
 }
