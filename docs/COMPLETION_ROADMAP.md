@@ -75,7 +75,7 @@
 
 ```text
 0 تأكيد النشر على inspect.dasm.com.sa يقرأ من master الحديث
-0b جذر الريبو: `vercel.json` يوجّه `installCommand`/`buildCommand` إلى `frontend/` لتلاءم نشر Git→Vercel
+0b مشروع Vercel «dasm-inspection» (فريق dasme-projects): **Root Directory = `frontend`** حتى يُنفَّذ `next build` من مجلد التطبيق ويُكتشف `.next` بشكل صحيح مع Git→Vercel
 1 تطبيق هجرة RLS الإغلاق + هجرة storage.objects lockdown (staging ثم prod)
 2 فحص يدوي للمسار الكامل + مرفق
 3 ~~مسار REST v1~~ — منفَّذ ومموَّث في api-contract.md
