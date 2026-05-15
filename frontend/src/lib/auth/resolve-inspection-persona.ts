@@ -1,4 +1,3 @@
-import type { ReadonlyRequestCookies } from "next/headers";
 import type { AppRole } from "@/types";
 import {
   INSPECTION_HEADER_INSPECTION_ROLE,
@@ -42,10 +41,15 @@ function parseRole(raw: string | undefined | null): AppRole | null {
   return (KNOWN_ROLES as readonly string[]).includes(v) ? v : null;
 }
 
+/** ناتج `await cookies()` في Next.js 14 App Router */
+export type InspectionRequestCookies = Awaited<
+  ReturnType<typeof import("next/headers").cookies>
+>;
+
 /** يقرأ الدور من رؤوس JWT المُحقَّقة أو من كوكي البوابة (تلميع UX فقط). */
 export function resolveInspectionPersona(
   headersList: Headers,
-  cookieStore: ReadonlyRequestCookies
+  cookieStore: InspectionRequestCookies
 ): ResolvedInspectionPersona {
   const jwtOk = headersList.get(INSPECTION_HEADER_VERIFIED) === "1";
   const headerRole = parseRole(headersList.get(INSPECTION_HEADER_INSPECTION_ROLE));

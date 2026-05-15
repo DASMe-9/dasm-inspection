@@ -42,6 +42,26 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
   },
 ];
 
+/** ترتيب شريط التنقّل السفلي للجوال (مختصر عن مجموعات الشريط الجانبي). */
+export const MOBILE_BOTTOM_NAV_ITEMS: SidebarNavItem[] = [
+  { key: "dashboard", href: "/", label: "الرئيسية", icon: "🏠" },
+  { key: "requests", href: "/requests", label: "الطلبات", icon: "📋" },
+  {
+    key: "my_inspections",
+    href: "/my-inspections",
+    label: "طلباتي",
+    icon: "👤",
+  },
+  { key: "workshops", href: "/workshops", label: "الورش", icon: "🔧" },
+  {
+    key: "subscription",
+    href: "/subscription",
+    label: "الاشتراك",
+    icon: "💳",
+  },
+  { key: "settings", href: "/settings", label: "الإعدادات", icon: "⚙️" },
+];
+
 export function filterSidebarNavGroups(
   allowed: Set<InspectionNavKey>
 ): SidebarNavGroup[] {

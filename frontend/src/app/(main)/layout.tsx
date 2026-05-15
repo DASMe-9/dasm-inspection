@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/shared/Sidebar";
+import { MOBILE_BOTTOM_NAV_ITEMS } from "@/components/shared/nav-config";
 import { SupabaseSetupWarning } from "@/components/shared";
 import {
   resolveInspectionPersona,
@@ -56,25 +57,7 @@ function MobileNav({
   allowedNavKeys: InspectionNavKey[];
 }) {
   const allowed = new Set(allowedNavKeys);
-  const items: { href: string; label: string; icon: string; key: InspectionNavKey }[] =
-    [
-      { key: "dashboard", href: "/", label: "الرئيسية", icon: "🏠" },
-      { key: "requests", href: "/requests", label: "الطلبات", icon: "📋" },
-      {
-        key: "my_inspections",
-        href: "/my-inspections",
-        label: "طلباتي",
-        icon: "👤",
-      },
-      { key: "workshops", href: "/workshops", label: "الورش", icon: "🔧" },
-      {
-        key: "subscription",
-        href: "/subscription",
-        label: "الاشتراك",
-        icon: "💳",
-      },
-      { key: "settings", href: "/settings", label: "الإعدادات", icon: "⚙️" },
-    ].filter((x) => allowed.has(x.key));
+  const items = MOBILE_BOTTOM_NAV_ITEMS.filter((x) => allowed.has(x.key));
 
   return (
     <nav
