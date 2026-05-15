@@ -5,6 +5,7 @@
 1. افتح **`inspect.dasm.com.sa`** وتأكد أن الصفحة تحمّل بدون أخطاء وحدة التحكم.
 2. مسار سريع: تسجيل الدخول → **طلبات الفحص** → فتح طلب → **رفع مرفق صغير** (صورة أو PDF حتى 8 ميغابايت).
 3. إن فشل الرفع: تحقق من وجود دلو **`inspection-attachments`** في مشروع Supabase **DASM-services** وهجرات **`storage_inspection_attachments_bucket`** و **`rls_deny_authenticated_direct_access`** المطبَّقة.
+4. سياسات **Storage (`storage.objects`)**: تأكد من تطبيق هجرة **`storage_objects_inspection_attachments_lockdown`** (سياسات RESTRICTIVE لمنع الوصول المباشر من أدوار `authenticated` و`anon` إلى دلو المرفقات). بدونها قد يعمل الرفع من الخادم (service role) لكن يظل خطر تعرّض الدلو لسياسات permissive قديمة.
 
 ## متغيرات بيئة إلزامية (مرجع)
 
