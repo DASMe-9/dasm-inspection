@@ -37,13 +37,14 @@
 ## 2.1 بوابة DASM و REST v1 — المنفَّذ
 
 المكتبة المشتركة للمصادقة والتحقق من مستخدم المنصّة: `frontend/src/lib/api/inspection-http-auth.ts`  
-إدراج الطلب المشترك: `frontend/src/lib/api/inspection-request-http.ts`
+إدراج الطلب المشترك: `frontend/src/lib/api/inspection-request-http.ts`  
+تحديد معدّل الإنشاء (نافذة دقيقة؛ بصمة مفتاح + IP): `frontend/src/lib/api/inspection-create-rate-limit.ts` — المتغير `INSPECTION_CREATE_RATE_LIMIT_PER_MIN` (افتراضي **60**؛ **≤0** يعطّل)
 
 | الملف | الطرق | الغرض |
 |-------|-------|-------|
 | `frontend/src/app/api/gateway/route.ts` | **GET** | `?token=` مستخدم DASM → `verifyDasmUserToken` (نفس نقطة `{DASM_API_URL}/api/user/profile`) → إعادة توجيه إلى `/requests` مع query params + **كوكي httpOnly** `inspection_dasm_user_id` لتصفية **صفحة `/my-inspections`** |
-| نفس الملف | **POST** | `X-Dasm-Api-Key` أو `Authorization: ApiKey …` + `Authorization: Bearer` مستخدم؛ body كما في §3.1 → إدراج طلب `submitted`؛ استجابة `{ success, data, message }` للتوافق الخلفي |
-| `frontend/src/app/api/v1/inspection-requests/route.ts` | **POST** | نفس المصادقة والجسم؛ استجابة **201** JSON حسب §3.1 |
+| نفس الملف | **POST** | حدّ معدّل الإنشاء ثم المصادقة؛ كما أعلاه؛ **429** عند التجاوز ورأس **`Retry-After`** |
+| `frontend/src/app/api/v1/inspection-requests/route.ts` | **POST** | حدّ معدّل الإنشاء ثم نفس المصادقة والجسم؛ استجابة **201** JSON حسب §3.1؛ **429** عند التجاوز |
 | `frontend/src/app/api/v1/inspection-requests/[id]/route.ts` | **GET** | مفتاح خدمة + Bearer؛ **404** إن لم يكن الطلب للمستخدم |
 
 يُفضّل للتكامل الجديد استخدام **`POST /api/v1/inspection-requests`** بدل **`POST /api/gateway`** (المساران متكافئان منطقياً).
@@ -85,6 +86,8 @@
 
 **4xx:** `{ "error": "code", "message": "string" }`
 
+**429 (تجاوز الحد):** `{ "error": "rate_limited", "message": "…", "retry_after": number }` ورأس **`Retry-After`** (ثوانٍ). ينطبق نفس الحدّ على **`POST /api/gateway`** مع شكل `{ "success": false, "message": "…" }`.
+
 **التنفيذ:** `frontend/src/app/api/v1/inspection-requests/route.ts`.
 
 ### 3.2 جلب طلب (مالك المنصّة)
@@ -101,7 +104,7 @@
 
 | الملف | الطرق | الغرض |
 |-------|-------|-------|
-| `frontend/src/app/api/gateway/route.ts` | **POST** | نفس المنطق؛ استجابة `{ success, data, message }` |
+| `frontend/src/app/api/gateway/route.ts` | **POST** | نفس المنطق + حدّ المعدّل؛ استجابة `{ success, data, message }` أو **429** |
 
 ### 3.4 Webhook (اختياري — لم يُنفَّذ)
 

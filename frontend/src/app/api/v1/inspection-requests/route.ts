@@ -5,6 +5,10 @@ import {
   verifyDasmUserToken,
 } from "@/lib/api/inspection-http-auth";
 import { insertInspectionRequestSubmitted } from "@/lib/api/inspection-request-http";
+import {
+  consumeInspectionCreateRateLimit,
+  inspectionCreateRateLimitResponse,
+} from "@/lib/api/inspection-create-rate-limit";
 
 /**
  * POST /api/v1/inspection-requests
@@ -18,6 +22,11 @@ import { insertInspectionRequestSubmitted } from "@/lib/api/inspection-request-h
  * @see docs/api-contract.md §3.1
  */
 export async function POST(request: NextRequest) {
+  const rl = consumeInspectionCreateRateLimit(request);
+  if (!rl.ok) {
+    return inspectionCreateRateLimitResponse("v1", rl.retryAfterSec);
+  }
+
   if (!verifyGatewayApiKey(request)) {
     return NextResponse.json(
       { error: "forbidden", message: "مفتاح API غير صالح" },
