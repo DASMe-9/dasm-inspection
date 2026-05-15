@@ -1,6 +1,6 @@
 # حالة التنفيذ مقابل الخطة — dasm-inspection
 
-**تاريخ المراجعة:** 2026-05-15
+**تاريخ المراجعة:** 2026-05-16
 
 **📌 مسار الإكمال المرقم (لا تضيع الأولويات):** انظر **[`COMPLETION_ROADMAP.md`](./COMPLETION_ROADMAP.md)** و **[`RUNBOOK.md`](./RUNBOOK.md)** للتشغيل بعد النشر.
 
@@ -14,7 +14,7 @@
 | `/requests` | ✅ قائمة + نموذج طلب جديد |
 | `/requests/:id` | ✅ تفاصيل، سير عمل، قائمة فحص، خط زمني، **مرفقات برفع ولروابط تحميل موقّعة**؛ إلغاء الطلب من اللوحة |
 | `/reports/:id` | ✅ تقرير + بنود + تعديل بند (`ReportChecklistRow` → `updateReportItemAction`) |
-| `/workshops`, `/workshops/:id` | ✅ موجودان |
+| `/workshops`, `/workshops/:id` | ✅ صفحة شبكة ورش (إحصاءات، بطاقات حديثة، روابط اشتراك/طلب) + تفصيل ورشة (بطل، جهات اتصال، مفتشون، CTAs) |
 | `/settings` | ✅ موجودة (نصي/إعدادات) |
 | `/my-inspections` | ✅ قائمة بحسب كوكي `inspection_dasm_user_id` (يُضبط من `GET /api/gateway`) |
 
