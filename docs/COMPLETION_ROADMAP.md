@@ -28,6 +28,8 @@
 | 1.2 | تطبيقها على **staging** أولاً إن وُجد؛ ثم **إنتاج DASM-services** |
 | 1.3 | دخّن سريع: إنشاء طلب من الواجهة + إسناد + رفع مرفق |
 
+**✅ إنتاج DASM-services (2026-05-16):** هجرة **`rls_deny_authenticated_direct_access`** مطبَّقة ومؤكَّد وجود سياسات `*_no_direct_authenticated` على الجداول السبعة؛ هجرة **`storage_objects_inspection_attachments_lockdown`** مطبَّقة ومؤكَّد وجود سياسات RESTRICTIVE على **`storage.objects`** لدلو **`inspection-attachments`**. مرجع استعلامات تحقق سريعة: [`RUNBOOK.md`](./RUNBOOK.md).
+
 **ما لم يُغلَق بعد:** سياسات JWT الدقيقة حسب [`rls-policies.md`](./rls-policies.md) تظل **مرحلة لاحقة** عندما يصبح JWT المنصّة متصلًا فعليًا بـ `auth.jwt()` في Postgres.
 
 ---
@@ -37,7 +39,7 @@
 | خطوة | الملاحظة |
 |------|-----------|
 | 2.1 | الدلو الخاص موجود؛ الرفع والتحميل عبر الخادم موقّع |
-| 2.2 | ✅ **منفَّذ:** هجرة **`20260517120000_storage_objects_inspection_attachments_lockdown.sql`** — سياسات RESTRICTIVE على `storage.objects` لدوري `authenticated` و`anon` على دلو **`inspection-attachments`** (التفصيل في [`rls-policies.md`](./rls-policies.md) §8). **يُطبَّق على إنتاج DASM-services** مع باقي الهجرات. |
+| 2.2 | ✅ **منفَّذ ومطبَّق على إنتاج DASM-services:** هجرة **`storage_objects_inspection_attachments_lockdown`** — سياسات RESTRICTIVE على `storage.objects` لدوري `authenticated` و`anon` على دلو **`inspection-attachments`** (التفصيل في [`rls-policies.md`](./rls-policies.md) §8). |
 
 ---
 
@@ -71,12 +73,23 @@
 
 ---
 
+## المرحلة 6 — متابعة مخططة (ليست جزءاً من PR واحد)
+
+نفِّذ كل بند في **PR أو جلسة مستقلة ضيقة** حتى لا تختلط مع تغييرات الأمان على قاعدة البيانات.
+
+| البند | المخرج المتوقع |
+|-------|----------------|
+| لوحات حسب الدور وفلاتر أوسع | مسارات أو مكوّنات منفصلة حسب دور المستخدم؛ تجنّب دمج مسارات لوحات المنصّة الأخرى مع بعضها إلا عبر توازٍ مقصود في الوثائق |
+| تنبيهات على **`inspection_ops`** | ربط سجلات Vercel (Log Drain) أو APM أو قواعد تنبيه على stderr JSON؛ لا يعتمد على قراءة يدوية فقط |
+
+---
+
 ## ترتيب العمل الموصى به (لم تنحرف)
 
 ```text
-0 تأكيد النشر على inspect.dasm.com.sa يقرأ من master الحديث
+0 تأكيد النشر على inspect.dasm.com.sa يقرأ من master الحديث (بعد دمج PR ورش الواجهة + إعدادات Vercel)
 0b مشروع Vercel «dasm-inspection» (فريق dasme-projects): **Root Directory = `frontend`** حتى يُنفَّذ `next build` من مجلد التطبيق ويُكتشف `.next` بشكل صحيح مع Git→Vercel
-1 تطبيق هجرة RLS الإغلاق + هجرة storage.objects lockdown (staging ثم prod)
+~~1 تطبيق هجرة RLS الإغلاق + هجرة storage.objects lockdown على DASM-services~~ — ✅ **مطبَّق ومؤكَّد إنتاجياً (2026-05-16)**
 2 فحص يدوي للمسار الكامل + مرفق
 3 ~~مسار REST v1~~ — منفَّذ ومموَّث في api-contract.md
 4 ~~حدّ معدّل الإنشاء في التطبيق~~ — منفَّذ؛ تعزيز موزَّع لاحقاً عند الحاجة

@@ -7,6 +7,26 @@
 3. إن فشل الرفع: تحقق من وجود دلو **`inspection-attachments`** في مشروع Supabase **DASM-services** وهجرات **`storage_inspection_attachments_bucket`** و **`rls_deny_authenticated_direct_access`** المطبَّقة.
 4. سياسات **Storage (`storage.objects`)**: تأكد من تطبيق هجرة **`storage_objects_inspection_attachments_lockdown`** (سياسات RESTRICTIVE لمنع الوصول المباشر من أدوار `authenticated` و`anon` إلى دلو المرفقات). بدونها قد يعمل الرفع من الخادم (service role) لكن يظل خطر تعرّض الدلو لسياسات permissive قديمة.
 
+### Smoke DB — تحقق سريع (قراءة فقط، لمشرفي قاعدة البيانات)
+
+بعد أي نشر لهجرات الأمان على مشروع **DASM-services**:
+
+```sql
+-- جداول الفحص: سياسات رفض authenticated المباشر
+SELECT tablename, policyname
+FROM pg_policies
+WHERE schemaname = 'public'
+  AND tablename LIKE 'inspection_%'
+ORDER BY tablename, policyname;
+
+-- Storage: سياسات RESTRICTIVE على دلو inspection-attachments
+SELECT policyname, roles::text
+FROM pg_policies
+WHERE schemaname = 'storage'
+  AND tablename = 'objects'
+  AND policyname LIKE 'inspection_attachments_storage_restrict_%';
+```
+
 ## متغيرات بيئة إلزامية (مرجع)
 
 - `NEXT_PUBLIC_SUPABASE_URL`
