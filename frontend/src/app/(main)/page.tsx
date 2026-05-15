@@ -1,18 +1,42 @@
 import Link from "next/link";
 import { StatCard, SectionCard } from "@/components/shared";
 import { RequestCard } from "@/components/inspection";
-import { dashboardCounts, listInspectionRequests, listWorkshops } from "@/lib/data/inspection";
+import {
+  dashboardCountsFromLists,
+  listInspectionRequests,
+  listInspectionRequestsForDasmUser,
+  listWorkshops,
+} from "@/lib/data/inspection";
+import { cookies, headers } from "next/headers";
+import {
+  resolveInspectionPersona,
+  shouldScopeRequestsToPlatformUser,
+} from "@/lib/auth/resolve-inspection-persona";
 
 export default async function DashboardPage() {
-  const kpi = await dashboardCounts();
-  const all = await listInspectionRequests();
+  const headersList = await headers();
+  const cookieStore = await cookies();
+  const personaCtx = resolveInspectionPersona(headersList, cookieStore);
+  const scoped = shouldScopeRequestsToPlatformUser(personaCtx);
+
   const workshops = await listWorkshops();
+  const all = scoped
+    ? await listInspectionRequestsForDasmUser(personaCtx.platformUserId!)
+    : await listInspectionRequests();
+
+  const kpi = dashboardCountsFromLists(all, workshops.length);
+
   const recent = [...all]
     .sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     )
     .slice(0, 5);
+
+  const subtitle =
+    personaCtx.persona === "dasm_user"
+      ? "نظرة على طلباتك المرتبطة بحساب منصّة داسم."
+      : "إدارة طلبات الفحص والورش والتقارير — بيانات حية من قاعدة البيانات";
 
   return (
     <div className="space-y-6" dir="rtl">
@@ -22,7 +46,7 @@ export default async function DashboardPage() {
           لوحة تحكم الفحص الفني
         </h1>
         <p className="text-sm text-gray-500 mt-2 max-w-2xl leading-relaxed">
-          إدارة طلبات الفحص والورش والتقارير — بيانات حية من قاعدة البيانات
+          {subtitle}
         </p>
       </div>
 

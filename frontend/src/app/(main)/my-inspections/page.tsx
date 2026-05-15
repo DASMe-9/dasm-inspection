@@ -5,7 +5,10 @@ import { RequestCard, RequestListFilters } from "@/components/inspection";
 import { EmptyState, SectionCard } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 import { parseInspectionRequestListQuery } from "@/lib/inspection-request-list-options";
-import { listInspectionRequestsForDasmUser } from "@/lib/data/inspection";
+import {
+  listInspectionRequestsForDasmUser,
+  listWorkshops,
+} from "@/lib/data/inspection";
 
 export default async function MyInspectionsPage({
   searchParams,
@@ -18,6 +21,9 @@ export default async function MyInspectionsPage({
   const list = uid
     ? await listInspectionRequestsForDasmUser(uid, listOpts)
     : [];
+
+  const workshops = await listWorkshops();
+  const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
 
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
@@ -55,7 +61,7 @@ export default async function MyInspectionsPage({
               />
             }
           >
-            <RequestListFilters />
+            <RequestListFilters workshopOptions={workshopOptions} />
           </Suspense>
 
           {list.length === 0 ? (

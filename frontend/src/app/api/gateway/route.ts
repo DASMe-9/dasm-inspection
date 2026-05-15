@@ -6,7 +6,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
+import {
+  INSPECTION_DASM_USER_COOKIE,
+  INSPECTION_UI_ROLE_COOKIE,
+} from "@/lib/cookies/inspection-gateway";
 import {
   verifyGatewayApiKey,
   getBearerToken,
@@ -49,15 +52,27 @@ export async function GET(request: NextRequest) {
 
   const res = NextResponse.redirect(redirectUrl);
   const isProd = process.env.NODE_ENV === "production";
+  const cookieBase = {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 14,
+  };
   res.cookies.set({
     name: INSPECTION_DASM_USER_COOKIE,
     value: String(user.id),
-    httpOnly: true,
-    secure: isProd,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 14,
+    ...cookieBase,
   });
+  if (user.inspectionRole?.trim()) {
+    res.cookies.set({
+      name: INSPECTION_UI_ROLE_COOKIE,
+      value: user.inspectionRole.trim(),
+      ...cookieBase,
+    });
+  } else {
+    res.cookies.delete(INSPECTION_UI_ROLE_COOKIE);
+  }
   return res;
 }
 

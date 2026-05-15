@@ -26,7 +26,12 @@ export function getBearerToken(request: NextRequest): string | null {
   return t || null;
 }
 
-export type DasmProfileUser = { id: string; name?: string };
+export type DasmProfileUser = {
+  id: string;
+  name?: string;
+  /** دور واجهة الفحص إنْ أعادته المنصّة (اختياري). */
+  inspectionRole?: string | null;
+};
 
 export async function verifyDasmUserToken(
   token: string
@@ -39,7 +44,15 @@ export async function verifyDasmUserToken(
     const data = await res.json();
     const u = data?.data ?? data;
     if (u?.id == null) return null;
-    return { id: String(u.id), name: u.name };
+    const rawRole =
+      (typeof u.inspection_role === "string" && u.inspection_role) ||
+      (typeof u.inspection_app_role === "string" && u.inspection_app_role) ||
+      null;
+    return {
+      id: String(u.id),
+      name: u.name,
+      inspectionRole: rawRole?.trim() ? rawRole.trim() : null,
+    };
   } catch {
     return null;
   }

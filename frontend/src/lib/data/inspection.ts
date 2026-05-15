@@ -92,12 +92,14 @@ export async function listInspectionRequests(
   }
   const orderCol =
     options?.sort === "created_desc" ? "created_at" : "updated_at";
+  if (options?.workshopId) {
+    q = q.eq("workshop_id", options.workshopId);
+  }
   const { data, error } = await q.order(orderCol, { ascending: false });
   if (error || !data) return [];
   return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
 }
 
-/** طلبات مرتبطة بمستخدم منصّة DASM (لصفحة «طلباتي»). */
 export async function listInspectionRequestsForDasmUser(
   dasmUserId: string,
   options?: ListInspectionRequestsQueryOptions
@@ -114,6 +116,9 @@ export async function listInspectionRequestsForDasmUser(
   }
   const orderCol =
     options?.sort === "created_desc" ? "created_at" : "updated_at";
+  if (options?.workshopId) {
+    q = q.eq("workshop_id", options.workshopId);
+  }
   const { data, error } = await q.order(orderCol, { ascending: false });
   if (error || !data) return [];
   return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
@@ -244,9 +249,10 @@ export async function getHistoryForRequest(
   return data.map((r) => mapHistory(r as Parameters<typeof mapHistory>[0]));
 }
 
-export async function dashboardCounts() {
-  const requests = await listInspectionRequests();
-  const workshops = await listWorkshops();
+export function dashboardCountsFromLists(
+  requests: InspectionRequest[],
+  workshopsCount: number
+) {
   return {
     openRequests: requests.filter((r) =>
       ["submitted", "assigned", "in_progress", "pending_review"].includes(
@@ -254,7 +260,13 @@ export async function dashboardCounts() {
       )
     ).length,
     pendingReview: requests.filter((r) => r.status === "pending_review").length,
-    workshops: workshops.length,
+    workshops: workshopsCount,
     closedSuccessful: requests.filter((r) => r.status === "approved").length,
   };
+}
+
+export async function dashboardCounts() {
+  const requests = await listInspectionRequests();
+  const workshops = await listWorkshops();
+  return dashboardCountsFromLists(requests, workshops.length);
 }

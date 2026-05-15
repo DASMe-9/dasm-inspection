@@ -1,6 +1,6 @@
 # حالة التنفيذ مقابل الخطة — dasm-inspection
 
-**تاريخ المراجعة:** 2026-05-16
+**تاريخ المراجعة:** 2026-05-15
 
 **📌 مسار الإكمال المرقم (لا تضيع الأولويات):** انظر **[`COMPLETION_ROADMAP.md`](./COMPLETION_ROADMAP.md)** و **[`RUNBOOK.md`](./RUNBOOK.md)** للتشغيل بعد النشر.
 
@@ -37,8 +37,8 @@
 | **Phase 1** توثيق معماري | ✅ مكتمل في `docs/` |
 | **Phase 2** تصميم هوية + هجرة enum | ✅ توثيق + هجرة `phase2_inspection_app_role_extend`؛ **تنفيذ JWT:** الكود موجود في `middleware.ts` + `verify-dasm-jwt` + `apply-inspection-headers` لكن **`DASM_JWT_ENFORCE` افتراضياً غير `true`** — أي الإنفاذ الخادمي اختياري. |
 | **Phase 2b** RLS حازمة | ✅ **إغلاق الوصول المباشر لـ `authenticated` على جداول `inspection_*`:** مطبَّق ومؤكَّد على **DASM-services** (هجرة **`rls_deny_authenticated_direct_access`**). ✅ **قفل دلو المرفقات على `storage.objects`:** مطبَّق (**`storage_objects_inspection_attachments_lockdown`**). **التالي (مرحلة لاحقة):** سياسات JWT الدقيقة حسب **`rls-policies.md`** عند ربط `auth.jwt()` فعلياً (قالب staging في `supabase/staging/`). |
-| **Phase 3** لوحات حسب الدور / فرز إنتاجي / Signed URLs للمرفقات | ⚠️ **جزئي:** رفع مرفقات + signed URLs؛ فرز وفلترة حالة الطلب على **`/requests`** و **`/my-inspections`** عبر query (`status`, `sort`؛ انظر **`RequestListFilters`**). لا تقسيم مسارات حسب الدور بعد؛ لا فرز في جداول أخرى. |
-| **Phase 4** تقوية إنتاج | ⚠️ **جزئي:** **`RUNBOOK.md`** موثَّق؛ حدّ معدّل الإنشاء؛ ✅ قفل **`storage.objects`** للدلو مطبَّق على الإنتاج؛ **سجلات تشغيلية JSON** (`inspection_ops`) لرفع المرفقات وتوقيع الروابط وإنشاء الطلب عبر البوابة — انظر **`RUNBOOK.md`** §سجلات التشغيل. **ما يزال مفتوحاً:** تنبيهات/لوحة مراقبة خارجية على `inspection_ops`، وتعزيز حدّ المعدّل على طبقة Edge/KV إن لزم. |
+| **Phase 3** لوحات حسب الدور / فرز إنتاجي / Signed URLs للمرفقات | ✅ **فرز وفلترة + ورشة:** حالة الطلب على **`/requests`** و **`/my-inspections`**؛ فلتر **`workshop`** في query؛ تنقّل جانبي/سفلي بحسب **`inspection_role`** (JWT أو كوكي البوابة عند توفر الحقل من المنصّة). Signed URLs للمرفقات كما سبق. |
+| **Phase 4** تقوية إنتاج | ✅ **`RUNBOOK`** + **`INSPECTION_OPS_ALERTING`**؛ حدّ معدّل الإنشاء؛ قفل **`storage.objects`**؛ سجلات **`inspection_ops`**. **اختياري لاحقاً:** ربط Log Drain فعلي على بيئة الإنتاج؛ تعزيز حدّ المعدّل على Edge/KV إن لزم. |
 
 ---
 
@@ -66,4 +66,4 @@
 
 **المسار الوظيفي لـ V1 شغّال.** تم تعزيز الأمان الأولي على قاعدة البيانات بإغلاق الوصول المباشر لدور **`authenticated`** على جداول الفحص مع الإبقاء على **`service_role`** للخادم.
 
-**ما يبقى «منتجياً/تشغيلياً» قبل ادّعاء إغلاق كامل للوثائق:** سياسات RLS المعتمدة على مطالبات JWT حسب **`rls-policies.md`**، تنبيهات مركزية على سجلات **`inspection_ops`** (أو APM — انظر **`COMPLETION_ROADMAP.md`** المرحلة 6)، تعزيز حدّ المعدّل على Edge عند الحاجة، ثم تحسينات واجهة إضافية (لوحات حسب الدور، فلاتر أوسع) في PRs مستقلة — انظر **`COMPLETION_ROADMAP.md`**.
+**ما يبقى «منتجياً/تشغيلياً» قبل ادّعاء إغلاق كامل للوثائق:** سياسات RLS المعتمدة على مطالبات JWT حسب **`rls-policies.md`** عند ربط **`auth.jwt()`** فعلياً؛ تفعيل **Log Drain** خارجياً على Vercel إن رغب الفريق؛ تعزيز حدّ المعدّل على Edge عند الحاجة.

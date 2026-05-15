@@ -2,38 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
+import {
+  filterSidebarNavGroups,
+  type SidebarNavGroup,
+} from "@/components/shared/nav-config";
 
-const NAV_GROUPS = [
-  {
-    label: "الرئيسية",
-    items: [
-      { href: "/", label: "لوحة التحكم", icon: "📊" },
-    ],
-  },
-  {
-    label: "إدارة الفحص",
-    items: [
-      { href: "/requests", label: "طلبات الفحص", icon: "📋" },
-      { href: "/my-inspections", label: "طلباتي", icon: "👤" },
-      { href: "/workshops", label: "الورش المعتمدة", icon: "🔧" },
-    ],
-  },
-  {
-    label: "الاشتراك",
-    items: [
-      { href: "/subscription", label: "الاشتراك الشهري", icon: "💳" },
-    ],
-  },
-  {
-    label: "النظام",
-    items: [
-      { href: "/settings", label: "الإعدادات", icon: "⚙️" },
-    ],
-  },
-];
-
-export function Sidebar() {
+export function Sidebar({
+  allowedNavKeys,
+}: {
+  allowedNavKeys: InspectionNavKey[];
+}) {
   const pathname = usePathname();
+  const allowed = new Set(allowedNavKeys);
+  const groups: SidebarNavGroup[] = filterSidebarNavGroups(allowed);
 
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:right-0 bg-white/95 backdrop-blur-sm border-l border-gray-200/90 shadow-[4px_0_32px_-16px_rgba(15,23,42,0.18)] z-40">
@@ -50,7 +32,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
-        {NAV_GROUPS.map((group) => (
+        {groups.map((group) => (
           <div key={group.label} className="mb-5">
             <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
               {group.label}

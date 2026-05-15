@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import {
   RequestCard,
   NewInspectionRequestForm,
@@ -8,14 +8,22 @@ import {
 import { SectionCard, EmptyState } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 import { parseInspectionRequestListQuery } from "@/lib/inspection-request-list-options";
-import { listInspectionRequests } from "@/lib/data/inspection";
+import {
+  listInspectionRequests,
+  listInspectionRequestsForDasmUser,
+  listWorkshops,
+} from "@/lib/data/inspection";
+import {
+  resolveInspectionPersona,
+  shouldScopeRequestsToPlatformUser,
+} from "@/lib/auth/resolve-inspection-persona";
 
 export default async function RequestsListPage({
   searchParams,
 }: {
   searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  const c = cookies();
+  const cookieStore = cookies();
   const presetDasmUserId =
     (typeof searchParams?.dasm_user_id === "string"
       ? searchParams.dasm_user_id
@@ -23,11 +31,27 @@ export default async function RequestsListPage({
         ? searchParams?.dasm_user_id[0]
         : ""
     )?.trim() ||
-    c.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ||
+    cookieStore.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ||
     "";
 
+  const headersList = headers();
+  const personaCtx = resolveInspectionPersona(headersList, cookieStore);
   const listOpts = parseInspectionRequestListQuery(searchParams);
-  const list = await listInspectionRequests(listOpts);
+
+  const list =
+    shouldScopeRequestsToPlatformUser(personaCtx) && personaCtx.platformUserId
+      ? await listInspectionRequestsForDasmUser(
+          personaCtx.platformUserId,
+          listOpts
+        )
+      : await listInspectionRequests(listOpts);
+
+  const workshops = await listWorkshops();
+  const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
+
+  const scopedNote =
+    shouldScopeRequestsToPlatformUser(personaCtx) &&
+    "تعرض هذه القائمة طلباتك المرتبطة بحساب منصّة داسم فقط.";
 
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
@@ -38,6 +62,7 @@ export default async function RequestsListPage({
         <p className="text-sm text-gray-500 mt-1">
           أنشئ طلباً جديداً أو تابع المسار من القائمة أدناه. استخدم الفرز والفلترة
           لتضييق القائمة.
+          {scopedNote ? ` ${scopedNote}` : ""}
         </p>
       </div>
 
@@ -53,7 +78,7 @@ export default async function RequestsListPage({
           />
         }
       >
-        <RequestListFilters />
+        <RequestListFilters workshopOptions={workshopOptions} />
       </Suspense>
 
       <SectionCard>
