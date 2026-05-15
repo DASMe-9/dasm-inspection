@@ -68,7 +68,7 @@ export default async function RequestDetailPage({
   return (
     <div className="space-y-6" dir="rtl">
       <div className="flex flex-wrap items-center gap-2 justify-between">
-        <h2 className="text-lg font-bold">{req.title}</h2>
+        <h2 className="text-lg font-bold text-gray-900">{req.title}</h2>
         <RequestStatusBadge status={req.status} />
       </div>
 
@@ -81,26 +81,26 @@ export default async function RequestDetailPage({
       </SectionCard>
 
       <SectionCard title="هوية DASM والمركبة">
-        <dl className="text-sm space-y-1">
+        <dl className="text-sm space-y-2">
           <div>
-            <dt className="text-gray-500">dasm_car_id</dt>
-            <dd className="font-mono break-all">{req.dasm_car_id}</dd>
+            <dt className="text-gray-600">dasm_car_id</dt>
+            <dd className="font-mono text-gray-900 break-all">{req.dasm_car_id}</dd>
           </div>
           {req.dasm_user_id && (
             <div>
-              <dt className="text-gray-500">dasm_user_id</dt>
-              <dd className="font-mono break-all">{req.dasm_user_id}</dd>
+              <dt className="text-gray-600">dasm_user_id</dt>
+              <dd className="font-mono text-gray-900 break-all">{req.dasm_user_id}</dd>
             </div>
           )}
           {req.auction_reference && (
             <div>
-              <dt className="text-gray-500">مرجع مزاد</dt>
-              <dd>{req.auction_reference}</dd>
+              <dt className="text-gray-600">مرجع مزاد</dt>
+              <dd className="text-gray-900">{req.auction_reference}</dd>
             </div>
           )}
           <div>
-            <dt className="text-gray-500">المركبة</dt>
-            <dd>{req.vehicleLabel}</dd>
+            <dt className="text-gray-600">المركبة</dt>
+            <dd className="text-gray-900 font-medium">{req.vehicleLabel}</dd>
           </div>
         </dl>
       </SectionCard>

@@ -1,6 +1,8 @@
 # حالة التنفيذ مقابل الخطة — dasm-inspection
 
-**تاريخ المراجعة:** 2026-05-15 (مراجعة كود محلي في `frontend/` و`supabase/migrations/` و`docs/`).
+**تاريخ المراجعة:** 2026-05-16
+
+**📌 مسار الإكمال المرقم (لا تضيع الأولويات):** انظر **[`COMPLETION_ROADMAP.md`](./COMPLETION_ROADMAP.md)** و **[`RUNBOOK.md`](./RUNBOOK.md)** للتشغيل بعد النشر.
 
 ---
 
@@ -32,10 +34,10 @@
 | المرحلة | الحالة الواقعية (ملخّص) |
 |---------|-------------------------|
 | **Phase 1** توثيق معماري | ✅ مكتمل في `docs/` |
-| **Phase 2** تصميم هوية + هجرة enum | ✅ توثيق + هجرة `phase2_inspection_app_role_extend`؛ **تنفيذ JWT:** الكود موجود في `middleware.ts` + `verify-dasm-jwt` + `apply-inspection-headers` لكن **`DASM_JWT_ENFORCE` افتراضياً غير `true`** — أي الإنفاذ الخادمي اختياري. `assertInspectionRoles` لا يقيّد شيئاً ما لم يُفعَّل الإنفاذ. |
-| **Phase 2b** RLS حازمة | ⚠️ الجداول **مفعّلة RLS** لكن سياسات V1 كلها **`USING (true)` لـ `authenticated`**؛ المنطق الفعلي للكتابة يمر عبر **service role** في Server Actions (`requireAdminClient`) — أي **ليست سياسات إنتاجية حازمة بعد**. قالب staging في `supabase/staging/` حسب الوثائق المنفصلة. |
-| **Phase 3** لوحات حسب الدور / فرز إنتاجي / Signed URLs للمرفقات | ⚠️ **جزئي محدّث:** رفع مرفقات + signed URLs من الخادم + سكيلتون تحميل؛ واجهة موحَّدة بدون تقسيم مسارات حسب الدور؛ لا فرز متقدّم في الجداول. |
-| **Phase 4** تقوية إنتاج | ❌ لم تُنجَز بعد (تصدير، Rate limit، Storage policies، Runbook موحّدة هنا). |
+| **Phase 2** تصميم هوية + هجرة enum | ✅ توثيق + هجرة `phase2_inspection_app_role_extend`؛ **تنفيذ JWT:** الكود موجود في `middleware.ts` + `verify-dasm-jwt` + `apply-inspection-headers` لكن **`DASM_JWT_ENFORCE` افتراضياً غير `true`** — أي الإنفاذ الخادمي اختياري. |
+| **Phase 2b** RLS حازمة | ⚠️ **جزئي (2026-05-16):** هجرة **`rls_deny_authenticated_direct_access`** تزيل سياسات `USING (true)` وتمنع دور **`authenticated`** من الوصول المباشر؛ مسار التطبيق الرسمي يبقى **service role** من الخادم. **لم يُكمَّل بعد:** سياسات JWT الدقيقة حسب **`rls-policies.md`** عند ربط `auth.jwt()` فعلياً (قالب staging في `supabase/staging/`). |
+| **Phase 3** لوحات حسب الدور / فرز إنتاجي / Signed URLs للمرفقات | ⚠️ **جزئي:** رفع مرفقات + signed URLs؛ واجهة موحَّدة بدون تقسيم مسارات حسب الدور؛ لا فرز متقدّم في الجداول. |
+| **Phase 4** تقوية إنتاج | ⚠️ **جزئي:** **`RUNBOOK.md`** موثَّق؛ ما يزال مفتوحاً: rate limit على الطبقة الخارجية، سياسات `storage.objects` التفصيلية إن رُغِب، تصدير/مراقبة موحّدة. |
 
 ---
 
@@ -51,14 +53,16 @@
 ## فجوات واضحة لإغلاقها لاحقاً (مرتبة بالأولوية المنطقية)
 
 1. ~~**إلغاء الطلب `cancelled`:**~~ **`cancelInspectionRequestAction`** + زر في `RequestWorkflowPanel` (مع قيود الحالة).
-2. ~~**رفع المرفقات + Storage:**~~ **`uploadInspectionAttachmentAction`** + عرض بروابط موقّعة؛ هجرة دلو `inspection-attachments` في `supabase/migrations/`.
-3. **ربط JWT إنفاذ بالـ Actions:** عند تشغيل `DASM_JWT_ENFORCE=true`، يُستدعى **`assertInspectionMutationAllowed`** في الإجراءات المتحوّلة (إلغاء، رفع، إلخ).
-4. **RLS حقيقية** على الإنتاج: استبدال سياسات `true` بتصميم `rls-policies.md` عبر خطّة rollout.
-5. ~~**صفحة `/my-inspections`:**~~ مضافة محلياً + كوكي من **`GET /api/gateway`** + ربط نموذج الطلب بـ `dasm_user_id` عند الدخول من البوابة.
-6. **توحيد اسم API:** قرار بين توسعة `POST /api/gateway` أو إضافة `POST /api/v1/inspection-requests` كما في العقد لتقليل اللبس.
+2. ~~**رفع المرفقات + Storage:**~~ **`uploadInspectionAttachmentAction`** + عرض بروابط موقّعة؛ هجرة دلو `inspection-attachments`.
+3. **ربط JWT إنفاذ بالـ Actions:** عند تشغيل `DASM_JWT_ENFORCE=true`، **`assertInspectionMutationAllowed`** في الإجراءات المتحوّلة (موجود في الكود؛ التفعيل بيئي).
+4. ~~**إغلاق RLS السطحي:**~~ هجرة **`rls_deny_authenticated_direct_access`** (في المستودع + يُطبَّق على **DASM-services**). **التالي:** سياسات قراءة/كتابة مفصّلة مع JWT كما في **`rls-policies.md`**.
+5. ~~**صفحة `/my-inspections`:**~~ مضافة + كوكي من **`GET /api/gateway`** + ربط نموذج الطلب بـ `dasm_user_id`.
+6. **توحيد اسم API:** قرار بين توسعة `POST /api/gateway` أو إضافة `POST /api/v1/inspection-requests` كما في العقد.
 
 ---
 
 ## الخلاصة
 
-**التنفيذ الحالي يتجاوز «مسودة Figma فقط» بكثير:** مسار الطلب الكامل من `submitted` حتى اعتماد/رفض التقرير يعمل عبر Server Actions، و`/api/gateway` يوفّر دخولاً من المنصّة بالمفتاح. **ما ينقص لإغلاق V1 بالمعنى الكامل للوثائق:** RLS/JWT بحماية إنتاجية كاملة، فرز/لوحات حسب الدور، وتحسينات Phase 4 (rate limit، سياسات Storage، runbook).
+**المسار الوظيفي لـ V1 شغّال.** تم تعزيز الأمان الأولي على قاعدة البيانات بإغلاق الوصول المباشر لدور **`authenticated`** على جداول الفحص مع الإبقاء على **`service_role`** للخادم.
+
+**ما يبقى «منتجياً/تشغيلياً» قبل ادّعاء إغلاق كامل للوثائق:** سياسات RLS المعتمدة على مطالبات JWT، Phase 4 (حدّ معدّل، سياسات تخزين تفصيلية)، قرار مسار REST، ثم تحسينات واجهة في PRs مستقلة — انظر **`COMPLETION_ROADMAP.md`**.
