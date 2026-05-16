@@ -30,7 +30,7 @@
 
 **✅ إنتاج DASM-services (2026-05-16):** هجرة **`rls_deny_authenticated_direct_access`** مطبَّقة ومؤكَّد وجود سياسات `*_no_direct_authenticated` على الجداول السبعة؛ هجرة **`storage_objects_inspection_attachments_lockdown`** مطبَّقة ومؤكَّد وجود سياسات RESTRICTIVE على **`storage.objects`** لدلو **`inspection-attachments`**. مرجع استعلامات تحقق سريعة: [`RUNBOOK.md`](./RUNBOOK.md).
 
-**ما لم يُغلَق بعد:** سياسات JWT الدقيقة حسب [`rls-policies.md`](./rls-policies.md) تظل **مرحلة لاحقة** عندما يصبح JWT المنصّة متصلًا فعليًا بـ `auth.jwt()` في Postgres.
+**ما يُكمّل المرحلة 1 الآن:** هجرة **`inspection_jwt_helpers_and_authenticated_select`** في `supabase/migrations/` (قراءة `SELECT` لمستخدمي PostgREST بتوكن؛ الكتابات تظل على **`service_role`**) + حزمة تشغيل [`ROLLOUT_SEQUENCE.md`](./ROLLOUT_SEQUENCE.md). صقل سياسات **INSERT/UPDATE** المفصّلة يبقى مطابقاً لمسار المنتج في [`rls-policies.md`](./rls-policies.md) إن اُتخذ ذلك لاحقاً.
 
 ---
 
