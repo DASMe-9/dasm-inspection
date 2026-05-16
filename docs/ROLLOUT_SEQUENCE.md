@@ -10,7 +10,7 @@
 
 ## 2) أمان JWT + RLS قراءة `authenticated`
 
-1. اتبع [`JWT_ROLLOUT.md`](./JWT_ROLLOUT.md): **staging أولاً** مع `DASM_JWT_ENFORCE=true` ومطابقة مطالبات التوكن لـ **`normalizeInspectionClaims`** في الكود (`inspection_role`, `workshop_id` / `organization_id`, `inspector_record_id`, `dasm_user_id`).
+1. اتبع [`JWT_ROLLOUT.md`](./JWT_ROLLOUT.md): **staging أولاً** عند تجربة تغييرات هوية؛ **Production** لمشروع Vercel **`dasm-inspection`:** ✅ **`DASM_JWT_ENFORCE=true`** مع **`DASM_JWT_ISSUER`** + **`DASM_JWT_SECRET` أو `DASM_JWKS_URI`** كما **`frontend/.env.example`**.
 2. طبّق الهجرات تحت **`supabase/migrations/`** على مشروع Supabase (**DASM-services**) بالترتيب الزمني (أو الاسكربت المركّز المطابق لهما في المراسلات)، ثم تأكَّد أن الناتج موجود في **`pg_policies`**، انظر **`RUNBOOK.md`**.
    - ✅ **إنتاج (`main`):** تنفيذ **JWT SELECT + backfill الأدوار** **موثَّق** (2026-05-17) بعد نجاح SQL Editor؛ إن لم تكن تنفَّذ بعد على نسختك، لا تخطَ **`rls_deny_authenticated_direct_access`** قبل سياسات القراءة.
 3. تحقَّق أن **PostgREST** مع جلسة مستخدم حقيقية ترى الصفوف المتوقَّعة فقط (وليس كل الجدول)، وأن **`service_role`** على التطبيق ما زال يعمل للكتابة عبر الخادم.

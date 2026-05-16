@@ -1,5 +1,7 @@
 # تدريج تفعيل `DASM_JWT_ENFORCE` — فحص داسم
 
+**حالة تشغيل (إنتاج):** ✅ على **Vercel** لمشروع **`dasm-inspection`** ضمن بيئة **Production** تم ضبط **`DASM_JWT_ENFORCE=true`**؛ يحدث **إعادة نشر** عند إضافة/تعديل المتغير. **يجب** بقاء **`DASM_JWT_ISSUER`** وإمّا **`DASM_JWT_SECRET`** أو **`DASM_JWKS_URI`** مضبوطة هناك (انظر أسفله و**`frontend/.env.example`** و**`verify-dasm-jwt.ts`**).
+
 ## الهدف
 
 عند **`DASM_JWT_ENFORCE=true`** يطبّق التطبيق حواجز خادمية (`assertInspectionMutationAllowed` والمسارات المربوطة بـ Middleware) وفق JWT مُحقَّق. يجب ألا يُفعَّل الإنتاج قبل أن تصدر المنصّة توكنًا يضم **`inspection_role`** والمعرِّفات المرتبطة كما يقرؤها **`frontend/src/lib/auth/normalize-claims.ts`**.
