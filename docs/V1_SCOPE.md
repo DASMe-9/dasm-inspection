@@ -16,7 +16,7 @@
 | inspection_attachments | `inspection_attachments` |
 | inspection_status_history | `inspection_status_history` |
 
-**inspection_checklists:** غير موجود كجدول في V1؛ واجهة «قائمة الفحص» الحالية (`ChecklistForm`) مسودة ويمكن ربطها لاحقاً بقالب بنود أو بجدول قوائم منفصل في نفس المستودع عند الحاجة.
+**القالب الافتراضي للبنود:** ليس كجدول `inspection_checklists` في V1؛ عند إرسال التقرير للمراجع تُنشأ صفوف `inspection_report_items` من القالب الموحَّد **`frontend/src/lib/checklist/default-report-items.ts`**، وتعرضها الواجهة (`ChecklistForm`) من قاعدة البيانات. يمكن استبدال الملف لاحقاً بجدول قوالب بنفس نقطة الدخول دون كسر مسار الواجهة.
 
 ## الأدوار
 

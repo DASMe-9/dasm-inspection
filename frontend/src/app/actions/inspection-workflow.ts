@@ -5,6 +5,7 @@ import { assertInspectionMutationAllowed } from "@/lib/auth/access-layer.server"
 import { requireAdminClient } from "@/lib/supabase/admin";
 import type { InspectionRequestStatus, ReportItemStatus } from "@/types";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
+import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
 
 const ACTOR = "inspection_admin" as const;
 
@@ -153,14 +154,6 @@ export async function startInspectionAction(requestId: string): Promise<ActionRe
     return { ok: false, message: mapAccessError(e) };
   }
 }
-
-const DEFAULT_REPORT_ITEMS = [
-  { section: "المحرك والناقل", label: "مستوى الزيت والتسريبات", status: "pass" as const, sort_order: 0 },
-  { section: "المحرك والناقل", label: "حزام التوقيت / السير", status: "warn" as const, notes: "يُنصح بالفحص خلال 5000 كم", sort_order: 1 },
-  { section: "الهيكل", label: "الهيكل الخارجي والصدأ", status: "pass" as const, sort_order: 2 },
-  { section: "الفرامل والتعليق", label: "أقراص الفرامل الأمامية", status: "fail" as const, notes: "تآكل يتجاوز الحد المسموح", sort_order: 3 },
-  { section: "الداخلية", label: "الوسائد والأحزمة", status: "pass" as const, sort_order: 4 },
-];
 
 export async function submitReportForReviewAction(requestId: string): Promise<ActionResult> {
   try {
