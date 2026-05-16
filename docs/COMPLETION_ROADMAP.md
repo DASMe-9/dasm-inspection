@@ -30,7 +30,9 @@
 
 **✅ إنتاج DASM-services (2026-05-16):** هجرة **`rls_deny_authenticated_direct_access`** مطبَّقة ومؤكَّد وجود سياسات `*_no_direct_authenticated` على الجداول السبعة؛ هجرة **`storage_objects_inspection_attachments_lockdown`** مطبَّقة ومؤكَّد وجود سياسات RESTRICTIVE على **`storage.objects`** لدلو **`inspection-attachments`**. مرجع استعلامات تحقق سريعة: [`RUNBOOK.md`](./RUNBOOK.md).
 
-**ما يُكمّل المرحلة 1 الآن:** هجرة **`inspection_jwt_helpers_and_authenticated_select`** في `supabase/migrations/` (قراءة `SELECT` لمستخدمي PostgREST بتوكن؛ الكتابات تظل على **`service_role`**) + حزمة تشغيل [`ROLLOUT_SEQUENCE.md`](./ROLLOUT_SEQUENCE.md). صقل سياسات **INSERT/UPDATE** المفصّلة يبقى مطابقاً لمسار المنتج في [`rls-policies.md`](./rls-policies.md) إن اُتخذ ذلك لاحقاً.
+**✅ إنتاج DASM-services — تكميل 2026-05-17 (يدويًا عبر SQL Editor، فرع dashboard `main PRODUCTION`):** محتوى **`20260518100000_inspection_jwt_helpers_and_authenticated_select`** (دالة **`inspection_jwt_text_claim`** + سياسات **`*_select_jwt_authenticated`**). سكربت **`20260518100500_inspection_backfill_workshop_manager_roles`** (توحيد enum؛ قد لا يحدِّث صفوفًا إذا لم توجد **`workshop_manager`**). تحقَّق بعد التشغيل: [`RUNBOOK.md`](./RUNBOOK.md) (§Smoke DB — فقرة JWT).
+
+**ما يبقى عند الإغلاق «الكامل» للمراقبة والهوية:** تنفيذ **Log Drain** + تفعيل **`DASM_JWT_ENFORCE`** عند قرار المنتج — [`ROLLOUT_SEQUENCE.md`](./ROLLOUT_SEQUENCE.md)، [`JWT_ROLLOUT.md`](./JWT_ROLLOUT.md). صقل سياسات **INSERT/UPDATE** للعميل يبقى في [`rls-policies.md`](./rls-policies.md) إن اُتخِذ ذلك.
 
 ---
 
