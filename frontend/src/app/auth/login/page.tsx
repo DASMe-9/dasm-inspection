@@ -5,8 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { platformTypeAllowedForInspectionLogin } from "@/lib/auth/platform-inspection-role";
 
-const DASM_API = process.env.NEXT_PUBLIC_API_URL || "https://api.dasm.com.sa";
-
 type LoginDeniedUser = { type: string };
 
 function messageFromUnknown(err: unknown): string {
@@ -65,7 +63,7 @@ function LoginPageInner() {
     setError(null);
     setBusy(true);
     try {
-      const res  = await fetch(`${DASM_API}/api/login`, {
+      const res  = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password: pw }),
