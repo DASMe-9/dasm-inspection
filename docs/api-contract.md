@@ -130,6 +130,18 @@
 
 ---
 
+## 4.1 جسر Core — سيارة minimal + sync تقرير
+
+| Endpoint Core | متى يُستدعى من Inspection |
+|---------------|---------------------------|
+| `POST /api/internal/dasm-inspection/cars/minimal` | إنشاء طلب بدون `dasm_car_id` (مع `dasm_user_id`)؛ أو عند الاعتماد إن بقي المعرّف غير رقمي |
+| `POST /api/internal/dasm-inspection/reports/sync` | بعد `approveReportAction` عند توفر `car_id` |
+
+**Headers:** `X-DASM-Internal-Token: DASM_INSPECTION_INTERNAL_PULL_TOKEN`  
+**Env:** `DASM_CORE_API_URL`, `DASM_INSPECTION_SYNC_ENABLED` (افتراضي مفعّل)
+
+---
+
 ## 5. ما هو خارج العقد
 
 - شحن، تتبع، ناقل، تسليم بضائع.

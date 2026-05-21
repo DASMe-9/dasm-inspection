@@ -33,7 +33,7 @@ export async function pushApprovedReportToCore(
 
   const token = process.env.DASM_INSPECTION_INTERNAL_PULL_TOKEN?.trim();
   if (!token) {
-    inspectionOpsLog("core_report_sync_skipped", {
+    inspectionOpsLog("warn", "core_report_sync_skipped", {
       reason: "missing_DASM_INSPECTION_INTERNAL_PULL_TOKEN",
       inspection_report_id: payload.inspection_report_id,
     });
@@ -59,7 +59,7 @@ export async function pushApprovedReportToCore(
     };
 
     if (!res.ok) {
-      inspectionOpsLog("core_report_sync_failed", {
+      inspectionOpsLog("warn", "core_report_sync_failed", {
         status: res.status,
         inspection_report_id: payload.inspection_report_id,
         car_id: payload.car_id,
@@ -68,7 +68,7 @@ export async function pushApprovedReportToCore(
       return { ok: false, message: body.message || `http_${res.status}` };
     }
 
-    inspectionOpsLog("core_report_sync_ok", {
+    inspectionOpsLog("warn", "core_report_sync_ok", {
       inspection_report_id: payload.inspection_report_id,
       car_id: payload.car_id,
       already_synced: body.data?.already_synced ?? false,
@@ -77,7 +77,7 @@ export async function pushApprovedReportToCore(
     return { ok: true };
   } catch (e) {
     const message = e instanceof Error ? e.message : "unknown";
-    inspectionOpsLog("core_report_sync_error", {
+    inspectionOpsLog("error", "core_report_sync_error", {
       inspection_report_id: payload.inspection_report_id,
       message,
     });
