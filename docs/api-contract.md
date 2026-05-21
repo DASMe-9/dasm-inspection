@@ -46,6 +46,22 @@
 | نفس الملف | **POST** | حدّ معدّل الإنشاء ثم المصادقة؛ كما أعلاه؛ **429** عند التجاوز ورأس **`Retry-After`** |
 | `frontend/src/app/api/v1/inspection-requests/route.ts` | **POST** | حدّ معدّل الإنشاء ثم نفس المصادقة والجسم؛ استجابة **201** JSON حسب §3.1؛ **429** عند التجاوز |
 | `frontend/src/app/api/v1/inspection-requests/[id]/route.ts` | **GET** | مفتاح خدمة + Bearer؛ **404** إن لم يكن الطلب للمستخدم |
+| `frontend/src/app/api/auth/sso-callback/route.ts` | **POST** | `{ sso_token }` → `{DASM_API_URL}/api/sso/verify` مع `platform: inspection` → `access_token` + `user` + كوكي httpOnly `inspection_dasm_user_id` / `inspection_ui_role` |
+
+### 2.2 SSO من المنصّة الأم (`/auth/callback`)
+
+**التدفق:** `dasm.com.sa` (مثلاً `/dashboard/technical-inspection`) → `POST /api/sso/generate` → فتح:
+
+`https://inspect.dasm.com.sa/auth/callback?sso_token=…&return_url=…&redirect=…`
+
+| الخطوة | المكوّن |
+|--------|---------|
+| 1 | `auth/callback/page.tsx` يقرأ `sso_token` و`redirect` |
+| 2 | `POST /api/auth/sso-callback` يستهلك التوكن على Core ويضبط كوكي البوابة |
+| 3 | العميل يضبط `dasm_access_token` + `inspection_token` + `localStorage.inspection_user` (كما `/auth/login`) |
+| 4 | إعادة توجيه: `redirect` بعد تعيين مسارات المنصّة (`/request` → `/requests`، `/tracking?id=` → `/track/{id}`)؛ مستخدم `dasm_user` يُوجَّه مع `gateway=dasm` |
+
+**مسار قديم (ما زال مدعوماً):** `GET /api/gateway?token=` — Sanctum مباشر بدون SSO.
 
 يُفضّل للتكامل الجديد استخدام **`POST /api/v1/inspection-requests`** بدل **`POST /api/gateway`** (المساران متكافئان منطقياً).
 
