@@ -119,6 +119,8 @@ export function mapInspector(row: DbInspector): Inspector {
 export function mapRequest(row: DbRequest): InspectionRequest {
   const quoted =
     row.quoted_fee_sar != null ? Number(row.quoted_fee_sar) : null;
+  const repair =
+    row.repair_quote_sar != null ? Number(row.repair_quote_sar) : null;
   return {
     id: row.id,
     title: row.title,
