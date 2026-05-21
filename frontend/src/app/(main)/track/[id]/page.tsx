@@ -34,16 +34,18 @@ export default async function CustomerTrackingPage({
   const request = await getInspectionRequest(params.id);
   if (!request) notFound();
 
+  const isApproved = request.status === "approved";
+
   const [history, report, workshop, inspector] = await Promise.all([
     getHistoryForRequest(request.id),
-    request.reportId
-      ? getReport(request.reportId)
-      : getReportByRequestId(request.id),
+    isApproved
+      ? request.reportId
+        ? getReport(request.reportId)
+        : getReportByRequestId(request.id)
+      : Promise.resolve(null),
     request.workshopId ? getWorkshop(request.workshopId) : null,
     request.inspectorId ? getInspector(request.inspectorId) : null,
   ]);
-
-  const isApproved = request.status === "approved";
 
   return (
     <div className="space-y-6" dir="rtl">

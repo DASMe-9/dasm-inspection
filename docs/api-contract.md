@@ -130,7 +130,13 @@
 
 ---
 
-## 4.1 جسر Core — سيارة minimal + sync تقرير
+## 4.1 سياسة العرض العام (معتمد فقط)
+
+- **Core:** لا يُعرض تقرير ورشة على `carDetails` أو شارات القوائم إلا إذا وُجد `approved_at` على سجل `car_inspection_reports`.
+- **sync:** `approved_at` **مطلوب** في `POST …/reports/sync`.
+- **تتبع العميل** (`/track/{id}`): ملخص التقرير يُحمَّل ويُعرض فقط عندما `inspection_requests.status === approved`.
+
+## 4.2 جسر Core — سيارة minimal + sync تقرير
 
 | Endpoint Core | متى يُستدعى من Inspection |
 |---------------|---------------------------|
