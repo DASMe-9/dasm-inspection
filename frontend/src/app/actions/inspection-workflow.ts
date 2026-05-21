@@ -6,6 +6,11 @@ import { requireAdminClient } from "@/lib/supabase/admin";
 import type { InspectionRequestStatus, ReportItemStatus } from "@/types";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
+import {
+  buildReportSyncPayload,
+  parseDasmCarId,
+} from "@/lib/core/build-report-sync-payload";
+import { pushApprovedReportToCore } from "@/lib/core/push-approved-report-to-core";
 
 const ACTOR = "inspection_admin" as const;
 
@@ -263,6 +268,9 @@ export async function approveReportAction(requestId: string): Promise<ActionResu
 
     if (reqErr) return { ok: false, message: reqErr.message };
     await insertHistory(requestId, "approved", "تم اعتماد التقرير");
+
+    await syncApprovedReportToCoreAfterApprove(sb, requestId, req.report_id, now);
+
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath(`/reports/${req.report_id}`);
@@ -271,6 +279,62 @@ export async function approveReportAction(requestId: string): Promise<ActionResu
   } catch (e) {
     return { ok: false, message: mapAccessError(e) };
   }
+}
+
+async function syncApprovedReportToCoreAfterApprove(
+  sb: ReturnType<typeof requireAdminClient>,
+  requestId: string,
+  reportId: string,
+  approvedAtIso: string
+): Promise<void> {
+  const { data: reqRow } = await sb
+    .from("inspection_requests")
+    .select("dasm_car_id, workshop_id, inspection_workshops(name)")
+    .eq("id", requestId)
+    .single();
+
+  const carId = parseDasmCarId(
+    (reqRow as { dasm_car_id?: string | null } | null)?.dasm_car_id
+  );
+  if (!carId) {
+    inspectionOpsLog("core_report_sync_skipped", {
+      reason: "missing_dasm_car_id",
+      inspection_request_id: requestId,
+      inspection_report_id: reportId,
+    });
+    return;
+  }
+
+  const { data: reportRow } = await sb
+    .from("inspection_reports")
+    .select("overall_summary")
+    .eq("id", reportId)
+    .single();
+
+  const { data: items } = await sb
+    .from("inspection_report_items")
+    .select("status")
+    .eq("report_id", reportId);
+
+  const workshop = (reqRow as { inspection_workshops?: { name?: string } | { name?: string }[] | null })
+    ?.inspection_workshops;
+  const workshopName = Array.isArray(workshop)
+    ? workshop[0]?.name
+    : workshop?.name;
+
+  const payload = buildReportSyncPayload({
+    carId,
+    requestId,
+    reportId,
+    workshopId: (reqRow as { workshop_id?: string | null })?.workshop_id ?? null,
+    workshopName: workshopName ?? null,
+    overallSummary:
+      (reportRow as { overall_summary?: string | null } | null)?.overall_summary ?? null,
+    approvedAtIso,
+    items: (items ?? []) as { status: ReportItemStatus }[],
+  });
+
+  await pushApprovedReportToCore(payload);
 }
 
 export async function updateReportItemAction(

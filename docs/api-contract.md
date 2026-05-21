@@ -106,9 +106,21 @@
 |-------|-------|-------|
 | `frontend/src/app/api/gateway/route.ts` | **POST** | نفس المنطق + حدّ المعدّل؛ استجابة `{ success, data, message }` أو **429** |
 
-### 3.4 Webhook (اختياري — لم يُنفَّذ)
+### 3.4 ربط التقرير المعتمد بسيارة Core (منفّذ — 2026-05-21)
 
-`POST /api/v1/webhooks/dasm` — أحداث من المنصّة؛ **يتطلب** توقيع سرّي مشترك.
+عند **اعتماد التقرير** في Inspection، الخادم يستدعي (إن وُجد `dasm_car_id`):
+
+`POST {DASM_CORE_API_URL}/api/internal/dasm-inspection/reports/sync`
+
+**Headers:** `X-DASM-Internal-Token: {DASM_INSPECTION_INTERNAL_PULL_TOKEN}`
+
+**Body:** انظر `DASM-Platform` → `docs/features/INSPECTION_PLATFORM_MASTER_PLAN.md` §6 (عقد sync).
+
+**Idempotency:** `inspection_report_id` فريد على Core.
+
+### 3.5 Webhook من المنصّة (اختياري — لم يُنفَّذ)
+
+`POST /api/v1/webhooks/dasm` — أحداث من المنصّة إلى Inspection؛ **يتطلب** توقيع سرّي مشترك.
 
 ---
 
