@@ -32,7 +32,7 @@
 
 **✅ إنتاج DASM-services — تكميل 2026-05-17 (يدويًا عبر SQL Editor، فرع dashboard `main PRODUCTION`):** محتوى **`20260518100000_inspection_jwt_helpers_and_authenticated_select`** (دالة **`inspection_jwt_text_claim`** + سياسات **`*_select_jwt_authenticated`**). سكربت **`20260518100500_inspection_backfill_workshop_manager_roles`** (توحيد enum؛ قد لا يحدِّث صفوفًا إذا لم توجد **`workshop_manager`**). تحقَّق بعد التشغيل: [`RUNBOOK.md`](./RUNBOOK.md) (§Smoke DB — فقرة JWT).
 
-**ما يبقى عند الإغلاق «الكامل» للمراقبة والهوية:** تنفيذ **Log Drain** + تفعيل **`DASM_JWT_ENFORCE`** عند قرار المنتج — [`ROLLOUT_SEQUENCE.md`](./ROLLOUT_SEQUENCE.md)، [`JWT_ROLLOUT.md`](./JWT_ROLLOUT.md). صقل سياسات **INSERT/UPDATE** للعميل يبقى في [`rls-policies.md`](./rls-policies.md) إن اُتخِذ ذلك.
+**ما يبقى عند الإغلاق «الكامل» للمراقبة والهوية:** تنفيذ **Log Drain** لـ **`inspection_ops`** — [`INSPECTION_OPS_ALERTING.md`](./INSPECTION_OPS_ALERTING.md). ✅ **`DASM_JWT_ENFORCE=true`** على **Vercel Production** (`dasm-inspection`)؛ راقب الـ deployments بعد كل تعديل متغيرات JWT. صقل سياسات **INSERT/UPDATE** للعميل يبقى في [`rls-policies.md`](./rls-policies.md) إن اُتخِذ ذلك.
 
 ---
 

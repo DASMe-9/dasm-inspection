@@ -55,7 +55,7 @@ ORDER BY tablename;
 - `SUPABASE_SERVICE_ROLE_KEY` (خادم فقط)
 - اختياري: `INSPECTION_ATTACHMENTS_BUCKET`، `INSPECTION_ATTACHMENT_SIGNED_URL_TTL_SEC`
 - بوابة: `DASM_GATEWAY_API_KEYS`, `DASM_API_URL`
-- JWT إن فُعّل: `DASM_JWT_ENFORCE=true` + متغيرات التحقق في `.env.example` — التدريج: [`JWT_ROLLOUT.md`](./JWT_ROLLOUT.md)
+- JWT (إنتاج فحص داسم): ✅ **`DASM_JWT_ENFORCE=true`** على Vercel لمشروع **`dasm-inspection`**؛ وأيضاً **`DASM_JWT_ISSUER`** و **`DASM_JWT_SECRET`** *أو* **`DASM_JWKS_URI`** (راجع **`frontend/.env.example`** و [**`JWT_ROLLOUT.md`**](./JWT_ROLLOUT.md)). بعد كل تعديل متغير: smoke تسجيل دخول + إجراء متحوّل (إسناد/مرفق) وراقب **`inspection_ops`**.
 
 ## سجلات التشغيل (`inspection_ops`)
 
