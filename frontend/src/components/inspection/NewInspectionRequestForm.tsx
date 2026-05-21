@@ -3,12 +3,16 @@
 import { useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createInspectionRequestAction } from "@/app/actions/inspection-workflow";
+import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { useTheme } from "@/hooks";
+import type { WorkshopServicePricing } from "@/types";
 
 export function NewInspectionRequestForm({
   defaultDasmUserId,
+  platformPricing,
 }: {
   defaultDasmUserId?: string;
+  platformPricing?: WorkshopServicePricing | null;
 }) {
   const { colors } = useTheme({ role: "workshop" });
   const router = useRouter();
@@ -37,6 +41,15 @@ export function NewInspectionRequestForm({
       }}
     >
       <p className="font-medium">طلب فحص جديد</p>
+      {platformPricing &&
+        (platformPricing.workshopSar != null || platformPricing.fieldSar != null) && (
+          <div className="rounded-lg border border-violet-100 bg-violet-50/50 px-3 py-2">
+            <p className="mb-2 text-xs font-medium text-violet-900">
+              أسعار مرجعية (قبل اختيار الورشة)
+            </p>
+            <WorkshopPricingBadges pricing={platformPricing} compact />
+          </div>
+        )}
       <input
         name="title"
         required

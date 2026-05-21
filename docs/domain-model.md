@@ -15,6 +15,7 @@
 | report_items | `inspection_report_items` | بنود التقرير |
 | attachments | `inspection_attachments` | `storage_path` لربط Storage |
 | status_history | `inspection_status_history` | سجل انتقالات الحالة + `actor_role` |
+| service_pricing | `inspection_service_pricing` | كتالوج أسعار: `workshop` (في الورشة) و`field` (ميداني)؛ `workshop_id` NULL = افتراضي المنصّة |
 
 **خارج النطاق:** checklists كجدول مستقل (غير موجود في V1)؛ أي توسعة تتطلب قرار معماري.
 
@@ -25,6 +26,7 @@
 ```
 inspection_workshops (1) ──< (N) inspection_inspectors
 inspection_workshops (1) ──< (N) inspection_requests [workshop_id]
+inspection_workshops (1) ──< (N) inspection_service_pricing [workshop_id optional]
 inspection_inspectors (1) ──< (N) inspection_requests [inspector_id]
 
 inspection_requests (1) ──< (1) inspection_reports [request_id UNIQUE]
@@ -64,6 +66,13 @@ inspection_requests.report_id → inspection_reports.id (nullable حتى إنش�
 ### `inspection_report_item_status`
 
 `pass` | `warn` | `fail` | `na`
+
+### `inspection_service_mode`
+
+| القيمة | معنى منتجي |
+|--------|-------------|
+| `workshop` | فحص في مقر الورشة |
+| `field` | فحص ميداني (زيارة للموقع) |
 
 ### `inspection_app_role`
 

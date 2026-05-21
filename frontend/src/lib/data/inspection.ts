@@ -11,6 +11,7 @@ import {
   mapRequest,
   mapWorkshop,
 } from "@/lib/data/mappers";
+import { attachPricingToWorkshopIds } from "@/lib/data/inspection-pricing-data";
 import type {
   InspectionAttachment,
   InspectionReport,
@@ -35,7 +36,16 @@ export async function listWorkshops(): Promise<Workshop[]> {
     .select("*")
     .order("name");
   if (error || !data) return [];
-  return data.map((r) => mapWorkshop(r as Parameters<typeof mapWorkshop>[0]));
+  const workshops = data.map((r) =>
+    mapWorkshop(r as Parameters<typeof mapWorkshop>[0])
+  );
+  const pricingMap = await attachPricingToWorkshopIds(
+    workshops.map((w) => w.id)
+  );
+  return workshops.map((w) => ({
+    ...w,
+    pricing: pricingMap.get(w.id),
+  }));
 }
 
 export async function getWorkshop(id: string): Promise<Workshop | null> {
@@ -47,7 +57,9 @@ export async function getWorkshop(id: string): Promise<Workshop | null> {
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
-  return mapWorkshop(data as Parameters<typeof mapWorkshop>[0]);
+  const w = mapWorkshop(data as Parameters<typeof mapWorkshop>[0]);
+  const pricingMap = await attachPricingToWorkshopIds([w.id]);
+  return { ...w, pricing: pricingMap.get(w.id) };
 }
 
 export async function listInspectors(): Promise<Inspector[]> {

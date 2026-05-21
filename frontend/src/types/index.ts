@@ -26,6 +26,15 @@ export type InspectionRequestStatus =
 
 export type ReportItemStatus = "pass" | "warn" | "fail" | "na";
 
+/** يطابق Postgres enum inspection_service_mode */
+export type InspectionServiceMode = "workshop" | "field";
+
+export interface WorkshopServicePricing {
+  workshopSar: number | null;
+  fieldSar: number | null;
+  currency: string;
+}
+
 export interface Workshop {
   id: string;
   name: string;
@@ -34,6 +43,8 @@ export interface Workshop {
   email?: string;
   isVerified: boolean;
   dasm_partner_ref?: string;
+  /** أسعار فعّالة (تخصيص الورشة مع fallback للمنصّة) */
+  pricing?: WorkshopServicePricing;
 }
 
 export interface Inspector {

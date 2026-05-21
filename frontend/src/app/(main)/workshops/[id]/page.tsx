@@ -10,6 +10,7 @@ import {
   Phone,
   Users,
 } from "lucide-react";
+import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { SectionCard } from "@/components/shared";
 import { getInspectorsForWorkshop, getWorkshop } from "@/lib/data/inspection";
 import { TOKENS } from "@/lib/theme";
@@ -103,6 +104,14 @@ export default async function WorkshopDetailPage({
           </div>
         </div>
       </section>
+
+      <SectionCard title="أسعار الفحص (تقديرية)">
+        <p className="mb-3 text-xs text-gray-600">
+          الأسعار المرجعية قبل تأكيد الورشة؛ قد تختلف حسب المركبة والمنطقة. رسوم الإصلاح
+          تُعرض لاحقاً بشكل منفصل عن رسوم الفحص.
+        </p>
+        <WorkshopPricingBadges pricing={w.pricing} />
+      </SectionCard>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard title="جهات الاتصال">

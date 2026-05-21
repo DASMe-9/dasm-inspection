@@ -8,6 +8,7 @@ import {
 import { SectionCard, EmptyState } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 import { parseInspectionRequestListQuery } from "@/lib/inspection-request-list-options";
+import { getPlatformDefaultPricing } from "@/lib/data/inspection-pricing-data";
 import {
   listInspectionRequests,
   listInspectionRequestsForDasmUser,
@@ -48,6 +49,7 @@ export default async function RequestsListPage({
 
   const workshops = await listWorkshops();
   const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
+  const platformPricing = await getPlatformDefaultPricing();
 
   const scopedNote =
     shouldScopeRequestsToPlatformUser(personaCtx) &&
@@ -67,7 +69,10 @@ export default async function RequestsListPage({
       </div>
 
       <SectionCard>
-        <NewInspectionRequestForm defaultDasmUserId={presetDasmUserId} />
+        <NewInspectionRequestForm
+          defaultDasmUserId={presetDasmUserId}
+          platformPricing={platformPricing}
+        />
       </SectionCard>
 
       <Suspense
