@@ -24,6 +24,12 @@ import {
 } from "@/lib/core/build-report-sync-payload";
 import { ensureDasmCarOnCore } from "@/lib/core/ensure-dasm-car-on-core";
 import { pushApprovedReportToCore } from "@/lib/core/push-approved-report-to-core";
+import {
+  canEditRepairQuote,
+  normalizeRepairQuoteNotes,
+  parseRepairQuoteSar,
+} from "@/lib/repair-quote";
+import { formatInspectionPriceSar } from "@/lib/inspection-pricing";
 
 const ACTOR = "inspection_admin" as const;
 
@@ -688,6 +694,72 @@ export async function cancelInspectionRequestAction(
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath("/my-inspections");
+    revalidatePath(`/track/${requestId}`);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapAccessError(e) };
+  }
+}
+
+/** عرض إصلاح اختياري — منفصل عن `quoted_fee_sar` (رسوم خدمة الفحص). */
+export async function setRepairQuoteAction(
+  requestId: string,
+  repairQuoteSar: number | null,
+  repairQuoteNotes?: string | null
+): Promise<ActionResult> {
+  try {
+    await assertInspectionMutationAllowed();
+    if (!requestId?.trim()) {
+      return { ok: false, message: "معرّف الطلب غير صالح." };
+    }
+
+    const amount =
+      repairQuoteSar === null ? null : parseRepairQuoteSar(repairQuoteSar);
+    if (repairQuoteSar !== null && amount === null) {
+      return { ok: false, message: "مبلغ عرض الإصلاح غير صالح." };
+    }
+
+    const notes = normalizeRepairQuoteNotes(repairQuoteNotes);
+    const sb = requireAdminClient();
+    const { data: req, error: fetchErr } = await sb
+      .from("inspection_requests")
+      .select("status")
+      .eq("id", requestId)
+      .single();
+
+    if (fetchErr || !req) {
+      return { ok: false, message: "الطلب غير موجود." };
+    }
+
+    const status = req.status as InspectionRequestStatus;
+    if (!canEditRepairQuote(status)) {
+      return {
+        ok: false,
+        message:
+          "عرض الإصلاح يُسجَّل بعد بدء الفحص (قيد التنفيذ أو المراجعة أو بعد الاعتماد).",
+      };
+    }
+
+    const offeredAt = amount != null ? new Date().toISOString() : null;
+    const { error } = await sb
+      .from("inspection_requests")
+      .update({
+        repair_quote_sar: amount,
+        repair_quote_notes: notes,
+        repair_quote_offered_at: offeredAt,
+      })
+      .eq("id", requestId);
+
+    if (error) return { ok: false, message: error.message };
+
+    const historyNote =
+      amount != null
+        ? `عرض إصلاح: ${formatInspectionPriceSar(amount)}${notes ? ` — ${notes}` : ""}`
+        : "إزالة عرض الإصلاح";
+    await insertHistory(requestId, status, historyNote);
+
+    revalidatePath("/requests");
+    revalidatePath(`/requests/${requestId}`);
     revalidatePath(`/track/${requestId}`);
     return { ok: true };
   } catch (e) {

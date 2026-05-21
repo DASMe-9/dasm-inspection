@@ -14,6 +14,7 @@ import {
   getInspector,
 } from "@/lib/data/inspection";
 import { TOKENS } from "@/lib/theme";
+import { formatInspectionPriceSar } from "@/lib/inspection-pricing";
 
 const STATUS_AR: Record<string, string> = {
   draft: "مسودة",
@@ -111,6 +112,24 @@ export default async function CustomerTrackingPage({
           )}
         </div>
       </SectionCard>
+
+      {request.repairQuoteSar != null && (
+        <SectionCard title="عرض إصلاح من الورشة">
+          <p className="text-sm text-gray-800">
+            مبلغ تقديري للإصلاح (منفصل عن رسوم الفحص):{" "}
+            <span className="font-semibold">
+              {formatInspectionPriceSar(request.repairQuoteSar)}
+            </span>
+          </p>
+          {request.repairQuoteNotes && (
+            <p className="text-sm text-gray-600 mt-2">{request.repairQuoteNotes}</p>
+          )}
+          <p className="text-xs text-gray-500 mt-2">
+            هذا عرض اختياري من الورشة ولا يُعتبر فاتورة نهائية أو التزام دفع
+            تلقائي.
+          </p>
+        </SectionCard>
+      )}
 
       {/* Status timeline */}
       <SectionCard title="سجل الحالات">

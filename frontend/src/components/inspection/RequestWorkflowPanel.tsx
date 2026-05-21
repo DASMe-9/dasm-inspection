@@ -20,6 +20,7 @@ import {
 import { formatInspectionPriceSar, pricingLabelAr } from "@/lib/inspection-pricing";
 import type { InspectionRequest, InspectionServiceMode, Inspector, Workshop } from "@/types";
 import { useTheme } from "@/hooks";
+import { RepairQuotePanel } from "./RepairQuotePanel";
 
 export function RequestWorkflowPanel({
   request,
@@ -260,6 +261,8 @@ export function RequestWorkflowPanel({
           تقديم التقرير للمراجعة
         </button>
       )}
+
+      <RepairQuotePanel request={request} />
 
       {request.status === "pending_review" && request.reportId && (
         <div className="space-y-3">

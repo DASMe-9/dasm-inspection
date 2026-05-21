@@ -29,6 +29,7 @@
 | `updateReportItemAction` | itemId, status, notes? |同上 | تحديث بند (`pass`/`warn`/`fail`/`na`) في `inspection_report_items` |
 | `cancelInspectionRequestAction` | requestId, reason? |同上 | من `submitted` / `assigned` / `in_progress` فقط؛ يرفض إن وُجد `report_id` |
 | `uploadInspectionAttachmentAction` | requestId, `FormData` بمفتاح `file` |同上 | رفع إلى حاوية Storage (اسم الدلو من `INSPECTION_ATTACHMENTS_BUCKET`، افتراضياً `inspection-attachments`) ثم إدراج `inspection_attachments` |
+| `setRepairQuoteAction` | requestId, `repairQuoteSar` (أو `null` للإزالة), `repairQuoteNotes?` |同上 | من `in_progress` / `pending_review` / `approved`؛ يحدّث `repair_quote_*` منفصلة عن `quoted_fee_sar` |
 
 **العقد الضمني:** `ActionResult = { ok: true } | { ok: false; message: string }`.
 
@@ -139,7 +140,9 @@
 
 `GET /api/v1/inspection-requests/:id`
 
-**200:** حقول الطلب من الجدول (`id`, `title`, `status`, `dasm_car_id`, `vehicle_label`, …) إذا كان **`dasm_user_id`** للطلب يطابق مستخدم Bearer.
+**200:** حقول الطلب من الجدول (`id`, `title`, `status`, `dasm_car_id`, `vehicle_label`, `quoted_fee_sar`, `repair_quote_sar`, `repair_quote_notes`, `repair_quote_offered_at`, …) إذا كان **`dasm_user_id`** للطلب يطابق مستخدم Bearer.
+
+**ملاحظة:** `quoted_fee_sar` = رسوم خدمة الفحص عند الإسناد؛ `repair_quote_sar` = عرض إصلاح اختياري منفصل يُسجّله الطاقم بعد بدء الفحص.
 
 **404:** الطلب غير موجود أو لا يخصّ المستخدم.
 

@@ -41,6 +41,9 @@ type DbRequest = {
   service_mode: InspectionServiceMode | null;
   field_service_address: string | null;
   quoted_fee_sar: number | string | null;
+  repair_quote_sar: number | string | null;
+  repair_quote_notes: string | null;
+  repair_quote_offered_at: string | null;
   dispatched_at: string | null;
   on_site_at: string | null;
   workshop_id: string | null;
@@ -127,6 +130,9 @@ export function mapRequest(row: DbRequest): InspectionRequest {
     serviceMode: row.service_mode === "field" ? "field" : "workshop",
     fieldServiceAddress: row.field_service_address?.trim() || undefined,
     quotedFeeSar: Number.isFinite(quoted) ? quoted : null,
+    repairQuoteSar: Number.isFinite(repair) ? repair : null,
+    repairQuoteNotes: row.repair_quote_notes?.trim() || undefined,
+    repairQuoteOfferedAt: row.repair_quote_offered_at ?? undefined,
     dispatchedAt: row.dispatched_at ?? undefined,
     onSiteAt: row.on_site_at ?? undefined,
     workshopId: row.workshop_id ?? undefined,

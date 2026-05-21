@@ -128,8 +128,19 @@ export default async function RequestDetailPage({
         )}
         {req.quotedFeeSar != null && (
           <p className="text-sm mt-1">
-            <span className="text-gray-500">رسوم مرجعية:</span>{" "}
+            <span className="text-gray-500">رسوم خدمة الفحص:</span>{" "}
             {req.quotedFeeSar} ر.س
+          </p>
+        )}
+        {req.repairQuoteSar != null && (
+          <p className="text-sm mt-1">
+            <span className="text-gray-500">عرض إصلاح (منفصل):</span>{" "}
+            {req.repairQuoteSar} ر.س
+            {req.repairQuoteNotes && (
+              <span className="block text-gray-600 text-xs mt-0.5">
+                {req.repairQuoteNotes}
+              </span>
+            )}
           </p>
         )}
       </SectionCard>
