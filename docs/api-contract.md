@@ -106,15 +106,39 @@
 |-------|-------|-------|
 | `frontend/src/app/api/gateway/route.ts` | **POST** | نفس المنطق + حدّ المعدّل؛ استجابة `{ success, data, message }` أو **429** |
 
-### 3.4 Webhook (اختياري — لم يُنفَّذ)
+### 3.4 ربط التقرير المعتمد بسيارة Core (منفّذ — 2026-05-21)
 
-`POST /api/v1/webhooks/dasm` — أحداث من المنصّة؛ **يتطلب** توقيع سرّي مشترك.
+عند **اعتماد التقرير** في Inspection، الخادم يستدعي (إن وُجد `dasm_car_id`):
+
+`POST {DASM_CORE_API_URL}/api/internal/dasm-inspection/reports/sync`
+
+**Headers:** `X-DASM-Internal-Token: {DASM_INSPECTION_INTERNAL_PULL_TOKEN}`
+
+**Body:** انظر `DASM-Platform` → `docs/features/INSPECTION_PLATFORM_MASTER_PLAN.md` §6 (عقد sync).
+
+**Idempotency:** `inspection_report_id` فريد على Core.
+
+### 3.5 Webhook من المنصّة (اختياري — لم يُنفَّذ)
+
+`POST /api/v1/webhooks/dasm` — أحداث من المنصّة إلى Inspection؛ **يتطلب** توقيع سرّي مشترك.
 
 ---
 
 ## 4. أحداث مجال (Domain events) — اختياري لاحقاً
 
 للتكامل غير المتزامن: `InspectionRequestSubmitted`, `ReportApproved`, `ReportRejected` — يمكن نشرها إلى طابور (Outbox) دون توسيع النطاق في Phase 1.
+
+---
+
+## 4.1 جسر Core — سيارة minimal + sync تقرير
+
+| Endpoint Core | متى يُستدعى من Inspection |
+|---------------|---------------------------|
+| `POST /api/internal/dasm-inspection/cars/minimal` | إنشاء طلب بدون `dasm_car_id` (مع `dasm_user_id`)؛ أو عند الاعتماد إن بقي المعرّف غير رقمي |
+| `POST /api/internal/dasm-inspection/reports/sync` | بعد `approveReportAction` عند توفر `car_id` |
+
+**Headers:** `X-DASM-Internal-Token: DASM_INSPECTION_INTERNAL_PULL_TOKEN`  
+**Env:** `DASM_CORE_API_URL`, `DASM_INSPECTION_SYNC_ENABLED` (افتراضي مفعّل)
 
 ---
 

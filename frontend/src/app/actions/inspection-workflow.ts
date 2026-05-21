@@ -6,6 +6,12 @@ import { requireAdminClient } from "@/lib/supabase/admin";
 import type { InspectionRequestStatus, ReportItemStatus } from "@/types";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
+import {
+  buildReportSyncPayload,
+  parseDasmCarId,
+} from "@/lib/core/build-report-sync-payload";
+import { ensureDasmCarOnCore } from "@/lib/core/ensure-dasm-car-on-core";
+import { pushApprovedReportToCore } from "@/lib/core/push-approved-report-to-core";
 
 const ACTOR = "inspection_admin" as const;
 
@@ -55,8 +61,15 @@ export async function createInspectionRequestAction(formData: FormData): Promise
     const auction_reference =
       String(formData.get("auction_reference") ?? "").trim() || null;
 
-    if (!title || !dasm_car_id || !vehicle_label) {
-      return { ok: false, message: "عنوان المركبة ومعرّف DASM مطلوبة." };
+    if (!title || !vehicle_label) {
+      return { ok: false, message: "عنوان الطلب ووصف المركبة مطلوبان." };
+    }
+
+    if (!dasm_car_id && !dasm_user_id) {
+      return {
+        ok: false,
+        message: "أدخل dasm_car_id أو اربط الطلب بحساب داسم (dasm_user_id).",
+      };
     }
 
     const sb = requireAdminClient();
@@ -64,7 +77,7 @@ export async function createInspectionRequestAction(formData: FormData): Promise
       .from("inspection_requests")
       .insert({
         title,
-        dasm_car_id,
+        dasm_car_id: dasm_car_id || "pending",
         vehicle_label,
         dasm_user_id,
         auction_reference,
@@ -75,6 +88,24 @@ export async function createInspectionRequestAction(formData: FormData): Promise
 
     if (error || !data) {
       return { ok: false, message: error?.message ?? "فشل الإنشاء" };
+    }
+
+    if (!dasm_car_id && dasm_user_id) {
+      const userId = Number.parseInt(dasm_user_id, 10);
+      if (Number.isFinite(userId) && userId > 0) {
+        const carId = await ensureDasmCarOnCore({
+          userId,
+          vehicleLabel: vehicle_label,
+          inspectionRequestId: data.id,
+          title,
+        });
+        if (carId) {
+          await sb
+            .from("inspection_requests")
+            .update({ dasm_car_id: String(carId) })
+            .eq("id", data.id);
+        }
+      }
     }
 
     await insertHistory(data.id, "submitted");
@@ -263,6 +294,9 @@ export async function approveReportAction(requestId: string): Promise<ActionResu
 
     if (reqErr) return { ok: false, message: reqErr.message };
     await insertHistory(requestId, "approved", "تم اعتماد التقرير");
+
+    await syncApprovedReportToCoreAfterApprove(sb, requestId, req.report_id, now);
+
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath(`/reports/${req.report_id}`);
@@ -271,6 +305,88 @@ export async function approveReportAction(requestId: string): Promise<ActionResu
   } catch (e) {
     return { ok: false, message: mapAccessError(e) };
   }
+}
+
+async function syncApprovedReportToCoreAfterApprove(
+  sb: ReturnType<typeof requireAdminClient>,
+  requestId: string,
+  reportId: string,
+  approvedAtIso: string
+): Promise<void> {
+  const { data: reqRow } = await sb
+    .from("inspection_requests")
+    .select(
+      "dasm_car_id, dasm_user_id, vehicle_label, title, workshop_id, inspection_workshops(name)"
+    )
+    .eq("id", requestId)
+    .single();
+
+  const row = reqRow as {
+    dasm_car_id?: string | null;
+    dasm_user_id?: string | null;
+    vehicle_label?: string | null;
+    title?: string | null;
+  } | null;
+
+  let carId = parseDasmCarId(row?.dasm_car_id);
+  if (!carId && row?.dasm_user_id && row.vehicle_label) {
+    const userId = Number.parseInt(String(row.dasm_user_id), 10);
+    if (Number.isFinite(userId) && userId > 0) {
+      const ensured = await ensureDasmCarOnCore({
+        userId,
+        vehicleLabel: row.vehicle_label,
+        inspectionRequestId: requestId,
+        title: row.title ?? undefined,
+      });
+      if (ensured) {
+        carId = ensured;
+        await sb
+          .from("inspection_requests")
+          .update({ dasm_car_id: String(ensured) })
+          .eq("id", requestId);
+      }
+    }
+  }
+
+  if (!carId) {
+    inspectionOpsLog("warn", "core_report_sync_skipped", {
+      reason: "missing_dasm_car_id",
+      inspection_request_id: requestId,
+      inspection_report_id: reportId,
+    });
+    return;
+  }
+
+  const { data: reportRow } = await sb
+    .from("inspection_reports")
+    .select("overall_summary")
+    .eq("id", reportId)
+    .single();
+
+  const { data: items } = await sb
+    .from("inspection_report_items")
+    .select("status")
+    .eq("report_id", reportId);
+
+  const workshop = (reqRow as { inspection_workshops?: { name?: string } | { name?: string }[] | null })
+    ?.inspection_workshops;
+  const workshopName = Array.isArray(workshop)
+    ? workshop[0]?.name
+    : workshop?.name;
+
+  const payload = buildReportSyncPayload({
+    carId,
+    requestId,
+    reportId,
+    workshopId: (reqRow as { workshop_id?: string | null })?.workshop_id ?? null,
+    workshopName: workshopName ?? null,
+    overallSummary:
+      (reportRow as { overall_summary?: string | null } | null)?.overall_summary ?? null,
+    approvedAtIso,
+    items: (items ?? []) as { status: ReportItemStatus }[],
+  });
+
+  await pushApprovedReportToCore(payload);
 }
 
 export async function updateReportItemAction(

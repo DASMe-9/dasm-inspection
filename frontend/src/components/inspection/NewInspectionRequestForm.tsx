@@ -45,8 +45,12 @@ export function NewInspectionRequestForm({
       />
       <input
         name="dasm_car_id"
-        required
-        placeholder="dasm_car_id"
+        placeholder={
+          defaultDasmUserId
+            ? "dasm_car_id (اختياري — يُنشأ تلقائياً على المنصّة)"
+            : "dasm_car_id (مطلوب بدون حساب داسم)"
+        }
+        required={!defaultDasmUserId}
         className="w-full border rounded-lg px-3 py-2 font-mono text-xs"
       />
       <input

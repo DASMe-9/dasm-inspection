@@ -2,7 +2,9 @@ import "server-only";
 
 import { getAdminClient } from "@/lib/supabase/admin";
 import type { DasmProfileUser } from "@/lib/api/inspection-http-auth";
+import { ensureDasmCarOnCore } from "@/lib/core/ensure-dasm-car-on-core";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
+import { parseDasmCarId } from "@/lib/core/build-report-sync-payload";
 
 export type CreateInspectionBody = {
   dasm_car_id: string;
@@ -38,10 +40,10 @@ export async function insertInspectionRequestSubmitted(
       ? String(body.auction_reference).trim()
       : null;
 
-  if (!dasm_car_id || !vehicle_label) {
+  if (!vehicle_label) {
     return {
       ok: false,
-      message: "dasm_car_id و vehicle_label مطلوبان",
+      message: "vehicle_label مطلوب",
       code: "validation_error",
     };
   }
@@ -60,11 +62,13 @@ export async function insertInspectionRequestSubmitted(
 
   const insertTitle = title || `فحص ${vehicle_label}`;
 
+  let resolvedCarId = parseDasmCarId(dasm_car_id);
+
   const { data, error } = await sb
     .from("inspection_requests")
     .insert({
       title: insertTitle,
-      dasm_car_id,
+      dasm_car_id: resolvedCarId ? String(resolvedCarId) : "pending",
       vehicle_label,
       dasm_user_id: String(user.id),
       auction_reference,
@@ -83,6 +87,22 @@ export async function insertInspectionRequestSubmitted(
       message: error?.message ?? "فشل الإنشاء",
       code: "database_error",
     };
+  }
+
+  if (!resolvedCarId) {
+    const ensured = await ensureDasmCarOnCore({
+      userId: Number(user.id),
+      vehicleLabel: vehicle_label,
+      inspectionRequestId: data.id,
+      title: insertTitle,
+    });
+    if (ensured) {
+      resolvedCarId = ensured;
+      await sb
+        .from("inspection_requests")
+        .update({ dasm_car_id: String(ensured) })
+        .eq("id", data.id);
+    }
   }
 
   const row: CreatedInspectionRow = {
