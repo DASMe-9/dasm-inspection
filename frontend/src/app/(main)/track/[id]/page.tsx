@@ -19,6 +19,8 @@ const STATUS_AR: Record<string, string> = {
   draft: "مسودة",
   submitted: "تم الإرسال",
   assigned: "تم الإسناد",
+  dispatched: "المفتش في الطريق",
+  on_site: "في الموقع",
   in_progress: "قيد التنفيذ",
   pending_review: "بانتظار المراجعة",
   approved: "معتمد",

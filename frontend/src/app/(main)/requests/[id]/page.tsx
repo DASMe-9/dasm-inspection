@@ -61,6 +61,8 @@ export default async function RequestDetailPage({
   const canUploadAttachment = [
     "submitted",
     "assigned",
+    "dispatched",
+    "on_site",
     "in_progress",
     "pending_review",
   ].includes(req.status);
@@ -105,7 +107,7 @@ export default async function RequestDetailPage({
         </dl>
       </SectionCard>
 
-      <SectionCard title="الإسناد الحالي">
+      <SectionCard title="الإسناد والخدمة">
         <p className="text-sm">
           <span className="text-gray-500">الورشة:</span>{" "}
           {workshop?.name ?? "—"}
@@ -114,11 +116,27 @@ export default async function RequestDetailPage({
           <span className="text-gray-500">المفتش:</span>{" "}
           {inspector?.fullName ?? "—"}
         </p>
+        <p className="text-sm mt-1">
+          <span className="text-gray-500">نوع الخدمة:</span>{" "}
+          {req.serviceMode === "field" ? "ميداني" : "في الورشة"}
+        </p>
+        {req.fieldServiceAddress && (
+          <p className="text-sm mt-1">
+            <span className="text-gray-500">عنوان ميداني:</span>{" "}
+            {req.fieldServiceAddress}
+          </p>
+        )}
+        {req.quotedFeeSar != null && (
+          <p className="text-sm mt-1">
+            <span className="text-gray-500">رسوم مرجعية:</span>{" "}
+            {req.quotedFeeSar} ر.س
+          </p>
+        )}
       </SectionCard>
 
       {report &&
         (req.status === "in_progress" ||
-          req.status === "assigned" ||
+          req.status === "on_site" ||
           req.status === "pending_review") && (
           <SectionCard title="قائمة الفحص">
             <ChecklistForm

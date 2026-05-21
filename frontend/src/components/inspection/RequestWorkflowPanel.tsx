@@ -6,11 +6,19 @@ import {
   assignInspectionRequestAction,
   approveReportAction,
   cancelInspectionRequestAction,
+  confirmOnSiteAction,
+  dispatchInspectionAction,
   rejectReportAction,
   startInspectionAction,
   submitReportForReviewAction,
 } from "@/app/actions/inspection-workflow";
-import type { InspectionRequest, Inspector, Workshop } from "@/types";
+import {
+  canConfirmOnSite,
+  canDispatchInspector,
+  canStartInspection,
+} from "@/lib/inspection-request-transitions";
+import { formatInspectionPriceSar, pricingLabelAr } from "@/lib/inspection-pricing";
+import type { InspectionRequest, InspectionServiceMode, Inspector, Workshop } from "@/types";
 import { useTheme } from "@/hooks";
 
 export function RequestWorkflowPanel({
@@ -30,10 +38,31 @@ export function RequestWorkflowPanel({
   const [cancelReason, setCancelReason] = useState("");
   const [workshopId, setWorkshopId] = useState(request.workshopId ?? "");
   const [inspectorId, setInspectorId] = useState(request.inspectorId ?? "");
+  const [serviceMode, setServiceMode] = useState<InspectionServiceMode>(
+    request.serviceMode ?? "workshop"
+  );
+  const [fieldAddress, setFieldAddress] = useState(
+    request.fieldServiceAddress ?? ""
+  );
+
+  const ctx = useMemo(
+    () => ({
+      status: request.status,
+      serviceMode: request.serviceMode ?? "workshop",
+    }),
+    [request.status, request.serviceMode]
+  );
+
+  const selectedWorkshop = workshops.find((w) => w.id === workshopId);
+  const previewFee =
+    serviceMode === "field"
+      ? selectedWorkshop?.pricing?.fieldSar
+      : selectedWorkshop?.pricing?.workshopSar;
 
   const canCancel =
-    ["submitted", "assigned", "in_progress"].includes(request.status) &&
-    !request.reportId;
+    ["submitted", "assigned", "dispatched", "on_site", "in_progress"].includes(
+      request.status
+    ) && !request.reportId;
 
   const inspectorsFiltered = useMemo(() => {
     if (!workshopId) return inspectors;
@@ -61,6 +90,39 @@ export function RequestWorkflowPanel({
         >
           <p className="font-medium text-sm">إسناد الطلب</p>
           <div className="space-y-2 text-sm">
+            <fieldset className="space-y-2">
+              <legend className="text-gray-500 text-xs">نوع الخدمة</legend>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="service_mode"
+                  checked={serviceMode === "workshop"}
+                  onChange={() => setServiceMode("workshop")}
+                />
+                {pricingLabelAr("workshop")}
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="service_mode"
+                  checked={serviceMode === "field"}
+                  onChange={() => setServiceMode("field")}
+                />
+                {pricingLabelAr("field")}
+              </label>
+            </fieldset>
+            {serviceMode === "field" && (
+              <label className="block">
+                <span className="text-gray-500">عنوان الفحص الميداني</span>
+                <input
+                  className="mt-1 w-full border rounded-lg px-3 py-2"
+                  value={fieldAddress}
+                  onChange={(e) => setFieldAddress(e.target.value)}
+                  placeholder="الحي، الشارع، المدينة"
+                  required
+                />
+              </label>
+            )}
             <label className="block">
               <span className="text-gray-500">الورشة</span>
               <select
@@ -79,6 +141,11 @@ export function RequestWorkflowPanel({
                 ))}
               </select>
             </label>
+            {previewFee != null && (
+              <p className="text-xs text-violet-800 rounded-lg bg-violet-50 px-2 py-1.5">
+                تقدير الرسوم: {formatInspectionPriceSar(previewFee)}
+              </p>
+            )}
             <label className="block">
               <span className="text-gray-500">المفتش</span>
               <select
@@ -98,7 +165,12 @@ export function RequestWorkflowPanel({
           </div>
           <button
             type="button"
-            disabled={pending || !workshopId || !inspectorId}
+            disabled={
+              pending ||
+              !workshopId ||
+              !inspectorId ||
+              (serviceMode === "field" && !fieldAddress.trim())
+            }
             className="w-full py-2 rounded-lg text-white text-sm font-medium disabled:opacity-50"
             style={{ backgroundColor: colors.primary }}
             onClick={() =>
@@ -106,7 +178,12 @@ export function RequestWorkflowPanel({
                 assignInspectionRequestAction(
                   request.id,
                   workshopId,
-                  inspectorId
+                  inspectorId,
+                  {
+                    serviceMode,
+                    fieldServiceAddress:
+                      serviceMode === "field" ? fieldAddress.trim() : undefined,
+                  }
                 )
               )
             }
@@ -116,7 +193,51 @@ export function RequestWorkflowPanel({
         </div>
       )}
 
-      {request.status === "assigned" && (
+      {request.status !== "submitted" && request.serviceMode === "field" && (
+        <div className="rounded-lg border border-violet-100 bg-violet-50/60 px-3 py-2 text-xs text-violet-900 space-y-1">
+          <p>
+            <span className="font-medium">الخدمة:</span> فحص ميداني
+          </p>
+          {request.fieldServiceAddress && (
+            <p>
+              <span className="font-medium">الموقع:</span>{" "}
+              {request.fieldServiceAddress}
+            </p>
+          )}
+          {request.quotedFeeSar != null && (
+            <p>
+              <span className="font-medium">الرسوم المرجعية:</span>{" "}
+              {formatInspectionPriceSar(request.quotedFeeSar)}
+            </p>
+          )}
+        </div>
+      )}
+
+      {canDispatchInspector(ctx) && (
+        <button
+          type="button"
+          disabled={pending}
+          className="w-full py-2 rounded-lg text-white text-sm font-medium"
+          style={{ backgroundColor: colors.primary }}
+          onClick={() => run(() => dispatchInspectionAction(request.id))}
+        >
+          توجيه المفتش إلى الموقع
+        </button>
+      )}
+
+      {canConfirmOnSite(ctx) && (
+        <button
+          type="button"
+          disabled={pending}
+          className="w-full py-2 rounded-lg text-white text-sm font-medium"
+          style={{ backgroundColor: colors.accent }}
+          onClick={() => run(() => confirmOnSiteAction(request.id))}
+        >
+          تأكيد الوصول للموقع
+        </button>
+      )}
+
+      {canStartInspection(ctx) && (
         <button
           type="button"
           disabled={pending}

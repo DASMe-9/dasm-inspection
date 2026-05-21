@@ -19,8 +19,10 @@
 | العملية | مدخلات (مختصر) | مخرجات | ملاحظات |
 |---------|----------------|--------|---------|
 | `createInspectionRequestAction` | `FormData`: title, dasm_car_id, vehicle_label, … | `{ ok, message? }` | ينشئ طلباً `submitted` + سجل تاريخ |
-| `assignInspectionRequestAction` | requestId, workshopId, inspectorId |同上 | من `submitted` فقط |
-| `startInspectionAction` | requestId |同上 | من `assigned` |
+| `assignInspectionRequestAction` | requestId, workshopId, inspectorId, `{ serviceMode?, fieldServiceAddress? }` |同上 | من `submitted`؛ يضبط `service_mode` و`quoted_fee_sar` |
+| `dispatchInspectionAction` | requestId |同上 | فحص ميداني: `assigned` → `dispatched` |
+| `confirmOnSiteAction` | requestId |同上 | فحص ميداني: `dispatched` → `on_site` |
+| `startInspectionAction` | requestId |同上 | ورشة: من `assigned`؛ ميداني: من `on_site` |
 | `submitReportForReviewAction` | requestId |同上 | ينشئ تقريراً + بنوداً افتراضية؛ `pending_review` |
 | `approveReportAction` | requestId |同上 | من `pending_review` |
 | `rejectReportAction` | requestId, reason |同上 | من `pending_review` |

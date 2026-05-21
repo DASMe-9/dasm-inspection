@@ -18,6 +18,8 @@ export type InspectionRequestStatus =
   | "draft"
   | "submitted"
   | "assigned"
+  | "dispatched"
+  | "on_site"
   | "in_progress"
   | "pending_review"
   | "approved"
@@ -63,6 +65,11 @@ export interface InspectionRequest {
   dasm_user_id?: string;
   auction_reference?: string;
   status: InspectionRequestStatus;
+  serviceMode: InspectionServiceMode;
+  fieldServiceAddress?: string;
+  quotedFeeSar?: number | null;
+  dispatchedAt?: string;
+  onSiteAt?: string;
   workshopId?: string;
   inspectorId?: string;
   createdAt: string;
