@@ -8,6 +8,13 @@ export function extractDasmBearerToken(request: NextRequest): string | null {
     return t || null;
   }
   const cookieName = process.env.DASM_JWT_COOKIE_NAME || "dasm_access_token";
-  const fromCookie = request.cookies.get(cookieName)?.value;
-  return fromCookie?.trim() || null;
+  const raw =
+    request.cookies.get(cookieName)?.value ??
+    request.cookies.get("inspection_token")?.value;
+  if (!raw?.trim()) return null;
+  try {
+    return decodeURIComponent(raw.trim());
+  } catch {
+    return raw.trim();
+  }
 }

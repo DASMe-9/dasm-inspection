@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, FormEvent, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { platformTypeAllowedForInspectionLogin } from "@/lib/auth/platform-inspection-role";
 
 const DASM_API = process.env.NEXT_PUBLIC_API_URL || "https://api.dasm.com.sa";
-const ALLOWED_TYPES = ["admin", "super_admin"];
 
 type LoginDeniedUser = { type: string };
 
@@ -41,8 +42,15 @@ function AccessDenied({ type }: { type: string }) {
   );
 }
 
-export default function LoginPage() {
+function sanitizeReturnTo(raw: string | null): string {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//") || raw.includes("://")) return "/";
+  return raw;
+}
+
+function LoginPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = sanitizeReturnTo(searchParams.get("returnTo"));
   const [email, setEmail]   = useState("");
   const [pw, setPw]         = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -67,15 +75,21 @@ export default function LoginPage() {
       const token = body.data?.access_token ?? body.access_token;
       const user  = body.data?.user ?? body.user;
       if (!token || !user) throw new Error("استجابة غير متوقعة من الخادم");
-      if (!ALLOWED_TYPES.includes(user.type)) {
-        setDenied({ type: user.type });
+      const userType = String(user.type ?? "");
+      if (!platformTypeAllowedForInspectionLogin(userType)) {
+        setDenied({ type: userType || "unknown" });
         return;
       }
-      // حفظ التوكن في cookie + localStorage ليتوافق مع middleware المنصة
-      document.cookie = `dasm_access_token=${token}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
-      document.cookie = `inspection_token=${token}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+      const maxAge = 60 * 60 * 8;
+      const secure =
+        typeof window !== "undefined" && window.location.protocol === "https:"
+          ? "; Secure"
+          : "";
+      // كوكي يقرأها middleware (Sanctum + تحقق عبر /api/user/profile على Core)
+      document.cookie = `dasm_access_token=${encodeURIComponent(token)}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
+      document.cookie = `inspection_token=${encodeURIComponent(token)}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
       localStorage.setItem("inspection_user", JSON.stringify(user));
-      router.replace("/");
+      router.replace(returnTo);
     } catch (err: unknown) {
       setError(messageFromUnknown(err));
     } finally {
@@ -205,5 +219,13 @@ export default function LoginPage() {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageInner />
+    </Suspense>
   );
 }

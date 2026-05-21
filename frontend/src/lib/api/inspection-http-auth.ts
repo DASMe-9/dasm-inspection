@@ -29,6 +29,8 @@ export function getBearerToken(request: NextRequest): string | null {
 export type DasmProfileUser = {
   id: string;
   name?: string;
+  /** نوع حساب DASM (مثل admin، venue_owner، user). */
+  type?: string | null;
   /** دور واجهة الفحص إنْ أعادته المنصّة (اختياري). */
   inspectionRole?: string | null;
 };
@@ -48,9 +50,15 @@ export async function verifyDasmUserToken(
       (typeof u.inspection_role === "string" && u.inspection_role) ||
       (typeof u.inspection_app_role === "string" && u.inspection_app_role) ||
       null;
+    const rawType =
+      (typeof u.type === "string" && u.type) ||
+      (typeof u.user_type === "string" && u.user_type) ||
+      null;
+
     return {
       id: String(u.id),
       name: u.name,
+      type: rawType?.trim() ? rawType.trim() : null,
       inspectionRole: rawRole?.trim() ? rawRole.trim() : null,
     };
   } catch {
