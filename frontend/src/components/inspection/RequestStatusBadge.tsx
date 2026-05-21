@@ -8,6 +8,8 @@ const LABELS: Record<InspectionRequestStatus, string> = {
   draft: "مسودة",
   submitted: "مُرسل",
   assigned: "مُسند",
+  dispatched: "مُوجَّه",
+  on_site: "في الموقع",
   in_progress: "قيد التنفيذ",
   pending_review: "بانتظار المراجعة",
   approved: "معتمد",
@@ -24,7 +26,10 @@ function statusColor(s: InspectionRequestStatus): string {
       return TOKENS.colors.semantic.error;
     case "pending_review":
     case "submitted":
+    case "dispatched":
       return TOKENS.colors.semantic.warning;
+    case "on_site":
+      return TOKENS.colors.semantic.info;
     default:
       return TOKENS.colors.semantic.info;
   }

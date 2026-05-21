@@ -55,6 +55,8 @@ inspection_requests.report_id → inspection_reports.id (nullable حتى إنش�
 | `draft` | مسودة طلب |
 | `submitted` | مُنشأ / مُرسل للمعالجة |
 | `assigned` | مُسند لورشة ومفتش |
+| `dispatched` | مُوجَّه للموقع (فحص ميداني) |
+| `on_site` | المفتش في موقع العميل |
 | `in_progress` | جاري الفحص |
 | `pending_review` | تقرير مُقدَّم للمراجعة |
 | `approved` | اعتماد نهائي للتقرير |

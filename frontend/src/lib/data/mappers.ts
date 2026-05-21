@@ -4,6 +4,7 @@ import type {
   InspectionReportItem,
   InspectionRequest,
   InspectionRequestStatus,
+  InspectionServiceMode,
   InspectionStatusHistory,
   Inspector,
   ReportItemStatus,
@@ -37,6 +38,11 @@ type DbRequest = {
   dasm_user_id: string | null;
   auction_reference: string | null;
   status: InspectionRequestStatus;
+  service_mode: InspectionServiceMode | null;
+  field_service_address: string | null;
+  quoted_fee_sar: number | string | null;
+  dispatched_at: string | null;
+  on_site_at: string | null;
   workshop_id: string | null;
   inspector_id: string | null;
   report_id: string | null;
@@ -108,6 +114,8 @@ export function mapInspector(row: DbInspector): Inspector {
 }
 
 export function mapRequest(row: DbRequest): InspectionRequest {
+  const quoted =
+    row.quoted_fee_sar != null ? Number(row.quoted_fee_sar) : null;
   return {
     id: row.id,
     title: row.title,
@@ -116,6 +124,11 @@ export function mapRequest(row: DbRequest): InspectionRequest {
     dasm_user_id: row.dasm_user_id ?? undefined,
     auction_reference: row.auction_reference ?? undefined,
     status: row.status,
+    serviceMode: row.service_mode === "field" ? "field" : "workshop",
+    fieldServiceAddress: row.field_service_address?.trim() || undefined,
+    quotedFeeSar: Number.isFinite(quoted) ? quoted : null,
+    dispatchedAt: row.dispatched_at ?? undefined,
+    onSiteAt: row.on_site_at ?? undefined,
     workshopId: row.workshop_id ?? undefined,
     inspectorId: row.inspector_id ?? undefined,
     createdAt: row.created_at,

@@ -3,7 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { assertInspectionMutationAllowed } from "@/lib/auth/access-layer.server";
 import { requireAdminClient } from "@/lib/supabase/admin";
-import type { InspectionRequestStatus, ReportItemStatus } from "@/types";
+import type {
+  InspectionRequestStatus,
+  InspectionServiceMode,
+  ReportItemStatus,
+} from "@/types";
+import { buildWorkshopPricingMap, resolveWorkshopServicePrice } from "@/lib/inspection-pricing";
+import {
+  canConfirmOnSite,
+  canDispatchInspector,
+  canStartInspection,
+  CANCELLABLE_REQUEST_STATUSES,
+  effectiveServiceMode,
+} from "@/lib/inspection-request-transitions";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
 import {
@@ -15,11 +27,58 @@ import { pushApprovedReportToCore } from "@/lib/core/push-approved-report-to-cor
 
 const ACTOR = "inspection_admin" as const;
 
-const CANCELLABLE: InspectionRequestStatus[] = [
-  "submitted",
-  "assigned",
-  "in_progress",
-];
+const CANCELLABLE = CANCELLABLE_REQUEST_STATUSES;
+
+type RequestRowForTransition = {
+  status: InspectionRequestStatus;
+  service_mode: InspectionServiceMode | null;
+  field_service_address: string | null;
+};
+
+async function loadRequestForTransition(
+  requestId: string
+): Promise<RequestRowForTransition | null> {
+  const sb = requireAdminClient();
+  const { data, error } = await sb
+    .from("inspection_requests")
+    .select("status, service_mode, field_service_address")
+    .eq("id", requestId)
+    .maybeSingle();
+  if (error || !data) return null;
+  return {
+    status: data.status as InspectionRequestStatus,
+    service_mode: data.service_mode as InspectionServiceMode | null,
+    field_service_address: data.field_service_address,
+  };
+}
+
+function transitionContext(row: RequestRowForTransition) {
+  return {
+    status: row.status,
+    serviceMode: effectiveServiceMode(row.service_mode),
+  };
+}
+
+async function resolveQuotedFeeForAssign(
+  workshopId: string,
+  serviceMode: InspectionServiceMode
+): Promise<number | null> {
+  const sb = requireAdminClient();
+  const { data } = await sb
+    .from("inspection_service_pricing")
+    .select("workshop_id, service_mode, price_sar, currency")
+    .eq("is_active", true);
+  const map = buildWorkshopPricingMap(
+    (data ?? []).map((r) => ({
+      workshop_id: r.workshop_id as string | null,
+      service_mode: r.service_mode as InspectionServiceMode,
+      price_sar: Number(r.price_sar),
+      currency: (r.currency as string) || "SAR",
+    }))
+  );
+  const resolved = resolveWorkshopServicePrice(workshopId, serviceMode, map);
+  return resolved.amountSar;
+}
 
 function mapAccessError(e: unknown): string {
   if (e instanceof Error) {
@@ -121,13 +180,23 @@ export async function createInspectionRequestAction(formData: FormData): Promise
 export async function assignInspectionRequestAction(
   requestId: string,
   workshopId: string,
-  inspectorId: string
+  inspectorId: string,
+  options?: {
+    serviceMode?: InspectionServiceMode;
+    fieldServiceAddress?: string;
+  }
 ): Promise<ActionResult> {
   try {
     await assertInspectionMutationAllowed();
     if (!workshopId || !inspectorId) {
       return { ok: false, message: "اختر الورشة والمفتش." };
     }
+    const serviceMode = effectiveServiceMode(options?.serviceMode);
+    const fieldAddress = options?.fieldServiceAddress?.trim() ?? "";
+    if (serviceMode === "field" && !fieldAddress) {
+      return { ok: false, message: "عنوان الفحص الميداني مطلوب." };
+    }
+
     const sb = requireAdminClient();
     const { data: req, error: fetchErr } = await sb
       .from("inspection_requests")
@@ -138,20 +207,108 @@ export async function assignInspectionRequestAction(
       return { ok: false, message: "لا يمكن الإسناد في هذه الحالة." };
     }
 
+    const quotedFee = await resolveQuotedFeeForAssign(workshopId, serviceMode);
+
     const { error } = await sb
       .from("inspection_requests")
       .update({
         workshop_id: workshopId,
         inspector_id: inspectorId,
         status: "assigned",
+        service_mode: serviceMode,
+        field_service_address: serviceMode === "field" ? fieldAddress : null,
+        quoted_fee_sar: quotedFee,
+        dispatched_at: null,
+        on_site_at: null,
       })
       .eq("id", requestId);
 
     if (error) return { ok: false, message: error.message };
-    await insertHistory(requestId, "assigned", "تم الإسناد");
+    const modeNote =
+      serviceMode === "field"
+        ? `تم الإسناد — فحص ميداني: ${fieldAddress}`
+        : "تم الإسناد — فحص في الورشة";
+    await insertHistory(requestId, "assigned", modeNote);
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
     revalidatePath("/my-inspections");
+    revalidatePath(`/track/${requestId}`);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapAccessError(e) };
+  }
+}
+
+export async function dispatchInspectionAction(
+  requestId: string
+): Promise<ActionResult> {
+  try {
+    await assertInspectionMutationAllowed();
+    const req = await loadRequestForTransition(requestId);
+    if (!req) return { ok: false, message: "الطلب غير موجود." };
+    const ctx = transitionContext(req);
+    if (!canDispatchInspector(ctx)) {
+      return {
+        ok: false,
+        message: "التوجيه الميداني متاح فقط لطلبات الفحص الميداني المُسنَّدة.",
+      };
+    }
+
+    const sb = requireAdminClient();
+    const { error } = await sb
+      .from("inspection_requests")
+      .update({
+        status: "dispatched",
+        dispatched_at: new Date().toISOString(),
+      })
+      .eq("id", requestId);
+
+    if (error) return { ok: false, message: error.message };
+    await insertHistory(
+      requestId,
+      "dispatched",
+      "تم توجيه المفتش إلى موقع العميل"
+    );
+    revalidatePath("/requests");
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/my-inspections");
+    revalidatePath(`/track/${requestId}`);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapAccessError(e) };
+  }
+}
+
+export async function confirmOnSiteAction(
+  requestId: string
+): Promise<ActionResult> {
+  try {
+    await assertInspectionMutationAllowed();
+    const req = await loadRequestForTransition(requestId);
+    if (!req) return { ok: false, message: "الطلب غير موجود." };
+    const ctx = transitionContext(req);
+    if (!canConfirmOnSite(ctx)) {
+      return {
+        ok: false,
+        message: "تأكيد الوصول متاح بعد حالة «مُوجَّه» فقط.",
+      };
+    }
+
+    const sb = requireAdminClient();
+    const { error } = await sb
+      .from("inspection_requests")
+      .update({
+        status: "on_site",
+        on_site_at: new Date().toISOString(),
+      })
+      .eq("id", requestId);
+
+    if (error) return { ok: false, message: error.message };
+    await insertHistory(requestId, "on_site", "المفتش في الموقع");
+    revalidatePath("/requests");
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/my-inspections");
+    revalidatePath(`/track/${requestId}`);
     return { ok: true };
   } catch (e) {
     return { ok: false, message: mapAccessError(e) };
@@ -161,16 +318,20 @@ export async function assignInspectionRequestAction(
 export async function startInspectionAction(requestId: string): Promise<ActionResult> {
   try {
     await assertInspectionMutationAllowed();
-    const sb = requireAdminClient();
-    const { data: req, error: fetchErr } = await sb
-      .from("inspection_requests")
-      .select("status")
-      .eq("id", requestId)
-      .single();
-    if (fetchErr || !req || req.status !== "assigned") {
-      return { ok: false, message: "ابدأ بعد الإسناد." };
+    const row = await loadRequestForTransition(requestId);
+    if (!row) return { ok: false, message: "الطلب غير موجود." };
+    const ctx = transitionContext(row);
+    if (!canStartInspection(ctx)) {
+      return {
+        ok: false,
+        message:
+          ctx.serviceMode === "field"
+            ? "ابدأ الفحص بعد تأكيد الوصول للموقع (في الموقع)."
+            : "ابدأ الفحص بعد الإسناد.",
+      };
     }
 
+    const sb = requireAdminClient();
     const { error } = await sb
       .from("inspection_requests")
       .update({ status: "in_progress" })

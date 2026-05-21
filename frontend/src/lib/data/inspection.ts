@@ -267,9 +267,14 @@ export function dashboardCountsFromLists(
 ) {
   return {
     openRequests: requests.filter((r) =>
-      ["submitted", "assigned", "in_progress", "pending_review"].includes(
-        r.status
-      )
+      [
+        "submitted",
+        "assigned",
+        "dispatched",
+        "on_site",
+        "in_progress",
+        "pending_review",
+      ].includes(r.status)
     ).length,
     pendingReview: requests.filter((r) => r.status === "pending_review").length,
     workshops: workshopsCount,
