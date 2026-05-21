@@ -68,6 +68,10 @@ export interface InspectionRequest {
   serviceMode: InspectionServiceMode;
   fieldServiceAddress?: string;
   quotedFeeSar?: number | null;
+  /** عرض إصلاح اختياري — منفصل عن رسوم خدمة الفحص */
+  repairQuoteSar?: number | null;
+  repairQuoteNotes?: string;
+  repairQuoteOfferedAt?: string;
   dispatchedAt?: string;
   onSiteAt?: string;
   workshopId?: string;
