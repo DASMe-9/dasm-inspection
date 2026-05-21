@@ -94,13 +94,13 @@ export async function buildServicePricingApiPayload(
 
   const workshopIds = filterWorkshopId
     ? [filterWorkshopId]
-    : [
-        ...new Set(
+    : Array.from(
+        new Set(
           rows
             .map((r) => r.workshop_id)
             .filter((id): id is string => id != null && id.length > 0)
-        ),
-      ];
+        )
+      );
 
   const attached = await attachPricingToWorkshopIds(workshopIds);
 
