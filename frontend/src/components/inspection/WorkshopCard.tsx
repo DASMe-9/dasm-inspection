@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Workshop } from "@/types";
 import { useTheme } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { BadgeCheck, Building2, ChevronLeft, MapPin } from "lucide-react";
 
 export function WorkshopCard({ workshop }: { workshop: Workshop }) {
@@ -44,6 +45,9 @@ export function WorkshopCard({ workshop }: { workshop: Workshop }) {
           {workshop.dasm_partner_ref && (
             <p className="truncate text-xs text-gray-500">{workshop.dasm_partner_ref}</p>
           )}
+          <div className="pt-2">
+            <WorkshopPricingBadges pricing={workshop.pricing} compact />
+          </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           {workshop.isVerified ? (

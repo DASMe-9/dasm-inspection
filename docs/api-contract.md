@@ -106,7 +106,34 @@
 
 **التنفيذ:** `frontend/src/app/api/v1/inspection-requests/route.ts`.
 
-### 3.2 جلب طلب (مالك المنصّة)
+### 3.2 أسعار الفحص (ورشة / ميداني)
+
+`GET /api/v1/service-pricing`
+
+**Query (اختياري):** `workshop_id` — أسعار فعّالة لورشة واحدة (مع fallback للمنصّة).
+
+**200:**
+
+```json
+{
+  "currency_default": "SAR",
+  "platform": { "workshop_sar": 350, "field_sar": 550 },
+  "workshops": [
+    {
+      "workshop_id": "uuid",
+      "workshop_sar": 320,
+      "field_sar": 520,
+      "currency": "SAR"
+    }
+  ]
+}
+```
+
+**مصدر البيانات:** جدول Supabase `inspection_service_pricing` (`workshop_id` فارغ = افتراضي المنصّة).
+
+**التنفيذ:** `frontend/src/app/api/v1/service-pricing/route.ts`.
+
+### 3.3 جلب طلب (مالك المنصّة)
 
 `GET /api/v1/inspection-requests/:id`
 
@@ -122,7 +149,7 @@
 |-------|-------|-------|
 | `frontend/src/app/api/gateway/route.ts` | **POST** | نفس المنطق + حدّ المعدّل؛ استجابة `{ success, data, message }` أو **429** |
 
-### 3.4 ربط التقرير المعتمد بسيارة Core (منفّذ — 2026-05-21)
+### 3.5 ربط التقرير المعتمد بسيارة Core (منفّذ — 2026-05-21)
 
 عند **اعتماد التقرير** في Inspection، الخادم يستدعي (إن وُجد `dasm_car_id`):
 
