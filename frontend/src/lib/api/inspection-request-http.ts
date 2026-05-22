@@ -150,6 +150,9 @@ export async function fetchInspectionRequestOwnedByDasmUser(
       repair_quote_sar: number | null;
       repair_quote_notes: string | null;
       repair_quote_offered_at: string | null;
+      inspection_fee_payment_status: string | null;
+      inspection_fee_payment_ref: string | null;
+      inspection_fee_paid_at: string | null;
       created_at: string;
       updated_at: string;
     }
@@ -160,7 +163,7 @@ export async function fetchInspectionRequestOwnedByDasmUser(
   const { data, error } = await sb
     .from("inspection_requests")
     .select(
-      "id, title, status, dasm_car_id, vehicle_label, dasm_user_id, auction_reference, workshop_id, inspector_id, report_id, quoted_fee_sar, repair_quote_sar, repair_quote_notes, repair_quote_offered_at, created_at, updated_at"
+      "id, title, status, dasm_car_id, vehicle_label, dasm_user_id, auction_reference, workshop_id, inspector_id, report_id, quoted_fee_sar, repair_quote_sar, repair_quote_notes, repair_quote_offered_at, inspection_fee_payment_status, inspection_fee_payment_ref, inspection_fee_paid_at, created_at, updated_at"
     )
     .eq("id", requestId)
     .maybeSingle();
@@ -187,6 +190,9 @@ export async function fetchInspectionRequestOwnedByDasmUser(
       data.repair_quote_sar != null ? Number(data.repair_quote_sar) : null,
     repair_quote_notes: data.repair_quote_notes,
     repair_quote_offered_at: data.repair_quote_offered_at,
+    inspection_fee_payment_status: data.inspection_fee_payment_status,
+    inspection_fee_payment_ref: data.inspection_fee_payment_ref,
+    inspection_fee_paid_at: data.inspection_fee_paid_at,
     created_at: data.created_at,
     updated_at: data.updated_at,
   };

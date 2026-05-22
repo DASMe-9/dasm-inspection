@@ -7,6 +7,8 @@ export { ChecklistForm } from "./ChecklistForm";
 export { InspectorAssignmentPanel } from "./InspectorAssignmentPanel";
 export { RequestWorkflowPanel } from "./RequestWorkflowPanel";
 export { RepairQuotePanel } from "./RepairQuotePanel";
+export { InspectionFeePayPanel } from "./InspectionFeePayPanel";
+export { WorkshopApplyForm } from "./WorkshopApplyForm";
 export { NewInspectionRequestForm } from "./NewInspectionRequestForm";
 export { RequestAttachmentsSection } from "./RequestAttachmentsSection";
 export { RequestListFilters } from "./RequestListFilters";

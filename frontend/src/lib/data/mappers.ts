@@ -44,6 +44,9 @@ type DbRequest = {
   repair_quote_sar: number | string | null;
   repair_quote_notes: string | null;
   repair_quote_offered_at: string | null;
+  inspection_fee_payment_status: string | null;
+  inspection_fee_payment_ref: string | null;
+  inspection_fee_paid_at: string | null;
   dispatched_at: string | null;
   on_site_at: string | null;
   workshop_id: string | null;
@@ -135,6 +138,10 @@ export function mapRequest(row: DbRequest): InspectionRequest {
     repairQuoteSar: Number.isFinite(repair) ? repair : null,
     repairQuoteNotes: row.repair_quote_notes?.trim() || undefined,
     repairQuoteOfferedAt: row.repair_quote_offered_at ?? undefined,
+    inspectionFeePaymentStatus: (row.inspection_fee_payment_status ??
+      "unpaid") as InspectionRequest["inspectionFeePaymentStatus"],
+    inspectionFeePaymentRef: row.inspection_fee_payment_ref?.trim() || undefined,
+    inspectionFeePaidAt: row.inspection_fee_paid_at ?? undefined,
     dispatchedAt: row.dispatched_at ?? undefined,
     onSiteAt: row.on_site_at ?? undefined,
     workshopId: row.workshop_id ?? undefined,

@@ -144,6 +144,24 @@
 
 **ملاحظة:** `quoted_fee_sar` = رسوم خدمة الفحص عند الإسناد؛ `repair_quote_sar` = عرض إصلاح اختياري منفصل يُسجّله الطاقم بعد بدء الفحص.
 
+### 3.2.1 دفع رسوم الفحص (اختياري — Paymob عبر Core)
+
+`POST {DASM_CORE_API_URL}/api/inspection/fee/checkout` (Bearer مستخدم المنصّة)
+
+**Body:** `{ "inspection_request_id": "uuid", "amount_sar": number }` — يجب أن يطابق `quoted_fee_sar` على الطلب.
+
+**200:** `{ "status": "success", "client_secret", "public_key", "payment_ref", "amount_sar" }`
+
+**Webhook (Core):** `POST /api/inspection/fee/webhook` — يحدّث `inspection_fee_payment_status` على Supabase ويسجّل الليدجر (`debit_wallet: false`).
+
+**واجهة التتبع:** `/track/{id}` — `InspectionFeePayPanel` عند تفعيل `NEXT_PUBLIC_INSPECTION_FEE_PAYMOB_ENABLED` (افتراضي مفعّل).
+
+### 3.2.2 انضمام ورشة شريكة
+
+`POST` Server Action: `submitWorkshopApplicationAction` → جدول `inspection_workshop_applications`.
+
+**صفحة:** `/workshops/apply`
+
 **404:** الطلب غير موجود أو لا يخصّ المستخدم.
 
 **التنفيذ:** `frontend/src/app/api/v1/inspection-requests/[id]/route.ts`.
