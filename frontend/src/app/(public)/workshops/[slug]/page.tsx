@@ -45,7 +45,7 @@ export default async function WorkshopPublicPage({
   const profile = toWorkshopPublicProfile(resolved.workshop, inspectors);
 
   return (
-    <>
+    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 md:px-6">
       <WorkshopPublicProfileView profile={profile} />
       <SectionCard title="متابعة الورشة">
         <WorkshopFollowPanel

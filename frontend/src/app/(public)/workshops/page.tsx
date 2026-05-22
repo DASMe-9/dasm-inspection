@@ -12,7 +12,7 @@ export default async function WorkshopsPage() {
   const { primary, accent } = TOKENS.colors.roles.workshop;
 
   return (
-    <div className="space-y-8" dir="rtl">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 md:px-6 md:py-10" dir="rtl">
       <section
         className="relative overflow-hidden rounded-3xl border border-violet-100/90 bg-gradient-to-bl from-white via-violet-50/50 to-white px-5 py-8 shadow-sm ring-1 ring-violet-100/60 md:px-10 md:py-10"
         aria-labelledby="workshops-hub-title"

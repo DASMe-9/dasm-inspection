@@ -17,9 +17,11 @@ function forwardSupabaseCookies(from: NextResponse, to: NextResponse): void {
  * لا تُضف هنا سوى ما هو موثَّق منتجياً كعام أو شبه عام.
  */
 function pathSkipsJwtEnforcement(pathname: string): boolean {
-  if (pathname === "/track" || pathname.startsWith("/track/")) return true;
+  if (pathname === "/" || pathname === "/track" || pathname.startsWith("/track/")) {
+    return true;
+  }
   if (pathname.startsWith("/auth/")) return true;
-  /** خطوة 26: دليل الورش وملفاتها العامة بدون JWT */
+  /** دليل الورش وملفاتها العامة بدون JWT */
   if (pathname === "/workshops" || pathname.startsWith("/workshops/")) {
     return true;
   }
@@ -121,6 +123,8 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
+    "/dashboard",
+    "/dashboard/:path*",
     "/requests/:path*",
     "/my-inspections",
     "/track/:path*",

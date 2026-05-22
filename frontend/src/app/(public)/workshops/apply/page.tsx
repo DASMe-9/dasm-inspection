@@ -7,7 +7,7 @@ export default function WorkshopApplyPage() {
   const { primary } = TOKENS.colors.roles.workshop;
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto" dir="rtl">
+    <div className="mx-auto max-w-2xl space-y-6 px-4 py-8 md:px-6" dir="rtl">
       <div>
         <Link
           href="/workshops"
