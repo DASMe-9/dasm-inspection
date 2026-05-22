@@ -20,6 +20,7 @@
 | `/workshop/reviews`, `/workshop/followers`, `/workshop/export` | ✅ خطوة 33 — عرض تقييمات الورشة، قائمة متابعين، تنزيل CSV (`GET /api/workshop/export`) |
 | `/workshop/field` | ✅ خطوة 34 — تقويم زيارات ميدانية + خريطة OSM (`field_scheduled_at`، إحداثيات اختيارية) |
 | `/requests` فلترة بالورشة | ✅ خطوة 35 — نطاق حسب الدور (ورشة/مفتش)، `service_mode`، شارات نشطة، عدّاد نتائج |
+| PWA لوحة الورشة | ✅ خطوة 36 — `manifest`، تثبيت، `sw-workshop.js`، `/offline` |
 | `/settings` | ✅ موجودة (نصي/إعدادات) |
 | `/my-inspections` | ✅ قائمة بحسب كوكي `inspection_dasm_user_id` (يُضبط من `GET /api/gateway`) |
 

@@ -20,6 +20,7 @@ function pathSkipsJwtEnforcement(pathname: string): boolean {
   if (pathname === "/" || pathname === "/track" || pathname.startsWith("/track/")) {
     return true;
   }
+  if (pathname === "/offline") return true;
   if (pathname.startsWith("/auth/")) return true;
   /** دليل الورش وملفاتها العامة بدون JWT */
   if (pathname === "/workshops" || pathname.startsWith("/workshops/")) {

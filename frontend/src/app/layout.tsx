@@ -16,6 +16,15 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "DASM — الفحص الفني",
   description: "نظام فحص السيارات والورش — تكامل مع منصة DASM",
+  applicationName: "داسم الفحص",
+  appleWebApp: {
+    capable: true,
+    title: "ورشتي",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport = {
