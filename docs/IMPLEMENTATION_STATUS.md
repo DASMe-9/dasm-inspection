@@ -15,7 +15,7 @@
 | `/requests/:id` | ✅ تفاصيل، سير عمل، قائمة فحص، خط زمني، **مرفقات برفع ولروابط تحميل موقّعة**؛ إلغاء الطلب من اللوحة |
 | `/reports/:id` | ✅ تقرير + بنود + تعديل بند (`ReportChecklistRow` → `updateReportItemAction`) |
 | `/workshops`, `/workshops/:slug` | ✅ شبكة ورش + ملف عام `/workshops/[slug]` بدون JWT (خطوة 26) + `GET /api/v1/workshops/:slug` |
-| `/workshop` | 🔄 لوحة تشغيل `workshop_owner` / `workshop_manager` (خطوة 31 — KPI + طلبات الورشة من JWT `workshop_id`) |
+| `/workshop` | ✅ لوحة تشغيل `workshop_owner` / `workshop_manager` (خطوة 31 — KPI + طلبات الورشة من JWT `workshop_id`) |
 | `/settings` | ✅ موجودة (نصي/إعدادات) |
 | `/my-inspections` | ✅ قائمة بحسب كوكي `inspection_dasm_user_id` (يُضبط من `GET /api/gateway`) |
 
