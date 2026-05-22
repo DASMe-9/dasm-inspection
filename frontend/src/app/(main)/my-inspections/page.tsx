@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { RequestCard, RequestListFilters } from "@/components/inspection";
 import { EmptyState, SectionCard } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
-import { parseInspectionRequestListQuery } from "@/lib/inspection-request-list-options";
+import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { InspectionNotificationsPanel } from "@/components/inspection/InspectionNotificationsPanel";
 import {
   listInspectionRequestsForDasmUser,
@@ -19,16 +19,16 @@ export default async function MyInspectionsPage({
 }) {
   const c = cookies();
   const uid = c.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ?? "";
-  const listOpts = parseInspectionRequestListQuery(searchParams);
+  const workshops = await listWorkshops();
+  const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
+  const scope = await buildRequestListScope(searchParams, workshopOptions);
+
   const [list, notifications] = uid
     ? await Promise.all([
-        listInspectionRequestsForDasmUser(uid, listOpts),
+        listInspectionRequestsForDasmUser(uid, scope.listOpts),
         listNotificationsForUser(uid),
       ])
     : [[], []];
-
-  const workshops = await listWorkshops();
-  const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
 
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
@@ -67,7 +67,14 @@ export default async function MyInspectionsPage({
               />
             }
           >
-            <RequestListFilters workshopOptions={workshopOptions} />
+            <RequestListFilters
+              workshopOptions={scope.workshopOptions}
+              lockedWorkshopId={scope.lockedWorkshopId}
+              lockedWorkshopName={scope.lockedWorkshopName}
+              showWorkshopFilter={scope.showWorkshopFilter}
+              showServiceModeFilter={scope.showServiceModeFilter}
+              resultCount={list.length}
+            />
           </Suspense>
 
           {list.length === 0 ? (

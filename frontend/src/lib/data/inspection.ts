@@ -162,6 +162,12 @@ export async function listInspectionRequests(
   if (options?.workshopId) {
     q = q.eq("workshop_id", options.workshopId);
   }
+  if (options?.serviceMode) {
+    q = q.eq("service_mode", options.serviceMode);
+  }
+  if (options?.inspectorId) {
+    q = q.eq("inspector_id", options.inspectorId);
+  }
   const { data, error } = await q.order(orderCol, { ascending: false });
   if (error || !data) return [];
   return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
@@ -185,6 +191,12 @@ export async function listInspectionRequestsForDasmUser(
     options?.sort === "created_desc" ? "created_at" : "updated_at";
   if (options?.workshopId) {
     q = q.eq("workshop_id", options.workshopId);
+  }
+  if (options?.serviceMode) {
+    q = q.eq("service_mode", options.serviceMode);
+  }
+  if (options?.inspectorId) {
+    q = q.eq("inspector_id", options.inspectorId);
   }
   const { data, error } = await q.order(orderCol, { ascending: false });
   if (error || !data) return [];

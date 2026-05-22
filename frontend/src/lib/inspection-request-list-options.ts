@@ -1,4 +1,4 @@
-import type { InspectionRequestStatus } from "@/types";
+import type { InspectionRequestStatus, InspectionServiceMode } from "@/types";
 
 /** قيم مسموحة في Query لفلترة الحالة */
 export const INSPECTION_REQUEST_STATUS_VALUES: readonly InspectionRequestStatus[] =
@@ -36,6 +36,18 @@ export type ListInspectionRequestsQueryOptions = {
   sort?: "updated_desc" | "created_desc";
   /** فلترة اختيارية بالورشة (معرف UUID). */
   workshopId?: string;
+  /** فلترة نوع الخدمة: ورشة أو ميداني. */
+  serviceMode?: InspectionServiceMode;
+  /** فلترة طلبات مُسنَدة لمفتش (من سياق JWT — لا يُقرأ من URL). */
+  inspectorId?: string;
+};
+
+export const INSPECTION_SERVICE_MODE_LABELS: Record<
+  InspectionServiceMode,
+  string
+> = {
+  workshop: "في الورشة",
+  field: "فحص ميداني",
 };
 
 const WORKSHOP_UUID_RE =
@@ -71,9 +83,14 @@ export function parseInspectionRequestListQuery(
   const workshopId =
     workshopRaw && WORKSHOP_UUID_RE.test(workshopRaw) ? workshopRaw : undefined;
 
+  const serviceRaw = singleParam(sp, "service_mode")?.trim();
+  const serviceMode: InspectionServiceMode | undefined =
+    serviceRaw === "field" || serviceRaw === "workshop" ? serviceRaw : undefined;
+
   return {
     sort,
     ...(status ? { status } : {}),
     ...(workshopId ? { workshopId } : {}),
+    ...(serviceMode ? { serviceMode } : {}),
   };
 }

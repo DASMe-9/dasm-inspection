@@ -5,8 +5,17 @@ import type { InspectionRequest } from "@/types";
 import { RequestStatusBadge } from "./RequestStatusBadge";
 import { useTheme } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { serviceModeLabelAr } from "@/lib/request-list-scope";
 
-export function RequestCard({ request }: { request: InspectionRequest }) {
+export function RequestCard({
+  request,
+  workshopName,
+  showServiceMode = false,
+}: {
+  request: InspectionRequest;
+  workshopName?: string;
+  showServiceMode?: boolean;
+}) {
   const { colors } = useTheme({ role: "workshop" });
 
   return (
@@ -28,6 +37,26 @@ export function RequestCard({ request }: { request: InspectionRequest }) {
           <p className="text-xs text-gray-500 mt-1 font-mono">
             dasm_car_id: {request.dasm_car_id}
           </p>
+          {(workshopName || showServiceMode) && (
+            <p className="mt-1 flex flex-wrap gap-2 text-xs text-gray-500">
+              {workshopName ? (
+                <span className="rounded-md bg-gray-100 px-1.5 py-0.5">
+                  {workshopName}
+                </span>
+              ) : null}
+              {showServiceMode ? (
+                <span
+                  className={
+                    request.serviceMode === "field"
+                      ? "rounded-md bg-orange-50 px-1.5 py-0.5 text-orange-800"
+                      : "rounded-md bg-sky-50 px-1.5 py-0.5 text-sky-800"
+                  }
+                >
+                  {serviceModeLabelAr(request.serviceMode)}
+                </span>
+              ) : null}
+            </p>
+          )}
         </div>
         <RequestStatusBadge status={request.status} />
       </div>
