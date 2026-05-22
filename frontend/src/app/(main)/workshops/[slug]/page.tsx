@@ -1,7 +1,14 @@
 import { permanentRedirect } from "next/navigation";
 import { notFound } from "next/navigation";
 import { WorkshopPublicProfileView } from "@/components/inspection/WorkshopPublicProfileView";
+import { WorkshopFollowPanel } from "@/components/inspection/WorkshopFollowPanel";
 import { WorkshopReviewsSection } from "@/components/inspection/WorkshopReviewsSection";
+import { SectionCard } from "@/components/shared";
+import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
+import {
+  getWorkshopFollowerCount,
+  isFollowingWorkshop,
+} from "@/lib/data/workshop-follows-data";
 import {
   getInspectorsForWorkshop,
   resolveWorkshopRouteParam,
@@ -27,12 +34,28 @@ export default async function WorkshopPublicPage({
     permanentRedirect(`/workshops/${resolved.canonicalSlug}`);
   }
 
-  const inspectors = await getInspectorsForWorkshop(resolved.workshop.id);
+  const dasmUserId = await resolveDasmUserId();
+  const [inspectors, followerCount, following] = await Promise.all([
+    getInspectorsForWorkshop(resolved.workshop.id),
+    getWorkshopFollowerCount(resolved.workshop.id),
+    dasmUserId
+      ? isFollowingWorkshop(dasmUserId, resolved.workshop.id)
+      : Promise.resolve(false),
+  ]);
   const profile = toWorkshopPublicProfile(resolved.workshop, inspectors);
 
   return (
     <>
       <WorkshopPublicProfileView profile={profile} />
+      <SectionCard title="متابعة الورشة">
+        <WorkshopFollowPanel
+          workshopId={resolved.workshop.id}
+          workshopSlug={resolved.canonicalSlug}
+          followerCount={followerCount}
+          isFollowing={following}
+          dasmUserId={dasmUserId}
+        />
+      </SectionCard>
       <WorkshopReviewsSection
         workshopId={resolved.workshop.id}
         workshopSlug={resolved.canonicalSlug}

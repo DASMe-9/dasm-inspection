@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { WorkshopCard } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
-import { listWorkshops } from "@/lib/data/inspection";
+import { listWorkshopsForDirectory } from "@/lib/data/inspection";
 import { TOKENS } from "@/lib/theme";
 
 export default async function WorkshopsPage() {
-  const list = await listWorkshops();
+  const list = await listWorkshopsForDirectory();
   const verified = list.filter((w) => w.isVerified).length;
   const cities = new Set(list.map((w) => w.city?.trim()).filter(Boolean)).size;
 

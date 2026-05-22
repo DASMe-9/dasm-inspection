@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { assertInspectionRoles } from "@/lib/auth/access-layer.server";
 import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
+import { notifyFollowersNewApprovedReview } from "@/app/actions/workshop-follows";
+import { getWorkshop } from "@/lib/data/inspection";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import {
   assertRequestEligibleForReview,
@@ -120,6 +122,13 @@ export async function moderateWorkshopReviewAction(
 
   if (error) {
     return { ok: false, message: error.message ?? "تعذّر تحديث التقييم." };
+  }
+
+  if (decision === "approved") {
+    const workshop = await getWorkshop(existing.workshop_id as string);
+    if (workshop) {
+      await notifyFollowersNewApprovedReview(workshop.id, workshop.name);
+    }
   }
 
   revalidatePath("/settings");

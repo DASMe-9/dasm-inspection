@@ -33,6 +33,38 @@ function mapReview(row: DbReview): WorkshopReview {
   };
 }
 
+export async function getWorkshopRatingAveragesMap(): Promise<
+  Map<string, { average: number; count: number }>
+> {
+  const sb = getAdminClient();
+  const map = new Map<string, { average: number; count: number }>();
+  if (!sb) return map;
+
+  const { data, error } = await sb
+    .from("inspection_workshop_reviews")
+    .select("workshop_id, rating")
+    .eq("status", "approved");
+
+  if (error || !data) return map;
+
+  const buckets = new Map<string, number[]>();
+  for (const row of data) {
+    const wid = row.workshop_id as string;
+    const list = buckets.get(wid) ?? [];
+    list.push(row.rating as number);
+    buckets.set(wid, list);
+  }
+
+  for (const [wid, ratings] of buckets) {
+    const sum = ratings.reduce((a, b) => a + b, 0);
+    map.set(wid, {
+      average: Math.round((sum / ratings.length) * 10) / 10,
+      count: ratings.length,
+    });
+  }
+  return map;
+}
+
 export async function listApprovedWorkshopReviews(
   workshopId: string
 ): Promise<WorkshopReview[]> {
