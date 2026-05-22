@@ -1,0 +1,734 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dasm-e.com/schemas/vehicle_inspection.v1.json",
+  "title": "DASM-e Vehicle Inspection Report",
+  "description": "تقرير فحص السيارة المستعملة في منصة DASM-e: ثلاث طبقات (الفحص الدوري MVPI + فحص ورشي عميق + سجل تاريخي).",
+  "type": "object",
+  "required": ["report_id", "vehicle", "inspection_meta", "mvpi_layer", "workshop_layer", "history_layer", "final_grade"],
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "description": "معرف فريد للتقرير (UUID v4)",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "report_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+
+    "vehicle": {
+      "type": "object",
+      "required": ["vin", "plate_number", "make", "model", "year"],
+      "properties": {
+        "vin": {
+          "type": "string",
+          "description": "رقم الهيكل (الشاسيه)",
+          "pattern": "^[A-HJ-NPR-Z0-9]{17}$"
+        },
+        "plate_number": { "type": "string", "description": "رقم اللوحة" },
+        "plate_letters_ar": { "type": "string", "description": "أحرف اللوحة بالعربية" },
+        "make": { "type": "string", "description": "الشركة المصنعة" },
+        "model": { "type": "string", "description": "الطراز" },
+        "trim": { "type": "string", "description": "الفئة" },
+        "year": { "type": "integer", "minimum": 1980, "maximum": 2030 },
+        "color": { "type": "string" },
+        "body_type": {
+          "type": "string",
+          "enum": ["sedan", "suv", "hatchback", "coupe", "pickup", "van", "wagon", "convertible", "other"]
+        },
+        "fuel_type": { "type": "string", "enum": ["gasoline", "diesel", "hybrid", "ev", "other"] },
+        "transmission": { "type": "string", "enum": ["automatic", "manual", "cvt", "dct", "other"] },
+        "drivetrain": { "type": "string", "enum": ["fwd", "rwd", "awd", "4wd"] },
+        "engine_displacement_cc": { "type": "integer" },
+        "odometer_km": { "type": "integer", "minimum": 0, "maximum": 2000000 },
+        "registration_type": { "type": "string", "enum": ["private", "public_transport", "rental", "government", "other"] },
+        "registration_expiry": { "type": "string", "format": "date" },
+        "import_card_number": { "type": ["string", "null"], "description": "رقم البطاقة الجمركية (إن وجد)" }
+      }
+    },
+
+    "inspection_meta": {
+      "type": "object",
+      "required": ["inspector", "workshop", "inspection_date"],
+      "properties": {
+        "inspector": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "license_no": { "type": "string" },
+            "signature_url": { "type": "string", "format": "uri" }
+          },
+          "required": ["id", "name"]
+        },
+        "workshop": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "cr_number": { "type": "string", "description": "رقم السجل التجاري" },
+            "address": { "type": "string" },
+            "city": { "type": "string" },
+            "phone": { "type": "string" }
+          },
+          "required": ["id", "name"]
+        },
+        "inspection_date": { "type": "string", "format": "date-time" },
+        "inspection_duration_minutes": { "type": "integer", "minimum": 0 },
+        "auction_lot_id": { "type": ["string", "null"], "description": "ربط بمزاد DASM-e (إن وجد)" }
+      }
+    },
+
+    "mvpi_layer": {
+      "type": "object",
+      "description": "طبقة الفحص الفني الدوري الرسمي (MVPI). تُسجَّل ولا تُعاد.",
+      "required": ["certificate_number", "inspection_date", "result", "sections"],
+      "properties": {
+        "certificate_number": { "type": "string", "description": "رقم شهادة الفحص" },
+        "track_number": { "type": "string", "description": "رقم مسار الفحص" },
+        "station_name": { "type": "string" },
+        "station_city": { "type": "string" },
+        "inspection_date": { "type": "string", "format": "date" },
+        "expiry_date": { "type": "string", "format": "date" },
+        "result": { "type": "string", "enum": ["pass", "fail", "conditional"] },
+        "absher_synced": { "type": "boolean", "description": "هل تم الترحيل على أبشر" },
+        "certificate_image_url": { "type": "string", "format": "uri" },
+        "sections": {
+          "type": "object",
+          "required": ["visual_inspection", "brakes_alignment", "emissions", "underbody", "headlights"],
+          "properties": {
+            "visual_inspection": {
+              "type": "object",
+              "description": "الفحص النظري (40% من المركبة)",
+              "properties": {
+                "result": { "$ref": "#/$defs/passFailNA" },
+                "notes": { "type": "string" }
+              }
+            },
+            "brakes_alignment": {
+              "type": "object",
+              "description": "فحص المكابح وانحراف العجلات (آلي)",
+              "properties": {
+                "result": { "$ref": "#/$defs/passFailNA" },
+                "wheel_deviation_value": { "type": "number" },
+                "brake_efficiency_front_pct": { "type": "number" },
+                "brake_efficiency_rear_pct": { "type": "number" },
+                "parking_brake_pct": { "type": "number" }
+              }
+            },
+            "emissions": {
+              "type": "object",
+              "description": "فحص انبعاث الغازات",
+              "properties": {
+                "result": { "$ref": "#/$defs/passFailNA" },
+                "co_pct": { "type": "number" },
+                "hc_ppm": { "type": "number" },
+                "diesel_opacity_pct": { "type": "number" }
+              }
+            },
+            "underbody": {
+              "type": "object",
+              "description": "الفحص السفلي",
+              "properties": {
+                "result": { "$ref": "#/$defs/passFailNA" },
+                "notes": { "type": "string" }
+              }
+            },
+            "headlights": {
+              "type": "object",
+              "description": "فحص الإنارة الأمامية (آلي)",
+              "properties": {
+                "result": { "$ref": "#/$defs/passFailNA" },
+                "intensity_left": { "type": "number" },
+                "intensity_right": { "type": "number" },
+                "deviation_left": { "type": "number" },
+                "deviation_right": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "workshop_layer": {
+      "type": "object",
+      "description": "طبقة فحص الورش العميق. ما لا يفحصه MVPI أو يفحصه نظرياً.",
+      "required": ["engine", "transmission", "electrical", "body_paint", "ac_cooling", "suspension_tires", "interior", "road_test", "summary"],
+      "properties": {
+        "engine": {
+          "type": "object",
+          "description": "فحص المحرك الداخلي",
+          "properties": {
+            "compression_test": {
+              "type": "object",
+              "properties": {
+                "cylinder_readings_psi": {
+                  "type": "array",
+                  "items": { "type": "number" },
+                  "description": "ضغط كل أسطوانة (PSI)"
+                },
+                "variance_pct": { "type": "number", "description": "نسبة التفاوت بين أعلى وأدنى أسطوانة" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "leak_down_test_pct": { "type": "number", "description": "نسبة تسرب الأسطوانات" },
+            "obd2_scan": {
+              "type": "object",
+              "properties": {
+                "stored_codes": { "type": "array", "items": { "type": "string" } },
+                "pending_codes": { "type": "array", "items": { "type": "string" } },
+                "permanent_codes": { "type": "array", "items": { "type": "string" } },
+                "freeze_frame_available": { "type": "boolean" },
+                "readiness_monitors_complete": { "type": "boolean" }
+              }
+            },
+            "oil_analysis": {
+              "type": "object",
+              "properties": {
+                "color": { "type": "string", "enum": ["amber", "brown", "black", "milky", "metallic"] },
+                "viscosity": { "type": "string", "enum": ["normal", "thin", "thick"] },
+                "metal_particles": { "type": "boolean" },
+                "coolant_contamination": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "head_gasket_test": {
+              "type": "object",
+              "properties": {
+                "chemical_block_test": { "type": "string", "enum": ["negative", "positive", "not_tested"] },
+                "coolant_hydrocarbons": { "type": "boolean" },
+                "white_smoke_observed": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "timing_chain_belt": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "enum": ["chain", "belt"] },
+                "noise_observed": { "type": "boolean" },
+                "last_replacement_km": { "type": ["integer", "null"] },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "engine_noise_assessment": {
+              "type": "object",
+              "properties": {
+                "knocking": { "type": "boolean" },
+                "ticking": { "type": "boolean" },
+                "tapping": { "type": "boolean" },
+                "audio_recording_url": { "type": "string", "format": "uri" }
+              }
+            },
+            "leaks": {
+              "type": "object",
+              "properties": {
+                "valve_cover": { "$ref": "#/$defs/leakSeverity" },
+                "oil_pan": { "$ref": "#/$defs/leakSeverity" },
+                "front_main_seal": { "$ref": "#/$defs/leakSeverity" },
+                "rear_main_seal": { "$ref": "#/$defs/leakSeverity" },
+                "head_seal": { "$ref": "#/$defs/leakSeverity" }
+              }
+            },
+            "spark_plugs_coils": {
+              "type": "object",
+              "properties": {
+                "plugs_condition": { "$ref": "#/$defs/conditionGrade" },
+                "coils_condition": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "transmission": {
+          "type": "object",
+          "description": "ناقل الحركة",
+          "properties": {
+            "fluid_check": {
+              "type": "object",
+              "properties": {
+                "color": { "type": "string", "enum": ["red", "brown", "dark", "burnt"] },
+                "smell": { "type": "string", "enum": ["normal", "burnt"] },
+                "particles": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "shifting_quality": {
+              "type": "object",
+              "properties": {
+                "smooth_upshifts": { "type": "boolean" },
+                "smooth_downshifts": { "type": "boolean" },
+                "kickdown_response": { "type": "boolean" },
+                "slipping": { "type": "boolean" },
+                "harsh_shifts": { "type": "boolean" }
+              }
+            },
+            "torque_converter_status": { "$ref": "#/$defs/conditionGrade" },
+            "clutch_status": { "$ref": "#/$defs/conditionGrade", "description": "للمانيوال" },
+            "tcm_codes": { "type": "array", "items": { "type": "string" } },
+            "differential": {
+              "type": "object",
+              "properties": {
+                "fluid_status": { "$ref": "#/$defs/conditionGrade" },
+                "noise": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "cv_joints": { "$ref": "#/$defs/conditionGrade" },
+            "driveshaft": { "$ref": "#/$defs/conditionGrade" },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "electrical": {
+          "type": "object",
+          "description": "الكهرباء والإلكترونيات",
+          "properties": {
+            "battery": {
+              "type": "object",
+              "properties": {
+                "voltage_v": { "type": "number" },
+                "cca_measured": { "type": "integer" },
+                "cca_rated": { "type": "integer" },
+                "terminals_condition": { "$ref": "#/$defs/conditionGrade" },
+                "age_months": { "type": "integer" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "alternator": {
+              "type": "object",
+              "properties": {
+                "idle_voltage_v": { "type": "number" },
+                "loaded_voltage_v": { "type": "number" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "starter": {
+              "type": "object",
+              "properties": {
+                "crank_time_seconds": { "type": "number" },
+                "current_draw_amps": { "type": "number" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "ecus_scan": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "module": { "type": "string", "enum": ["ECM", "TCM", "ABS", "SRS", "BCM", "TPMS", "Climate", "Infotainment", "Other"] },
+                  "codes": { "type": "array", "items": { "type": "string" } },
+                  "communication_ok": { "type": "boolean" }
+                }
+              }
+            },
+            "airbag_system": {
+              "type": "object",
+              "properties": {
+                "warning_light_off": { "type": "boolean" },
+                "tampering_suspected": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "body_paint": {
+          "type": "object",
+          "description": "الهيكل والصبغ (الأهم لمشتري المستعمل)",
+          "properties": {
+            "paint_thickness_microns": {
+              "type": "object",
+              "description": "قياس سماكة الطلاء لكل بانل (ميكرون)",
+              "properties": {
+                "hood": { "type": "number" },
+                "roof": { "type": "number" },
+                "trunk": { "type": "number" },
+                "front_left_fender": { "type": "number" },
+                "front_right_fender": { "type": "number" },
+                "rear_left_fender": { "type": "number" },
+                "rear_right_fender": { "type": "number" },
+                "front_left_door": { "type": "number" },
+                "front_right_door": { "type": "number" },
+                "rear_left_door": { "type": "number" },
+                "rear_right_door": { "type": "number" }
+              }
+            },
+            "repainted_panels": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "البانلات المعاد دهنها"
+            },
+            "filler_detected_panels": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "البانلات التي تحوي معجوناً"
+            },
+            "chassis_welds_inspection": {
+              "type": "object",
+              "properties": {
+                "factory_welds_intact": { "type": "boolean" },
+                "evidence_of_re_welding": { "type": "boolean" },
+                "frame_alignment_ok": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "panel_gaps_alignment": { "$ref": "#/$defs/conditionGrade" },
+            "factory_bolts_check": {
+              "type": "object",
+              "properties": {
+                "hood_bolts_oem": { "type": "boolean" },
+                "fender_bolts_oem": { "type": "boolean" },
+                "door_bolts_oem": { "type": "boolean" }
+              }
+            },
+            "flood_damage_indicators": {
+              "type": "object",
+              "properties": {
+                "musty_smell": { "type": "boolean" },
+                "rust_in_unusual_areas": { "type": "boolean" },
+                "silt_in_corners": { "type": "boolean" },
+                "water_lines_in_upholstery": { "type": "boolean" },
+                "corroded_connectors": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "vin_matching_on_panels": {
+              "type": "object",
+              "properties": {
+                "chassis_stamp_match": { "type": "boolean" },
+                "panel_stickers_match": { "type": "boolean" },
+                "discrepancies": { "type": "array", "items": { "type": "string" } }
+              }
+            },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "ac_cooling": {
+          "type": "object",
+          "description": "التكييف والتبريد",
+          "properties": {
+            "refrigerant_pressure_high_psi": { "type": "number" },
+            "refrigerant_pressure_low_psi": { "type": "number" },
+            "vent_temperature_celsius": { "type": "number" },
+            "compressor_status": { "$ref": "#/$defs/conditionGrade" },
+            "cooling_fans_status": { "$ref": "#/$defs/conditionGrade" },
+            "radiator_pressure_test": { "type": "string", "enum": ["pass", "fail", "not_tested"] },
+            "coolant_condition": { "$ref": "#/$defs/conditionGrade" },
+            "thermostat_status": { "$ref": "#/$defs/conditionGrade" },
+            "hoses_clamps_status": { "$ref": "#/$defs/conditionGrade" },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "suspension_tires": {
+          "type": "object",
+          "description": "التعليق والإطارات (تفصيلي)",
+          "properties": {
+            "tires": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "object",
+                "required": ["position", "tread_depth_mm", "dot_code"],
+                "properties": {
+                  "position": { "type": "string", "enum": ["FL", "FR", "RL", "RR"] },
+                  "brand_model": { "type": "string" },
+                  "size": { "type": "string" },
+                  "tread_depth_mm": { "type": "number" },
+                  "dot_code": { "type": "string", "description": "تاريخ الإطار" },
+                  "uneven_wear": { "type": "boolean" },
+                  "sidewall_damage": { "type": "boolean" },
+                  "status": { "$ref": "#/$defs/conditionGrade" }
+                }
+              }
+            },
+            "rims_condition": {
+              "type": "object",
+              "properties": {
+                "cracks": { "type": "boolean" },
+                "bends": { "type": "boolean" },
+                "repainted": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "shock_absorbers": {
+              "type": "object",
+              "properties": {
+                "bounce_test_pass": { "type": "boolean" },
+                "leaks_detected": { "type": "boolean" },
+                "status": { "$ref": "#/$defs/conditionGrade" }
+              }
+            },
+            "bushings": { "$ref": "#/$defs/conditionGrade" },
+            "tie_rods_ball_joints": { "$ref": "#/$defs/conditionGrade" },
+            "sway_bar_links": { "$ref": "#/$defs/conditionGrade" },
+            "wheel_bearings": { "$ref": "#/$defs/conditionGrade" },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "interior": {
+          "type": "object",
+          "description": "المقصورة والميزات",
+          "properties": {
+            "upholstery_condition": { "$ref": "#/$defs/conditionGrade" },
+            "smells": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["none", "smoke", "mold", "fuel", "burnt", "other"] }
+            },
+            "power_features": {
+              "type": "object",
+              "properties": {
+                "all_windows_working": { "type": "boolean" },
+                "all_locks_working": { "type": "boolean" },
+                "all_mirrors_working": { "type": "boolean" },
+                "all_seat_motors_working": { "type": "boolean" },
+                "remote_key_working": { "type": "boolean" },
+                "sunroof_working": { "type": "string", "enum": ["working", "not_working", "not_equipped"] }
+              }
+            },
+            "infotainment": {
+              "type": "object",
+              "properties": {
+                "screen_working": { "type": "boolean" },
+                "speakers_working": { "type": "boolean" },
+                "bluetooth_working": { "type": "boolean" },
+                "cameras_working": { "type": "boolean" },
+                "sensors_working": { "type": "boolean" }
+              }
+            },
+            "dashboard_warnings": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "أي لمبات تحذير ظاهرة على لوحة العدادات"
+            },
+            "seatbelts": {
+              "type": "object",
+              "properties": {
+                "all_retract_properly": { "type": "boolean" },
+                "all_lock_properly": { "type": "boolean" }
+              }
+            },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "road_test": {
+          "type": "object",
+          "description": "اختبار قيادة ميدانية (لا يفعله MVPI)",
+          "properties": {
+            "distance_km": { "type": "number" },
+            "max_speed_reached_kmh": { "type": "number" },
+            "acceleration_response": { "$ref": "#/$defs/conditionGrade" },
+            "braking_response": { "$ref": "#/$defs/conditionGrade" },
+            "brake_disc_vibration": { "type": "boolean" },
+            "steering_pull_direction": { "type": "string", "enum": ["none", "left", "right"] },
+            "abnormal_noises_at_speed": {
+              "type": "object",
+              "properties": {
+                "at_40_kmh": { "type": "boolean" },
+                "at_80_kmh": { "type": "boolean" },
+                "at_120_kmh": { "type": "boolean" }
+              }
+            },
+            "transmission_uphill": { "$ref": "#/$defs/conditionGrade" },
+            "transmission_downhill": { "$ref": "#/$defs/conditionGrade" },
+            "cornering_stability": { "$ref": "#/$defs/conditionGrade" },
+            "cruise_control_working": { "type": "string", "enum": ["working", "not_working", "not_equipped"] },
+            "overall_status": { "$ref": "#/$defs/conditionGrade" },
+            "media": { "$ref": "#/$defs/mediaArray" },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "summary": {
+          "type": "object",
+          "description": "ملخص الورشة والتكاليف التقديرية",
+          "properties": {
+            "critical_issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category": { "type": "string" },
+                  "issue": { "type": "string" },
+                  "estimated_repair_cost_sar": { "type": "number" },
+                  "urgency": { "type": "string", "enum": ["immediate", "soon", "monitor"] }
+                }
+              }
+            },
+            "minor_issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category": { "type": "string" },
+                  "issue": { "type": "string" },
+                  "estimated_repair_cost_sar": { "type": "number" }
+                }
+              }
+            },
+            "total_estimated_repair_cost_sar": { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "history_layer": {
+      "type": "object",
+      "description": "السجل التاريخي (Absher + قواعد بيانات داخلية)",
+      "properties": {
+        "absher_data": {
+          "type": "object",
+          "properties": {
+            "registered_accidents": { "type": "integer", "minimum": 0 },
+            "active_violations": { "type": "integer", "minimum": 0 },
+            "ownership_transfers_count": { "type": "integer", "minimum": 0 },
+            "last_renewal_date": { "type": "string", "format": "date" },
+            "absher_sync_timestamp": { "type": "string", "format": "date-time" }
+          }
+        },
+        "odometer_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "recorded_at": { "type": "string", "format": "date" },
+              "reading_km": { "type": "integer" },
+              "source": { "type": "string", "enum": ["mvpi", "dealer_service", "workshop", "owner_declared"] }
+            }
+          }
+        },
+        "odometer_tampering_suspected": { "type": "boolean" },
+        "service_records_available": { "type": "boolean" },
+        "service_records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "string", "format": "date" },
+              "odometer_km": { "type": "integer" },
+              "service_provider": { "type": "string" },
+              "service_type": { "type": "string" },
+              "document_url": { "type": "string", "format": "uri" }
+            }
+          }
+        },
+        "previous_owners_count": { "type": "integer", "minimum": 1 },
+        "import_history": {
+          "type": "object",
+          "properties": {
+            "is_imported": { "type": "boolean" },
+            "country_of_origin": { "type": "string" },
+            "import_date": { "type": "string", "format": "date" }
+          }
+        }
+      }
+    },
+
+    "final_grade": {
+      "type": "object",
+      "required": ["letter_grade", "score", "recommendation"],
+      "properties": {
+        "letter_grade": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "F"],
+          "description": "A: ممتاز / B: جيد / C: مقبول، يحتاج صيانة بسيطة / D: ضعيف، إصلاحات كبيرة / F: مرفوض"
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "النقاط المئوية"
+        },
+        "category_scores": {
+          "type": "object",
+          "properties": {
+            "engine_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "transmission_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "electrical_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "body_paint_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "ac_cooling_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "suspension_tires_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "interior_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "road_test_score": { "type": "integer", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": ["approved_for_premium_auction", "approved_for_standard_auction", "approved_for_fixed_market", "requires_repair_before_listing", "rejected"]
+        },
+        "auction_track_suggestion": {
+          "type": "string",
+          "enum": ["haraj_live", "instant", "delayed", "fixed"],
+          "description": "اقتراح مسار المزاد في DASM-e بناءً على الحالة"
+        },
+        "inspector_remarks": { "type": "string" },
+        "buyer_disclosure": {
+          "type": "string",
+          "description": "نص الإفصاح للمشتري في صفحة المزاد"
+        }
+      }
+    },
+
+    "digital_signatures": {
+      "type": "object",
+      "properties": {
+        "inspector_signature_hash": { "type": "string" },
+        "workshop_seal_url": { "type": "string", "format": "uri" },
+        "dasm_e_verification_hash": { "type": "string", "description": "هاش يضمن عدم تعديل التقرير" },
+        "signed_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+
+  "$defs": {
+    "passFailNA": {
+      "type": "string",
+      "enum": ["pass", "fail", "not_applicable"]
+    },
+    "conditionGrade": {
+      "type": "string",
+      "enum": ["excellent", "good", "fair", "poor", "critical", "not_tested"],
+      "description": "ممتاز / جيد / مقبول / ضعيف / حرج / لم يُفحص"
+    },
+    "leakSeverity": {
+      "type": "string",
+      "enum": ["none", "seepage", "drip", "active_leak"],
+      "description": "لا يوجد / رطوبة / قطرات / تسرب نشط"
+    },
+    "mediaArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["image", "video", "audio", "document"] },
+          "url": { "type": "string", "format": "uri" },
+          "caption": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["type", "url"]
+      }
+    }
+  }
+}
