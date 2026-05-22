@@ -1,6 +1,7 @@
 export { RequestStatusBadge } from "./RequestStatusBadge";
 export { RequestCard } from "./RequestCard";
 export { WorkshopCard } from "./WorkshopCard";
+export { WorkshopPublicProfileView } from "./WorkshopPublicProfileView";
 export { StatusTimeline } from "./StatusTimeline";
 export { ReportChecklistRow } from "./ReportChecklistRow";
 export { ChecklistForm } from "./ChecklistForm";

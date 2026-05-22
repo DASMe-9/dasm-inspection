@@ -14,7 +14,7 @@
 | `/requests` | ✅ قائمة + نموذج طلب جديد |
 | `/requests/:id` | ✅ تفاصيل، سير عمل، قائمة فحص، خط زمني، **مرفقات برفع ولروابط تحميل موقّعة**؛ إلغاء الطلب من اللوحة |
 | `/reports/:id` | ✅ تقرير + بنود + تعديل بند (`ReportChecklistRow` → `updateReportItemAction`) |
-| `/workshops`, `/workshops/:id` | ✅ صفحة شبكة ورش (إحصاءات، بطاقات حديثة، روابط اشتراك/طلب) + تفصيل ورشة (بطل، جهات اتصال، مفتشون، CTAs) |
+| `/workshops`, `/workshops/:slug` | ✅ شبكة ورش + ملف عام `/workshops/[slug]` بدون JWT (خطوة 26) + `GET /api/v1/workshops/:slug` |
 | `/settings` | ✅ موجودة (نصي/إعدادات) |
 | `/my-inspections` | ✅ قائمة بحسب كوكي `inspection_dasm_user_id` (يُضبط من `GET /api/gateway`) |
 

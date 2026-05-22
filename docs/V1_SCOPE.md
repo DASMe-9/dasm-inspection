@@ -33,7 +33,7 @@
 | `/requests/:id` | تفاصيل، إسناد، خط زمني، مرفقات، اعتماد/رفض |
 | `/reports/:id` | تقرير + بنود |
 | `/workshops` | قائمة الورش |
-| `/workshops/:id` | ملف ورشة + مفتشون |
+| `/workshops/:slug` | ملف ورشة عام (بدون login) + مفتشون (أسماء فقط) |
 | `/settings` | أدوار وتكامل (نصي) |
 
 **مسارات إضافية في الكود اليوم:** `/track/:id` (تتبع مبسّط)، `/subscription` (خدمة اشتراك)، `/auth/login` و`/auth/callback`، و**`POST|GET /api/gateway`** (بوابة DASM). تفاصيل التطابق مع خطة المراحل: **`IMPLEMENTATION_STATUS.md`**.

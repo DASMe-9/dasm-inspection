@@ -1,7 +1,7 @@
 -- بذور تجريبية: ورش + مفتشون (معرّفات ثابتة للتوثيق والاختبار المحلي)
-INSERT INTO inspection_workshops (id, name, city, phone, email, is_verified, dasm_partner_ref) VALUES
-('11111111-1111-4111-8111-111111111101', 'ورشة الخليج المعتمدة', 'الدمام', '+966500000001', 'ops@gulf-workshop.sa', true, 'DASM-P-8821'),
-('11111111-1111-4111-8111-111111111102', 'مركز الفحص الفني — الرياض', 'الرياض', '+966500000002', NULL, true, 'DASM-P-9012')
+INSERT INTO inspection_workshops (id, slug, name, city, phone, email, is_verified, dasm_partner_ref) VALUES
+('11111111-1111-4111-8111-111111111101', 'workshop-11111111', 'ورشة الخليج المعتمدة', 'الدمام', '+966500000001', 'ops@gulf-workshop.sa', true, 'DASM-P-8821'),
+('11111111-1111-4111-8111-111111111102', 'workshop-11111111-2', 'مركز الفحص الفني — الرياض', 'الرياض', '+966500000002', NULL, true, 'DASM-P-9012')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO inspection_inspectors (id, workshop_id, full_name, dasm_user_id, active) VALUES

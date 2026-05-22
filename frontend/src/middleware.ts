@@ -19,6 +19,10 @@ function forwardSupabaseCookies(from: NextResponse, to: NextResponse): void {
 function pathSkipsJwtEnforcement(pathname: string): boolean {
   if (pathname === "/track" || pathname.startsWith("/track/")) return true;
   if (pathname.startsWith("/auth/")) return true;
+  /** خطوة 26: دليل الورش وملفاتها العامة بدون JWT */
+  if (pathname === "/workshops" || pathname.startsWith("/workshops/")) {
+    return true;
+  }
   return false;
 }
 

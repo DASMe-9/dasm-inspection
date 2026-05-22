@@ -14,6 +14,7 @@ import type {
 
 type DbWorkshop = {
   id: string;
+  slug: string;
   name: string;
   city: string;
   phone: string | null;
@@ -100,6 +101,7 @@ type DbHistory = {
 export function mapWorkshop(row: DbWorkshop): Workshop {
   return {
     id: row.id,
+    slug: row.slug,
     name: row.name,
     city: row.city,
     phone: row.phone ?? undefined,
