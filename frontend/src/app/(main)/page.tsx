@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { StatCard, SectionCard } from "@/components/shared";
 import { RequestCard } from "@/components/inspection";
 import {
@@ -12,11 +13,21 @@ import {
   resolveInspectionPersona,
   shouldScopeRequestsToPlatformUser,
 } from "@/lib/auth/resolve-inspection-persona";
+import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
+import { resolveWorkshopIdFromAuth } from "@/lib/auth/workshop-dashboard.server";
 
 export default async function DashboardPage() {
   const headersList = await headers();
   const cookieStore = await cookies();
   const personaCtx = resolveInspectionPersona(headersList, cookieStore);
+
+  if (isWorkshopOperatorRole(personaCtx.persona)) {
+    const workshopId = await resolveWorkshopIdFromAuth();
+    if (workshopId) {
+      redirect("/workshop");
+    }
+  }
+
   const scoped = shouldScopeRequestsToPlatformUser(personaCtx);
 
   const workshops = await listWorkshops();

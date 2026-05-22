@@ -61,4 +61,12 @@ describe("resolveInspectionPersona", () => {
     expect(keys.has("subscription")).toBe(false);
     expect(keys.has("requests")).toBe(true);
   });
+
+  it("shows workshop dashboard nav for workshop_owner", () => {
+    const keys = visibleNavKeys("workshop_owner");
+    expect(keys.has("workshop_dashboard")).toBe(true);
+    expect(keys.has("dashboard")).toBe(false);
+    expect(keys.has("my_inspections")).toBe(false);
+    expect(keys.has("requests")).toBe(true);
+  });
 });

@@ -1,0 +1,235 @@
+import Link from "next/link";
+import { cookies, headers } from "next/headers";
+import { RequestCard } from "@/components/inspection";
+import { EmptyState, SectionCard, StatCard } from "@/components/shared";
+import {
+  isWorkshopOperatorRole,
+  parseWorkshopIdParam,
+} from "@/lib/auth/workshop-dashboard";
+import { getWorkshopDashboardAccess } from "@/lib/auth/workshop-dashboard.server";
+import { resolveInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
+import {
+  getWorkshop,
+  listInspectionRequests,
+  listWorkshops,
+} from "@/lib/data/inspection";
+import { getWorkshopDashboardStats } from "@/lib/data/workshop-dashboard-data";
+import { TOKENS } from "@/lib/theme";
+import { Building2, ClipboardList, ExternalLink, Users } from "lucide-react";
+
+type PageProps = {
+  searchParams: Promise<{ workshop_id?: string }>;
+};
+
+export default async function WorkshopDashboardPage({ searchParams }: PageProps) {
+  const sp = await searchParams;
+  const headersList = await headers();
+  const cookieStore = await cookies();
+  const personaCtx = resolveInspectionPersona(headersList, cookieStore);
+  const overrideId = parseWorkshopIdParam(sp.workshop_id);
+  const access = await getWorkshopDashboardAccess(personaCtx, {
+    workshopIdOverride: overrideId,
+  });
+
+  if (!access.allowed) {
+    return (
+      <div dir="rtl">
+        <SectionCard>
+          <EmptyState
+            title="لوحة الورشة غير متاحة"
+            description={access.reason ?? "لا تملك صلاحية الوصول."}
+            action={
+              <Link
+                href="/"
+                className="text-sm font-semibold text-indigo-600 hover:underline"
+              >
+                العودة للوحة العامة
+              </Link>
+            }
+          />
+        </SectionCard>
+      </div>
+    );
+  }
+
+  let workshopId = access.workshopId;
+
+  if (
+    !workshopId &&
+    (access.persona === "inspection_admin" || access.persona === "super_admin")
+  ) {
+    const workshops = await listWorkshops();
+    if (workshops.length === 0) {
+      return (
+        <SectionCard>
+          <EmptyState
+            title="لا ورش مسجّلة"
+            description="أضف ورشة في النظام أولاً لعرض لوحة التشغيل."
+          />
+        </SectionCard>
+      );
+    }
+    if (workshops.length === 1) {
+      workshopId = workshops[0].id;
+    } else {
+      return (
+        <div className="space-y-6" dir="rtl">
+          <h1 className="text-2xl font-bold text-gray-900">لوحة الورشة</h1>
+          <p className="text-sm text-gray-600">
+            اختر ورشة لعرض لوحة التشغيل (وضع الإدارة).
+          </p>
+          <ul className="grid gap-3 md:grid-cols-2">
+            {workshops.map((w) => (
+              <li key={w.id}>
+                <Link
+                  href={`/workshop?workshop_id=${w.id}`}
+                  className="block rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-violet-300"
+                >
+                  <p className="font-semibold text-gray-900">{w.name}</p>
+                  <p className="mt-1 text-xs text-gray-500">{w.city}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+  }
+
+  if (!workshopId) {
+    return (
+      <SectionCard>
+        <EmptyState
+          title="لم تُحدَّد ورشة"
+          description={
+            access.reason ??
+            "تعذّر تحديد الورشة المرتبطة بحسابك."
+          }
+        />
+      </SectionCard>
+    );
+  }
+
+  const workshop = await getWorkshop(workshopId);
+  if (!workshop) {
+    return (
+      <SectionCard>
+        <EmptyState
+          title="الورشة غير موجودة"
+          description="تحقق من ربط الحساب بالورشة الصحيحة."
+        />
+      </SectionCard>
+    );
+  }
+
+  const [stats, recent] = await Promise.all([
+    getWorkshopDashboardStats(workshopId),
+    listInspectionRequests({ workshopId, sort: "updated_desc" }),
+  ]);
+
+  const { primary } = TOKENS.colors.roles.workshop;
+  const recentSlice = recent.slice(0, 6);
+
+  return (
+    <div className="space-y-8" dir="rtl">
+      <section className="relative overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-bl from-white via-violet-50/50 to-white p-6 shadow-sm md:p-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-xs font-semibold text-violet-800/90">لوحة تشغيل الورشة</p>
+            <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold text-gray-900 md:text-3xl">
+              <Building2 className="h-7 w-7 text-violet-700" aria-hidden />
+              {workshop.name}
+            </h1>
+            <p className="mt-1 text-sm text-gray-600">{workshop.city}</p>
+            {isWorkshopOperatorRole(access.persona) && (
+              <p className="mt-2 text-xs text-gray-500">
+                دورك:{" "}
+                {access.persona === "workshop_owner" ? "مالك ورشة" : "مدير ورشة"}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/workshops/${workshop.slug}`}
+              className="inline-flex items-center gap-2 rounded-xl border-2 bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:bg-violet-50"
+              style={{ borderColor: primary, color: primary }}
+            >
+              الصفحة العامة
+              <ExternalLink className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link
+              href={`/requests?workshop=${workshopId}`}
+              className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-gray-800"
+            >
+              <ClipboardList className="h-4 w-4" aria-hidden />
+              كل طلبات الورشة
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {stats && (
+        <section className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          <StatCard value={stats.openRequests} label="طلبات نشطة" />
+          <StatCard value={stats.pendingReview} label="بانتظار المراجعة" />
+          <StatCard value={stats.inProgress} label="قيد الفحص" />
+          <StatCard value={stats.approvedTotal} label="فحوص معتمدة" />
+        </section>
+      )}
+
+      {stats && (
+        <section className="grid gap-4 md:grid-cols-3">
+          <StatCard value={stats.teamSize} label="المفتشون" />
+          <StatCard value={stats.followerCount} label="المتابعون" />
+          <StatCard
+            value={stats.averageRating ?? "—"}
+            label={`تقييم (${stats.reviewCount})`}
+          />
+        </section>
+      )}
+
+      <SectionCard title="أحدث طلبات الورشة">
+        {recentSlice.length === 0 ? (
+          <EmptyState
+            title="لا طلبات"
+            description="ستظهر هنا الطلبات المرتبطة بهذه الورشة."
+          />
+        ) : (
+          <div className="space-y-3">
+            {recentSlice.map((r) => (
+              <RequestCard key={r.id} request={r} />
+            ))}
+            <Link
+              href={`/requests?workshop=${workshopId}`}
+              className="block text-center text-sm font-semibold text-violet-700 hover:underline"
+            >
+              عرض كل الطلبات ({recent.length}) ←
+            </Link>
+          </div>
+        )}
+      </SectionCard>
+
+      <SectionCard title="اختصارات سريعة">
+        <ul className="grid gap-3 sm:grid-cols-2">
+          <li>
+            <Link
+              href={`/requests?workshop=${workshopId}&status=pending_review`}
+              className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-amber-50"
+            >
+              مراجعة التقارير المعلّقة
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/settings"
+              className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50"
+            >
+              <Users className="h-4 w-4 text-violet-600" aria-hidden />
+              الإعدادات ومراجعة التقييمات
+            </Link>
+          </li>
+        </ul>
+      </SectionCard>
+    </div>
+  );
+}

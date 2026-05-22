@@ -129,5 +129,7 @@ export const config = {
     "/settings/:path*",
     "/subscription",
     "/subscription/:path*",
+    "/workshop",
+    "/workshop/:path*",
   ],
 };
