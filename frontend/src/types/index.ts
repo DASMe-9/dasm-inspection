@@ -31,6 +31,19 @@ export type ReportItemStatus = "pass" | "warn" | "fail" | "na";
 /** يطابق Postgres enum inspection_service_mode */
 export type InspectionServiceMode = "workshop" | "field";
 
+/** يطابق Postgres enum inspection_fee_payment_status */
+export type InspectionFeePaymentStatus =
+  | "unpaid"
+  | "pending"
+  | "paid"
+  | "waived";
+
+export type InspectionWorkshopApplicationStatus =
+  | "submitted"
+  | "under_review"
+  | "approved"
+  | "rejected";
+
 export interface WorkshopServicePricing {
   workshopSar: number | null;
   fieldSar: number | null;
@@ -72,6 +85,9 @@ export interface InspectionRequest {
   repairQuoteSar?: number | null;
   repairQuoteNotes?: string;
   repairQuoteOfferedAt?: string;
+  inspectionFeePaymentStatus?: InspectionFeePaymentStatus;
+  inspectionFeePaymentRef?: string;
+  inspectionFeePaidAt?: string;
   dispatchedAt?: string;
   onSiteAt?: string;
   workshopId?: string;

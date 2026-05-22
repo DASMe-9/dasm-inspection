@@ -47,11 +47,17 @@ export default async function WorkshopsPage() {
               طلب فحص جديد
             </Link>
             <Link
-              href="/subscription"
+              href="/workshops/apply"
               className="inline-flex items-center justify-center rounded-xl border-2 px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:bg-violet-50"
               style={{ borderColor: primary, color: primary }}
             >
-              اشتراك الورش والشركاء
+              انضم كورشة شريكة
+            </Link>
+            <Link
+              href="/subscription"
+              className="inline-flex items-center justify-center rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+            >
+              اشتراك الورش
             </Link>
           </div>
         </div>

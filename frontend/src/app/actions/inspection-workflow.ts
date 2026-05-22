@@ -224,6 +224,10 @@ export async function assignInspectionRequestAction(
         service_mode: serviceMode,
         field_service_address: serviceMode === "field" ? fieldAddress : null,
         quoted_fee_sar: quotedFee,
+        inspection_fee_payment_status:
+          quotedFee != null && quotedFee > 0 ? "unpaid" : "waived",
+        inspection_fee_payment_ref: null,
+        inspection_fee_paid_at: null,
         dispatched_at: null,
         on_site_at: null,
       })

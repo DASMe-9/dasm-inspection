@@ -3,6 +3,7 @@ import {
   RequestStatusBadge,
   StatusTimeline,
   ReportChecklistRow,
+  InspectionFeePayPanel,
 } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
 import {
@@ -80,6 +81,16 @@ export default async function CustomerTrackingPage({
           </div>
         </dl>
       </SectionCard>
+
+      {request.quotedFeeSar != null && request.quotedFeeSar > 0 && (
+        <SectionCard title="رسوم خدمة الفحص">
+          <InspectionFeePayPanel
+            requestId={request.id}
+            quotedFeeSar={request.quotedFeeSar}
+            paymentStatus={request.inspectionFeePaymentStatus}
+          />
+        </SectionCard>
+      )}
 
       {/* Current status summary */}
       <SectionCard title="حالة الطلب الحالية">

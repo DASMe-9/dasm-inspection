@@ -5,6 +5,7 @@ import type {
   InspectionRequest,
   InspectionRequestStatus,
   InspectionServiceMode,
+  InspectionFeePaymentStatus,
   InspectionStatusHistory,
   Inspector,
   ReportItemStatus,
@@ -135,6 +136,10 @@ export function mapRequest(row: DbRequest): InspectionRequest {
     repairQuoteSar: Number.isFinite(repair) ? repair : null,
     repairQuoteNotes: row.repair_quote_notes?.trim() || undefined,
     repairQuoteOfferedAt: row.repair_quote_offered_at ?? undefined,
+    inspectionFeePaymentStatus:
+      row.inspection_fee_payment_status ?? "unpaid",
+    inspectionFeePaymentRef: row.inspection_fee_payment_ref?.trim() || undefined,
+    inspectionFeePaidAt: row.inspection_fee_paid_at ?? undefined,
     dispatchedAt: row.dispatched_at ?? undefined,
     onSiteAt: row.on_site_at ?? undefined,
     workshopId: row.workshop_id ?? undefined,
