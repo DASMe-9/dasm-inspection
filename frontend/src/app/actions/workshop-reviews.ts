@@ -70,6 +70,13 @@ export async function submitWorkshopReviewAction(
   return { ok: true };
 }
 
+/** غلاف لنماذج Server Actions (يجب أن يعيد void). */
+export async function moderateWorkshopReviewFormAction(
+  formData: FormData
+): Promise<void> {
+  await moderateWorkshopReviewAction(formData);
+}
+
 export async function moderateWorkshopReviewAction(
   formData: FormData
 ): Promise<WorkshopReviewActionResult> {

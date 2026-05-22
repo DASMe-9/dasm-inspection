@@ -1,4 +1,4 @@
-import { moderateWorkshopReviewAction } from "@/app/actions/workshop-reviews";
+import { moderateWorkshopReviewFormAction } from "@/app/actions/workshop-reviews";
 import { SectionCard } from "@/components/shared";
 import { listPendingWorkshopReviews } from "@/lib/data/workshop-reviews-data";
 import { listWorkshops } from "@/lib/data/inspection";
@@ -36,7 +36,7 @@ export async function WorkshopReviewModerationPanel() {
               <p className="mt-2 text-sm text-gray-800">{r.comment}</p>
             )}
             <div className="mt-3 flex flex-wrap gap-2">
-              <form action={moderateWorkshopReviewAction}>
+              <form action={moderateWorkshopReviewFormAction}>
                 <input type="hidden" name="review_id" value={r.id} />
                 <input type="hidden" name="decision" value="approved" />
                 <button
@@ -46,7 +46,7 @@ export async function WorkshopReviewModerationPanel() {
                   اعتماد
                 </button>
               </form>
-              <form action={moderateWorkshopReviewAction} className="flex flex-wrap items-end gap-2">
+              <form action={moderateWorkshopReviewFormAction} className="flex flex-wrap items-end gap-2">
                 <input type="hidden" name="review_id" value={r.id} />
                 <input type="hidden" name="decision" value="rejected" />
                 <input
