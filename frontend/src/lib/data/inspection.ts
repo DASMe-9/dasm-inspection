@@ -48,6 +48,11 @@ export async function listWorkshops(): Promise<Workshop[]> {
   }));
 }
 
+async function attachWorkshopPricing(w: Workshop): Promise<Workshop> {
+  const pricingMap = await attachPricingToWorkshopIds([w.id]);
+  return { ...w, pricing: pricingMap.get(w.id) };
+}
+
 export async function getWorkshop(id: string): Promise<Workshop | null> {
   const sb = getAdminClient();
   if (!sb) return null;
@@ -57,9 +62,40 @@ export async function getWorkshop(id: string): Promise<Workshop | null> {
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
-  const w = mapWorkshop(data as Parameters<typeof mapWorkshop>[0]);
-  const pricingMap = await attachPricingToWorkshopIds([w.id]);
-  return { ...w, pricing: pricingMap.get(w.id) };
+  return attachWorkshopPricing(
+    mapWorkshop(data as Parameters<typeof mapWorkshop>[0])
+  );
+}
+
+/** ملف ورشة عام بالـ slug (خطوة 26 — بدون تسجيل دخول). */
+export async function getWorkshopBySlug(slug: string): Promise<Workshop | null> {
+  const normalized = slug.trim().toLowerCase();
+  if (!normalized) return null;
+  const sb = getAdminClient();
+  if (!sb) return null;
+  const { data, error } = await sb
+    .from("inspection_workshops")
+    .select("*")
+    .eq("slug", normalized)
+    .maybeSingle();
+  if (error || !data) return null;
+  return attachWorkshopPricing(
+    mapWorkshop(data as Parameters<typeof mapWorkshop>[0])
+  );
+}
+
+export async function resolveWorkshopRouteParam(
+  slugOrId: string
+): Promise<{ workshop: Workshop; canonicalSlug: string } | null> {
+  const key = slugOrId.trim();
+  if (!key) return null;
+  const bySlug = await getWorkshopBySlug(key);
+  if (bySlug) {
+    return { workshop: bySlug, canonicalSlug: bySlug.slug };
+  }
+  const byId = await getWorkshop(key);
+  if (!byId) return null;
+  return { workshop: byId, canonicalSlug: byId.slug };
 }
 
 export async function listInspectors(): Promise<Inspector[]> {

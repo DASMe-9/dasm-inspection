@@ -50,8 +50,29 @@ export interface WorkshopServicePricing {
   currency: string;
 }
 
+export type WorkshopReviewModerationStatus =
+  | "pending"
+  | "approved"
+  | "rejected";
+
+export interface WorkshopReview {
+  id: string;
+  workshopId: string;
+  dasmUserId: string;
+  inspectionRequestId: string;
+  rating: number;
+  comment?: string;
+  status: WorkshopReviewModerationStatus;
+  rejectionReason?: string;
+  moderatedAt?: string;
+  moderatedBy?: string;
+  createdAt: string;
+}
+
 export interface Workshop {
   id: string;
+  /** مسار عام: /workshops/[slug] */
+  slug: string;
   name: string;
   city: string;
   phone?: string;

@@ -12,7 +12,7 @@ export function WorkshopCard({ workshop }: { workshop: Workshop }) {
 
   return (
     <Link
-      href={`/workshops/${workshop.id}`}
+      href={`/workshops/${workshop.slug}`}
       prefetch
       className={cn(
         "group relative block overflow-hidden rounded-2xl border bg-white p-5 shadow-sm ring-1 ring-black/[0.04]",

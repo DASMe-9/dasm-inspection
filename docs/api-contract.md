@@ -162,6 +162,42 @@
 
 **صفحة:** `/workshops/apply`
 
+### 3.4 ملف ورشة عام (بدون JWT)
+
+`GET /api/v1/workshops/:slug`
+
+**Path:** `slug` — المعرف العام للورشة (أو `uuid` قديم يُحلّ ثم يُفضّل slug في `canonical_slug`).
+
+**200:**
+
+```json
+{
+  "workshop": {
+    "id": "uuid",
+    "slug": "workshop-11111111",
+    "name": "string",
+    "city": "string",
+    "isVerified": true,
+    "phone": "string (معتمد فقط)",
+    "email": "string (معتمد فقط)",
+    "pricing": { "workshopSar": 320, "fieldSar": 520, "currency": "SAR" },
+    "inspectors": [{ "id": "uuid", "fullName": "string" }]
+  },
+  "canonical_slug": "workshop-11111111",
+  "profile_url": "/workshops/workshop-11111111"
+}
+```
+
+**صفحة:** `/workshops/[slug]` — نفس الحقول الآمنة؛ لا `dasm_partner_ref` ولا `dasm_user_id` للمفتشين.
+
+**تقييمات (خطوة 27):** `reviews[]` و`rating_summary` — معتمدة فقط (`status === approved`). الإرسال عبر Server Action `submitWorkshopReviewAction` بعد طلب فحص **`approved`**؛ المراجعة في `/settings` لـ `inspection_admin` / `super_admin`.
+
+**404:** الورشة غير موجودة.
+
+**التنفيذ:** `frontend/src/app/api/v1/workshops/[slug]/route.ts`.
+
+### 3.3 جلب طلب (مالك المنصّة) — تتمة
+
 **404:** الطلب غير موجود أو لا يخصّ المستخدم.
 
 **التنفيذ:** `frontend/src/app/api/v1/inspection-requests/[id]/route.ts`.

@@ -1,4 +1,6 @@
+import { WorkshopReviewModerationPanel } from "@/components/inspection/WorkshopReviewModerationPanel";
 import { SectionCard } from "@/components/shared";
+import { getInspectionAuthContext } from "@/lib/auth/inspection-context.server";
 import type { AppRole } from "@/types";
 
 const ROLES: { id: AppRole; label: string }[] = [
@@ -9,10 +11,20 @@ const ROLES: { id: AppRole; label: string }[] = [
   { id: "viewer", label: "عرض فقط" },
 ];
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const ctx = await getInspectionAuthContext();
+  const canModerate =
+    ctx?.inspectionRole === "inspection_admin" ||
+    ctx?.inspectionRole === "super_admin" ||
+    ctx?.dasmRoles.some((r) =>
+      ["super_admin", "admin", "moderator"].includes(r)
+    );
+
   return (
     <div className="space-y-6" dir="rtl">
       <h2 className="text-lg font-bold text-gray-800">الإعدادات</h2>
+
+      {canModerate && <WorkshopReviewModerationPanel />}
 
       <SectionCard title="الأدوار (V1)">
         <ul className="text-sm space-y-2">
