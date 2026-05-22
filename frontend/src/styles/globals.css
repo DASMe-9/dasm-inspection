@@ -10,6 +10,9 @@
   --customer-primary: #2563eb;
   --workshop-primary: #7c3aed;
   --admin-primary: #dc2626;
+  /* الواجهة العامة (MVPI-style) */
+  --inspection-navy: #0c1f3d;
+  --inspection-accent: #8dc63f;
 }
 
 /* لا نقلب الألوان تلقائياً مع prefers-color-scheme: الواجهة بطاقات فاتحة؛

@@ -6,7 +6,7 @@ import { useTheme } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/", label: "الرئيسية", icon: "🏠" },
+  { href: "/dashboard", label: "الرئيسية", icon: "🏠" },
   { href: "/requests", label: "الطلبات", icon: "📋" },
   { href: "/workshops", label: "الورش", icon: "🔧" },
   { href: "/subscription", label: "الاشتراك", icon: "💳" },
@@ -26,7 +26,7 @@ export function BottomNav() {
       {NAV_ITEMS.map((item) => {
         const isActive =
           pathname === item.href ||
-          (item.href !== "/" && pathname.startsWith(item.href)) ||
+          (item.href !== "/dashboard" && pathname.startsWith(item.href)) ||
           (item.href === "/requests" && pathname.startsWith("/reports"));
         return (
           <Link

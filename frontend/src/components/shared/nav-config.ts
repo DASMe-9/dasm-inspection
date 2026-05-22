@@ -16,7 +16,7 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
   {
     label: "الرئيسية",
     items: [
-      { key: "dashboard", href: "/", label: "لوحة التحكم", icon: "📊" },
+      { key: "dashboard", href: "/dashboard", label: "لوحة التحكم", icon: "📊" },
       {
         key: "workshop_dashboard",
         href: "/workshop",
@@ -52,7 +52,7 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
 
 /** ترتيب شريط التنقّل السفلي للجوال (مختصر عن مجموعات الشريط الجانبي). */
 export const MOBILE_BOTTOM_NAV_ITEMS: SidebarNavItem[] = [
-  { key: "dashboard", href: "/", label: "الرئيسية", icon: "🏠" },
+  { key: "dashboard", href: "/dashboard", label: "الرئيسية", icon: "🏠" },
   {
     key: "workshop_dashboard",
     href: "/workshop",

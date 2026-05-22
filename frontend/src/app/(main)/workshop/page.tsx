@@ -40,7 +40,7 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
             description={access.reason ?? "لا تملك صلاحية الوصول."}
             action={
               <Link
-                href="/"
+                href="/dashboard"
                 className="text-sm font-semibold text-indigo-600 hover:underline"
               >
                 العودة للوحة العامة

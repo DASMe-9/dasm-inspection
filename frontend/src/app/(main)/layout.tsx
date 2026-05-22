@@ -25,7 +25,7 @@ export default async function MainShellLayout({
     cookieStore.get("inspection_token")?.value;
 
   if (!token) {
-    redirect("/auth/login");
+    redirect("/");
   }
 
   const configured = await isSupabaseConfigured();

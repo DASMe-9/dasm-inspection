@@ -41,7 +41,10 @@ function AccessDenied({ type }: { type: string }) {
 }
 
 function sanitizeReturnTo(raw: string | null): string {
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//") || raw.includes("://")) return "/";
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//") || raw.includes("://")) {
+    return "/dashboard";
+  }
+  if (raw === "/") return "/dashboard";
   return raw;
 }
 
@@ -96,13 +99,13 @@ function LoginPageInner() {
   };
 
   return (
-    <div dir="rtl" style={{ minHeight: "100vh", display: "flex", background: "linear-gradient(145deg, #020509 0%, #060d1a 50%, #0a1020 100%)" }}>
+    <div dir="rtl" style={{ minHeight: "100vh", display: "flex", background: "linear-gradient(145deg, #071428 0%, #0c1f3d 50%, #132a4a 100%)" }}>
 
       {/* ── يسار: نموذج ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem 2.5rem" }}>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #6366f1, #4f46e5)", fontSize: 22, color: "white" }}>
+          <div style={{ width: 48, height: 48, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #8dc63f, #5a9a1a)", fontSize: 22, color: "white" }}>
             🔧
           </div>
           <div>
@@ -149,7 +152,7 @@ function LoginPageInner() {
 
             <button
               type="submit" disabled={busy}
-              style={{ width: "100%", padding: "0.9rem", borderRadius: 12, fontWeight: 700, fontSize: "1rem", color: "white", background: busy ? "rgba(99,102,241,0.35)" : "linear-gradient(135deg, #6366f1, #4f46e5)", border: "none", cursor: busy ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", opacity: busy ? 0.7 : 1 }}
+              style={{ width: "100%", padding: "0.9rem", borderRadius: 12, fontWeight: 700, fontSize: "1rem", color: "white", background: busy ? "rgba(141,198,63,0.35)" : "linear-gradient(135deg, #8dc63f, #5a9a1a)", border: "none", cursor: busy ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", opacity: busy ? 0.7 : 1 }}
             >
               {busy
                 ? <><svg style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} fill="none" viewBox="0 0 24 24"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>جارٍ التحقق...</>
@@ -158,7 +161,9 @@ function LoginPageInner() {
           </form>
 
           <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
-            <a href="https://www.dasm.com.sa" style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.8125rem", textDecoration: "none" }}>← العودة لمنصة داسم</a>
+            <a href="/" style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.8125rem", textDecoration: "none" }}>← الصفحة الرئيسية</a>
+            {" · "}
+            <a href="https://www.dasm.com.sa" style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.8125rem", textDecoration: "none" }}>منصّة داسم</a>
           </div>
         </div>
       </div>
@@ -166,9 +171,9 @@ function LoginPageInner() {
       {/* ── يمين: لوحة الهوية (desktop) ── */}
       <div
         className="inspection-brand"
-        style={{ width: "45%", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "3rem 2.5rem", gap: "1.5rem", background: "linear-gradient(145deg, #020307 0%, #060d1a 55%, #0a1020 100%)", display: "none", borderRight: "1px solid rgba(99,102,241,0.08)" }}
+        style={{ width: "45%", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "3rem 2.5rem", gap: "1.5rem", background: "linear-gradient(145deg, #071428 0%, #0c1f3d 55%, #132a4a 100%)", display: "none", borderRight: "1px solid rgba(141,198,63,0.15)" }}
       >
-        <div style={{ width: 88, height: 88, borderRadius: 22, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #6366f1, #4f46e5)", fontSize: 44 }}>
+        <div style={{ width: 88, height: 88, borderRadius: 22, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #8dc63f, #5a9a1a)", fontSize: 44 }}>
           🔧
         </div>
 
