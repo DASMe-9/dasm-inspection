@@ -48,7 +48,9 @@ export function WorkshopFollowPanel({
           onSubmit={(e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
-            startTransition(() => unfollowWorkshopAction(fd));
+            startTransition(() => {
+              void unfollowWorkshopAction(fd);
+            });
           }}
         >
           {hidden}
@@ -66,7 +68,9 @@ export function WorkshopFollowPanel({
           onSubmit={(e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
-            startTransition(() => followWorkshopAction(fd));
+            startTransition(() => {
+              void followWorkshopAction(fd);
+            });
           }}
         >
           {hidden}
