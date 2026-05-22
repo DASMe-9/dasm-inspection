@@ -112,6 +112,9 @@ export interface InspectionRequest {
   status: InspectionRequestStatus;
   serviceMode: InspectionServiceMode;
   fieldServiceAddress?: string;
+  fieldScheduledAt?: string;
+  fieldServiceLat?: number | null;
+  fieldServiceLng?: number | null;
   quotedFeeSar?: number | null;
   /** عرض إصلاح اختياري — منفصل عن رسوم خدمة الفحص */
   repairQuoteSar?: number | null;

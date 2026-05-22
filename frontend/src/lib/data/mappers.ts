@@ -41,6 +41,9 @@ type DbRequest = {
   status: InspectionRequestStatus;
   service_mode: InspectionServiceMode | null;
   field_service_address: string | null;
+  field_scheduled_at: string | null;
+  field_service_lat: number | string | null;
+  field_service_lng: number | string | null;
   quoted_fee_sar: number | string | null;
   repair_quote_sar: number | string | null;
   repair_quote_notes: string | null;
@@ -98,6 +101,12 @@ type DbHistory = {
   created_at: string;
 };
 
+function parseCoord(value: number | string | null | undefined): number | null {
+  if (value == null || value === "") return null;
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 export function mapWorkshop(row: DbWorkshop): Workshop {
   return {
     id: row.id,
@@ -136,6 +145,9 @@ export function mapRequest(row: DbRequest): InspectionRequest {
     status: row.status,
     serviceMode: row.service_mode === "field" ? "field" : "workshop",
     fieldServiceAddress: row.field_service_address?.trim() || undefined,
+    fieldScheduledAt: row.field_scheduled_at ?? undefined,
+    fieldServiceLat: parseCoord(row.field_service_lat),
+    fieldServiceLng: parseCoord(row.field_service_lng),
     quotedFeeSar: Number.isFinite(quoted) ? quoted : null,
     repairQuoteSar: Number.isFinite(repair) ? repair : null,
     repairQuoteNotes: row.repair_quote_notes?.trim() || undefined,
