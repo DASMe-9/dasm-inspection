@@ -19,9 +19,12 @@ import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
 import {
   Building2,
   ClipboardList,
+  Download,
   ExternalLink,
   MapPin,
   CircleDollarSign,
+  Star,
+  UserPlus,
   Users,
 } from "lucide-react";
 
@@ -250,18 +253,37 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           </li>
           <li>
             <Link
-              href={`/requests?workshop=${workshopId}&status=pending_review`}
+              href={`/workshop/reviews${manageQ}`}
               className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-amber-50"
             >
-              مراجعة التقارير المعلّقة
+              <Star className="h-4 w-4 text-amber-700" aria-hidden />
+              تقييمات العملاء
             </Link>
           </li>
           <li>
             <Link
-              href="/settings"
-              className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50"
+              href={`/workshop/followers${manageQ}`}
+              className="flex items-center gap-3 rounded-xl border border-indigo-100 bg-indigo-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-indigo-50"
             >
-              الإعدادات ومراجعة التقييمات
+              <UserPlus className="h-4 w-4 text-indigo-700" aria-hidden />
+              قائمة المتابعين
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/workshop/export${manageQ}`}
+              className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-100"
+            >
+              <Download className="h-4 w-4 text-gray-700" aria-hidden />
+              تصدير CSV
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/requests?workshop=${workshopId}&status=pending_review`}
+              className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-amber-50"
+            >
+              مراجعة التقارير المعلّقة
             </Link>
           </li>
         </ul>
