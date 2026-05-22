@@ -9,6 +9,7 @@ const TABS = [
   { href: "/workshop/team", label: "الفريق" },
   { href: "/workshop/pricing", label: "الأسعار" },
   { href: "/workshop/areas", label: "مناطق الخدمة" },
+  { href: "/workshop/field", label: "ميداني" },
   { href: "/workshop/reviews", label: "التقييمات" },
   { href: "/workshop/followers", label: "المتابعون" },
   { href: "/workshop/export", label: "تصدير CSV" },

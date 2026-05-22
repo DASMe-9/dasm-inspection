@@ -23,6 +23,7 @@ import {
   ExternalLink,
   MapPin,
   CircleDollarSign,
+  CalendarDays,
   Star,
   UserPlus,
   Users,
@@ -249,6 +250,15 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
             >
               <MapPin className="h-4 w-4 text-sky-700" aria-hidden />
               مناطق الخدمة
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/workshop/field${manageQ}`}
+              className="flex items-center gap-3 rounded-xl border border-orange-100 bg-orange-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-orange-50"
+            >
+              <CalendarDays className="h-4 w-4 text-orange-700" aria-hidden />
+              تقويم وخريطة ميداني
             </Link>
           </li>
           <li>
