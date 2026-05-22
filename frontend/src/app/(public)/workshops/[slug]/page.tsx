@@ -60,6 +60,6 @@ export default async function WorkshopPublicPage({
         workshopId={resolved.workshop.id}
         workshopSlug={resolved.canonicalSlug}
       />
-    </>
+    </div>
   );
 }

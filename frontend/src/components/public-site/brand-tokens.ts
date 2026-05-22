@@ -10,7 +10,13 @@ export const PUBLIC_BRAND = {
   muted: "rgba(255,255,255,0.75)",
 } as const;
 
-export const PUBLIC_NAV_LINKS = [
+export type PublicNavLink = {
+  href: string;
+  label: string;
+  exact?: boolean;
+};
+
+export const PUBLIC_NAV_LINKS: PublicNavLink[] = [
   { href: "/", label: "الصفحة الرئيسية", exact: true },
   { href: "/#services", label: "تفاصيل الخدمة" },
   { href: "/workshops", label: "مواقع الخدمة" },
@@ -18,4 +24,4 @@ export const PUBLIC_NAV_LINKS = [
   { href: "/#support", label: "خدمة العملاء" },
   { href: "/#contact", label: "تواصل معنا" },
   { href: "/workshops", label: "احجز موعدك" },
-] as const;
+];
