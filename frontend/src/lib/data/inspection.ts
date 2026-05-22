@@ -12,6 +12,7 @@ import {
   mapWorkshop,
 } from "@/lib/data/mappers";
 import { attachPricingToWorkshopIds } from "@/lib/data/inspection-pricing-data";
+import { getWorkshopRatingAveragesMap } from "@/lib/data/workshop-reviews-data";
 import type {
   InspectionAttachment,
   InspectionReport,
@@ -46,6 +47,24 @@ export async function listWorkshops(): Promise<Workshop[]> {
     ...w,
     pricing: pricingMap.get(w.id),
   }));
+}
+
+/** خطوة 30: معتمد أولاً، ثم متوسط التقييم، ثم الاسم (المسافة لاحقاً عند إحداثيات الورش). */
+export async function listWorkshopsForDirectory(): Promise<Workshop[]> {
+  const [workshops, ratingMap] = await Promise.all([
+    listWorkshops(),
+    getWorkshopRatingAveragesMap(),
+  ]);
+
+  return [...workshops].sort((a, b) => {
+    if (a.isVerified !== b.isVerified) {
+      return a.isVerified ? -1 : 1;
+    }
+    const ra = ratingMap.get(a.id)?.average ?? 0;
+    const rb = ratingMap.get(b.id)?.average ?? 0;
+    if (rb !== ra) return rb - ra;
+    return a.name.localeCompare(b.name, "ar");
+  });
 }
 
 async function attachWorkshopPricing(w: Workshop): Promise<Workshop> {

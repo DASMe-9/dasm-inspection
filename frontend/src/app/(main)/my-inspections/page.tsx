@@ -5,10 +5,12 @@ import { RequestCard, RequestListFilters } from "@/components/inspection";
 import { EmptyState, SectionCard } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 import { parseInspectionRequestListQuery } from "@/lib/inspection-request-list-options";
+import { InspectionNotificationsPanel } from "@/components/inspection/InspectionNotificationsPanel";
 import {
   listInspectionRequestsForDasmUser,
   listWorkshops,
 } from "@/lib/data/inspection";
+import { listNotificationsForUser } from "@/lib/data/workshop-follows-data";
 
 export default async function MyInspectionsPage({
   searchParams,
@@ -18,9 +20,12 @@ export default async function MyInspectionsPage({
   const c = cookies();
   const uid = c.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ?? "";
   const listOpts = parseInspectionRequestListQuery(searchParams);
-  const list = uid
-    ? await listInspectionRequestsForDasmUser(uid, listOpts)
-    : [];
+  const [list, notifications] = uid
+    ? await Promise.all([
+        listInspectionRequestsForDasmUser(uid, listOpts),
+        listNotificationsForUser(uid),
+      ])
+    : [[], []];
 
   const workshops = await listWorkshops();
   const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
@@ -53,6 +58,7 @@ export default async function MyInspectionsPage({
         </SectionCard>
       ) : (
         <>
+          <InspectionNotificationsPanel notifications={notifications} />
           <Suspense
             fallback={
               <div

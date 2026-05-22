@@ -55,6 +55,17 @@ export type WorkshopReviewModerationStatus =
   | "approved"
   | "rejected";
 
+export interface InspectionNotification {
+  id: string;
+  dasmUserId: string;
+  workshopId?: string;
+  kind: string;
+  title: string;
+  body?: string;
+  readAt?: string;
+  createdAt: string;
+}
+
 export interface WorkshopReview {
   id: string;
   workshopId: string;
