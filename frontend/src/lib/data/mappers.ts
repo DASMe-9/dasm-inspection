@@ -5,7 +5,7 @@ import type {
   InspectionRequest,
   InspectionRequestStatus,
   InspectionServiceMode,
-  InspectionFeePaymentStatus,
+  type InspectionFeePaymentStatus,
   InspectionStatusHistory,
   Inspector,
   ReportItemStatus,
