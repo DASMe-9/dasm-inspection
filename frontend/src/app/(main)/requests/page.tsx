@@ -7,17 +7,15 @@ import {
 } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
-import { parseInspectionRequestListQuery } from "@/lib/inspection-request-list-options";
+import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { getPlatformDefaultPricing } from "@/lib/data/inspection-pricing-data";
 import {
   listInspectionRequests,
   listInspectionRequestsForDasmUser,
   listWorkshops,
 } from "@/lib/data/inspection";
-import {
-  resolveInspectionPersona,
-  shouldScopeRequestsToPlatformUser,
-} from "@/lib/auth/resolve-inspection-persona";
+import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
+import { resolveInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
 
 export default async function RequestsListPage({
   searchParams,
@@ -37,23 +35,23 @@ export default async function RequestsListPage({
 
   const headersList = headers();
   const personaCtx = resolveInspectionPersona(headersList, cookieStore);
-  const listOpts = parseInspectionRequestListQuery(searchParams);
-
-  const list =
-    shouldScopeRequestsToPlatformUser(personaCtx) && personaCtx.platformUserId
-      ? await listInspectionRequestsForDasmUser(
-          personaCtx.platformUserId,
-          listOpts
-        )
-      : await listInspectionRequests(listOpts);
-
   const workshops = await listWorkshops();
   const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
-  const platformPricing = await getPlatformDefaultPricing();
+  const scope = await buildRequestListScope(searchParams, workshopOptions);
 
-  const scopedNote =
-    shouldScopeRequestsToPlatformUser(personaCtx) &&
-    "تعرض هذه القائمة طلباتك المرتبطة بحساب منصّة داسم فقط.";
+  const list = scope.usePlatformUserScope
+    ? await listInspectionRequestsForDasmUser(
+        scope.platformUserId!,
+        scope.listOpts
+      )
+    : await listInspectionRequests(scope.listOpts);
+
+  const workshopNameById = new Map(workshopOptions.map((w) => [w.id, w.name]));
+
+  const platformPricing = await getPlatformDefaultPricing();
+  const hideNewRequestForm = isWorkshopOperatorRole(personaCtx.persona);
+
+  const scopedNote = scope.scopedNote;
 
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
@@ -68,12 +66,14 @@ export default async function RequestsListPage({
         </p>
       </div>
 
-      <SectionCard>
-        <NewInspectionRequestForm
-          defaultDasmUserId={presetDasmUserId}
-          platformPricing={platformPricing}
-        />
-      </SectionCard>
+      {!hideNewRequestForm ? (
+        <SectionCard>
+          <NewInspectionRequestForm
+            defaultDasmUserId={presetDasmUserId}
+            platformPricing={platformPricing}
+          />
+        </SectionCard>
+      ) : null}
 
       <Suspense
         fallback={
@@ -83,19 +83,35 @@ export default async function RequestsListPage({
           />
         }
       >
-        <RequestListFilters workshopOptions={workshopOptions} />
+        <RequestListFilters
+          workshopOptions={scope.workshopOptions}
+          lockedWorkshopId={scope.lockedWorkshopId}
+          lockedWorkshopName={scope.lockedWorkshopName}
+          showWorkshopFilter={scope.showWorkshopFilter}
+          showServiceModeFilter={scope.showServiceModeFilter}
+          resultCount={list.length}
+        />
       </Suspense>
 
       <SectionCard>
         {list.length === 0 ? (
           <EmptyState
             title="لا توجد طلبات"
-            description="جرّب تغيير فلتر الحالة، أو أنشئ طلباً أعلاه لبدء المسار: إسناد ← فحص ← تقرير ← اعتماد أو رفض."
+            description="جرّب تغيير فلتر الحالة أو نوع الخدمة، أو أنشئ طلباً لبدء المسار: إسناد ← فحص ← تقرير ← اعتماد أو رفض."
           />
         ) : (
           <div className="space-y-3">
             {list.map((r) => (
-              <RequestCard key={r.id} request={r} />
+              <RequestCard
+                key={r.id}
+                request={r}
+                showServiceMode
+                workshopName={
+                  scope.showWorkshopFilter && r.workshopId
+                    ? workshopNameById.get(r.workshopId)
+                    : undefined
+                }
+              />
             ))}
           </div>
         )}
