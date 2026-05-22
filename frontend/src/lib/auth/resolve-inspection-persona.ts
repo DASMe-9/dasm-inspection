@@ -22,6 +22,7 @@ const KNOWN_ROLES: readonly AppRole[] = [
 
 export type InspectionNavKey =
   | "dashboard"
+  | "workshop_dashboard"
   | "requests"
   | "my_inspections"
   | "workshops"
@@ -87,6 +88,7 @@ export function visibleNavKeys(
 ): Set<InspectionNavKey> {
   const all: InspectionNavKey[] = [
     "dashboard",
+    "workshop_dashboard",
     "requests",
     "my_inspections",
     "workshops",
@@ -98,12 +100,24 @@ export function visibleNavKeys(
 
   if (persona === "dasm_user") return new Set(all);
 
+  if (persona === "workshop_owner" || persona === "workshop_manager") {
+    return new Set<InspectionNavKey>([
+      "workshop_dashboard",
+      "requests",
+      "settings",
+    ]);
+  }
+
   if (persona === "inspector" || persona === "mechanic") {
     return new Set(all.filter((k) => k !== "subscription"));
   }
 
   if (persona === "viewer") {
     return new Set(all.filter((k) => k !== "subscription"));
+  }
+
+  if (persona === "super_admin" || persona === "inspection_admin") {
+    return new Set(all);
   }
 
   return new Set(all);
