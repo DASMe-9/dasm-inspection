@@ -16,6 +16,7 @@
 | `/reports/:id` | ✅ تقرير + بنود + تعديل بند (`ReportChecklistRow` → `updateReportItemAction`) |
 | `/workshops`, `/workshops/:slug` | ✅ شبكة ورش + ملف عام `/workshops/[slug]` بدون JWT (خطوة 26) + `GET /api/v1/workshops/:slug` |
 | `/workshop` | ✅ لوحة تشغيل `workshop_owner` / `workshop_manager` (خطوة 31 — KPI + طلبات الورشة من JWT `workshop_id`) |
+| `/workshop/team`, `/workshop/pricing`, `/workshop/areas` | ✅ خطوة 32 — إدارة مفتشين، أسعار ورشة/ميداني (`inspection_service_pricing`)، مناطق خدمة (`inspection_workshop_service_areas`) |
 | `/settings` | ✅ موجودة (نصي/إعدادات) |
 | `/my-inspections` | ✅ قائمة بحسب كوكي `inspection_dasm_user_id` (يُضبط من `GET /api/gateway`) |
 

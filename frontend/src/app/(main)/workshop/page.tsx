@@ -15,7 +15,15 @@ import {
 } from "@/lib/data/inspection";
 import { getWorkshopDashboardStats } from "@/lib/data/workshop-dashboard-data";
 import { TOKENS } from "@/lib/theme";
-import { Building2, ClipboardList, ExternalLink, Users } from "lucide-react";
+import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
+import {
+  Building2,
+  ClipboardList,
+  ExternalLink,
+  MapPin,
+  CircleDollarSign,
+  Users,
+} from "lucide-react";
 
 type PageProps = {
   searchParams: Promise<{ workshop_id?: string }>;
@@ -129,9 +137,11 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
 
   const { primary } = TOKENS.colors.roles.workshop;
   const recentSlice = recent.slice(0, 6);
+  const manageQ = `?workshop_id=${workshopId}`;
 
   return (
     <div className="space-y-8" dir="rtl">
+      <WorkshopManageNav />
       <section className="relative overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-bl from-white via-violet-50/50 to-white p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
@@ -209,8 +219,35 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
         )}
       </SectionCard>
 
-      <SectionCard title="اختصارات سريعة">
-        <ul className="grid gap-3 sm:grid-cols-2">
+      <SectionCard title="إدارة الورشة">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <li>
+            <Link
+              href={`/workshop/team${manageQ}`}
+              className="flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-violet-50"
+            >
+              <Users className="h-4 w-4 text-violet-600" aria-hidden />
+              إدارة الفريق
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/workshop/pricing${manageQ}`}
+              className="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-emerald-50"
+            >
+              <CircleDollarSign className="h-4 w-4 text-emerald-700" aria-hidden />
+              أسعار الخدمة
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/workshop/areas${manageQ}`}
+              className="flex items-center gap-3 rounded-xl border border-sky-100 bg-sky-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-sky-50"
+            >
+              <MapPin className="h-4 w-4 text-sky-700" aria-hidden />
+              مناطق الخدمة
+            </Link>
+          </li>
           <li>
             <Link
               href={`/requests?workshop=${workshopId}&status=pending_review`}
@@ -224,7 +261,6 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
               href="/settings"
               className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50"
             >
-              <Users className="h-4 w-4 text-violet-600" aria-hidden />
               الإعدادات ومراجعة التقييمات
             </Link>
           </li>
