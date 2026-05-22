@@ -55,7 +55,7 @@ export async function getWorkshopRatingAveragesMap(): Promise<
     buckets.set(wid, list);
   }
 
-  for (const [wid, ratings] of buckets) {
+  for (const [wid, ratings] of Array.from(buckets.entries())) {
     const sum = ratings.reduce((a, b) => a + b, 0);
     map.set(wid, {
       average: Math.round((sum / ratings.length) * 10) / 10,
