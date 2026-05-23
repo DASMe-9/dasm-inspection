@@ -56,6 +56,16 @@
 
 ---
 
+## Moderation وثقة الورش
+
+| المطلوب | الحالة |
+|---------|--------|
+| مراجعة تقييمات مشبوهة | ✅ `/settings` يعرض pending reviews لـ `inspection_admin` / `super_admin` |
+| إيقاف ورشة | ✅ `is_suspended` + سبب/وقت/من أوقف، مع لوحة إدارة في `/settings` |
+| إخفاء الورشة الموقوفة للعامة | ✅ الدليل العام و`/workshops/[slug]` يستبعدان `is_suspended = true` |
+
+---
+
 ## مقابل `EXECUTION_PLAN.md`
 
 | المرحلة | الحالة الواقعية (ملخّص) |

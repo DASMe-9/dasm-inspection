@@ -21,6 +21,10 @@ type DbWorkshop = {
   phone: string | null;
   email: string | null;
   is_verified: boolean;
+  is_suspended?: boolean | null;
+  suspended_at?: string | null;
+  suspended_by?: string | null;
+  suspension_reason?: string | null;
   dasm_partner_ref: string | null;
 };
 
@@ -118,6 +122,10 @@ export function mapWorkshop(row: DbWorkshop): Workshop {
     phone: row.phone ?? undefined,
     email: row.email ?? undefined,
     isVerified: row.is_verified,
+    isSuspended: row.is_suspended ?? false,
+    suspendedAt: row.suspended_at ?? undefined,
+    suspendedBy: row.suspended_by ?? undefined,
+    suspensionReason: row.suspension_reason ?? undefined,
     dasm_partner_ref: row.dasm_partner_ref ?? undefined,
   };
 }
