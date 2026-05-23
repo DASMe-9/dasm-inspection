@@ -46,6 +46,16 @@
 
 ---
 
+## ملخص التقرير العام
+
+| المطلوب | الحالة |
+|---------|--------|
+| `inspection_report_public_summary` | ✅ view للـ approved reports فقط في `20260523150000_inspection_report_public_summary_view.sql` |
+| محتوى الملخص | ✅ JSONB counts: `pass`, `warn`, `fail`, `na` + `report_path` |
+| مصدر الحقيقة | ✅ التفاصيل/checklist تبقى في Inspection؛ Core يستقبل ملخصًا ورابطًا فقط |
+
+---
+
 ## مقابل `EXECUTION_PLAN.md`
 
 | المرحلة | الحالة الواقعية (ملخّص) |
