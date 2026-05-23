@@ -11,7 +11,7 @@
 | المصدر | المحتوى |
 |--------|---------|
 | **DASM Platform** | الحساب، الأدوار العالمية، الجلسة/التوكن، ربط المستخدم بالمركبة والمزاد |
-| **Inspection DB** | مراجع فقط: `dasm_user_id`, `dasm_car_id`, `dasm_partner_ref`؛ وجداول الورشة/المفتش/الطلب |
+| **Inspection DB** | مراجع فقط: `dasm_user_id`, `dasm_car_id`, `dasm_partner_ref`, `inspection_workshops.owner_user_id`؛ وجداول الورشة/المفتش/الطلب |
 
 **ممنوع:** تخزين كلمات مرور، تسجيل مستخدمين محليين، أو نسخ نموذج هوية DASM كاملاً داخل inspection.
 
@@ -78,6 +78,8 @@
 | `workshop_id` | uuid | اختياري | ورشة المستخدم عند دور الورشة |
 | `inspector_record_id` | uuid | اختياري | مطابقة صف `inspection_inspectors.id` عند دور المفتش |
 | `permissions` | string[] | اختياري | صلاحيات دقيقة إن اعتمدتم نموذج RBAC مرن |
+
+**Mapping الورشة:** `inspection_workshops.owner_user_id` يحفظ مرجع `users.id` من DASM Platform لمالك الورشة، و`inspection_workshops.dasm_partner_ref` يبقى مرجع الشريك/المنشأة التجاري. عند إصدار JWT لدور ورشة يجب أن يطابق `workshop_id` صف الورشة الذي يملكه هذا المستخدم.
 
 **ملاحظة:** يمكن دمج `inspection_role` داخل `dasm_roles` ببادئة (مثلاً `inspection:inspector`) إذا كان أبسط تشغيلياً؛ عندها يُعرَّف محوّل في طبقة التطبيق (انظر `enum-alignment-strategy.md`).
 

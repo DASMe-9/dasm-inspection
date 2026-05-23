@@ -36,6 +36,16 @@
 
 ---
 
+## Mapping هوية الورشة
+
+| المطلوب | الحالة |
+|---------|--------|
+| `users.id` من DASM Platform ↔ `inspection_workshops.owner_user_id` | ✅ عمود additive مع index في `20260523143000_inspection_workshops_owner_user_id.sql` |
+| `inspection_workshops.dasm_partner_ref` | ✅ موجود كمرجع شريك/منشأة |
+| JWT `inspection_role` + `workshop_id` | ✅ طبقة القراءة/التنقل تقرأها؛ إصدارها يبقى مسؤولية منصة داسم/SSO |
+
+---
+
 ## مقابل `EXECUTION_PLAN.md`
 
 | المرحلة | الحالة الواقعية (ملخّص) |
