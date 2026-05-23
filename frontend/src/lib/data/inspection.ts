@@ -141,6 +141,24 @@ export async function getInspector(id: string): Promise<Inspector | null> {
   return mapInspector(data as Parameters<typeof mapInspector>[0]);
 }
 
+/** ربط حساب منصّة داسم بسجل مفتش (تطبيق الجوال — خطوة 39). */
+export async function findInspectorByDasmUserId(
+  dasmUserId: string
+): Promise<Inspector | null> {
+  const key = dasmUserId?.trim();
+  if (!key) return null;
+  const sb = getAdminClient();
+  if (!sb) return null;
+  const { data, error } = await sb
+    .from("inspection_inspectors")
+    .select("*")
+    .eq("dasm_user_id", key)
+    .eq("active", true)
+    .maybeSingle();
+  if (error || !data) return null;
+  return mapInspector(data as Parameters<typeof mapInspector>[0]);
+}
+
 export async function getInspectorsForWorkshop(
   workshopId: string
 ): Promise<Inspector[]> {
