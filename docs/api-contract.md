@@ -220,7 +220,9 @@
 
 **Idempotency:** `inspection_report_id` فريد على Core.
 
-### 3.5 Webhook من المنصّة (اختياري — لم يُنفَّذ)
+**قرار العقد الحالي (2026-05-23):** هذا هو مسار المزامنة الرسمي بين Inspection وCore في MVP. الخطة الأصلية ذكرت `POST /api/v1/webhooks/dasm` بتوقيع HMAC، لكن التنفيذ المدمج اختار internal push إلى Core عبر `X-DASM-Internal-Token`. لا تضف webhook HMAC موازياً إلا إذا وُجدت حاجة تشغيلية جديدة وتوثيق ترحيل واضح.
+
+### 3.6 Webhook من المنصّة (اختياري — لم يُنفَّذ)
 
 `POST /api/v1/webhooks/dasm` — أحداث من المنصّة إلى Inspection؛ **يتطلب** توقيع سرّي مشترك.
 
