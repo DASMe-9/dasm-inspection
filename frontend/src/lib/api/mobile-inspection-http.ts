@@ -2,14 +2,26 @@ import "server-only";
 
 import {
   findInspectorByDasmUserId,
+  getInspectionRequest,
+  getReport,
+  getReportByRequestId,
   listInspectionRequests,
   listInspectionRequestsForDasmUser,
   listWorkshopsForDirectory,
 } from "@/lib/data/inspection";
+import {
+  canAccessMobileRequest,
+  ensureDraftChecklistReport,
+} from "@/lib/api/mobile-inspection-mutations";
+import {
+  canConfirmOnSite,
+  canStartInspection,
+  effectiveServiceMode,
+} from "@/lib/inspection-request-transitions";
 import { authenticateDasmToken } from "@/lib/auth/authenticate-dasm-token";
 import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
 import type { AppRole } from "@/types";
-import type { InspectionRequest, Workshop } from "@/types";
+import type { InspectionReportItem, InspectionRequest, Workshop } from "@/types";
 import { getBearerToken } from "@/lib/api/inspection-http-auth";
 import type { NextRequest } from "next/server";
 
@@ -116,4 +128,66 @@ export async function listMobileRequestsForAuth(normalized: {
   }
 
   return { requests: [], scope: "none" as const };
+}
+
+export function toMobileChecklistItem(item: InspectionReportItem) {
+  return {
+    id: item.id,
+    section: item.section,
+    label: item.label,
+    status: item.status,
+    notes: item.notes ?? null,
+  };
+}
+
+export async function getMobileRequestDetail(
+  requestId: string,
+  normalized: {
+    userId: string;
+    inspectionRole: string | null;
+    workshopId: string | null;
+    inspectorRecordId: string | null;
+  }
+) {
+  const req = await getInspectionRequest(requestId);
+  if (!req) return { ok: false as const, status: 404, message: "الطلب غير موجود" };
+
+  const claims = {
+    userId: normalized.userId,
+    dasmRoles: [] as string[],
+    inspectionRole: normalized.inspectionRole,
+    workshopId: normalized.workshopId,
+    inspectorRecordId: normalized.inspectorRecordId,
+  };
+
+  if (!canAccessMobileRequest(req, claims)) {
+    return { ok: false as const, status: 403, message: "غير مصرّح بعرض هذا الطلب" };
+  }
+
+  const serviceMode = effectiveServiceMode(req.serviceMode);
+  const ctx = { status: req.status, serviceMode };
+
+  let report =
+    (req.reportId ? await getReport(req.reportId) : null) ??
+    (await getReportByRequestId(req.id));
+
+  if (req.status === "in_progress" && !report) {
+    const draft = await ensureDraftChecklistReport(req.id);
+    if (draft.ok && draft.report) report = draft.report;
+  }
+
+  return {
+    ok: true as const,
+    request: {
+      ...toMobileRequestRow(req),
+      field_service_address: req.fieldServiceAddress ?? null,
+      field_service_lat: req.fieldServiceLat ?? null,
+      field_service_lng: req.fieldServiceLng ?? null,
+      can_confirm_on_site: canConfirmOnSite(ctx),
+      can_start: canStartInspection(ctx),
+      checklist_editable: req.status === "in_progress",
+    },
+    checklist: report?.items.map(toMobileChecklistItem) ?? [],
+    report_id: report?.id ?? null,
+  };
 }
