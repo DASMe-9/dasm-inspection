@@ -56,7 +56,7 @@ export async function listWorkshopsForDirectory(): Promise<Workshop[]> {
     getWorkshopRatingAveragesMap(),
   ]);
 
-  return [...workshops].sort((a, b) => {
+  return workshops.filter((w) => !w.isSuspended).sort((a, b) => {
     if (a.isVerified !== b.isVerified) {
       return a.isVerified ? -1 : 1;
     }
@@ -96,6 +96,7 @@ export async function getWorkshopBySlug(slug: string): Promise<Workshop | null> 
     .from("inspection_workshops")
     .select("*")
     .eq("slug", normalized)
+    .eq("is_suspended", false)
     .maybeSingle();
   if (error || !data) return null;
   return attachWorkshopPricing(

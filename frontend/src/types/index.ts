@@ -91,6 +91,10 @@ export interface Workshop {
   phone?: string;
   email?: string;
   isVerified: boolean;
+  isSuspended: boolean;
+  suspendedAt?: string;
+  suspendedBy?: string;
+  suspensionReason?: string;
   dasm_partner_ref?: string;
   /** أسعار فعّالة (تخصيص الورشة مع fallback للمنصّة) */
   pricing?: WorkshopServicePricing;

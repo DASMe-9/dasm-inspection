@@ -1,3 +1,4 @@
+import { WorkshopAdminModerationPanel } from "@/components/inspection/WorkshopAdminModerationPanel";
 import { WorkshopReviewModerationPanel } from "@/components/inspection/WorkshopReviewModerationPanel";
 import { SectionCard } from "@/components/shared";
 import { getInspectionAuthContext } from "@/lib/auth/inspection-context.server";
@@ -24,7 +25,12 @@ export default async function SettingsPage() {
     <div className="space-y-6" dir="rtl">
       <h2 className="text-lg font-bold text-gray-800">الإعدادات</h2>
 
-      {canModerate && <WorkshopReviewModerationPanel />}
+      {canModerate && (
+        <>
+          <WorkshopReviewModerationPanel />
+          <WorkshopAdminModerationPanel />
+        </>
+      )}
 
       <SectionCard title="الأدوار (V1)">
         <ul className="text-sm space-y-2">
