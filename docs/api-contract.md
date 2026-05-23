@@ -260,6 +260,20 @@
 
 لا تنسخ بيانات مستخدم داسم كاملة داخل Inspection؛ هذه الحقول مراجع ربط فقط.
 
+## 4.4 ملخص التقرير العام
+
+`inspection_report_public_summary` هو view للقراءة فقط يعرض التقارير التي لديها `approved_at` فقط، مع:
+
+- `inspection_report_id`
+- `inspection_request_id`
+- `workshop_id`
+- `inspector_id`
+- `approved_at`
+- `summary` بصيغة JSONB تحتوي `pass`, `warn`, `fail`, `na`
+- `report_path` مثل `/reports/{inspection_report_id}`
+
+يبقى الـ PDF/URL المطلق مسؤولية طبقة التطبيق لأنها تعرف `INSPECTION_PUBLIC_BASE_URL`. لا يكرر هذا الـ view checklist كامل داخل Core.
+
 ---
 
 ## 5. ما هو خارج العقد
