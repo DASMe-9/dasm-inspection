@@ -17,13 +17,13 @@ import {
   effectiveServiceMode,
 } from "@/lib/inspection-request-transitions";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
-import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
-import {
-  buildReportSyncPayload,
-  parseDasmCarId,
-} from "@/lib/core/build-report-sync-payload";
 import { ensureDasmCarOnCore } from "@/lib/core/ensure-dasm-car-on-core";
-import { pushApprovedReportToCore } from "@/lib/core/push-approved-report-to-core";
+import {
+  defaultReportItemRows,
+  executeApproveInspectionReport,
+  executeRejectInspectionReport,
+  SUBMIT_FOR_REVIEW_SUMMARY,
+} from "@/lib/inspection/report-approval-core";
 import {
   canEditRepairQuote,
   normalizeRepairQuoteNotes,
@@ -378,8 +378,7 @@ export async function submitReportForReviewAction(requestId: string): Promise<Ac
       return { ok: false, message: "يوجد تقرير مسبقاً." };
     }
 
-    const summary =
-      "تقرير فحص فني مبدئي: مراجعة البنود أدناه قبل الاعتماد النهائي.";
+    const summary = SUBMIT_FOR_REVIEW_SUMMARY;
 
     const { data: rep, error: repErr } = await sb
       .from("inspection_reports")
@@ -397,14 +396,7 @@ export async function submitReportForReviewAction(requestId: string): Promise<Ac
       return { ok: false, message: repErr?.message ?? "فشل إنشاء التقرير" };
     }
 
-    const rows = DEFAULT_REPORT_ITEMS.map((it) => ({
-      report_id: rep.id,
-      section: it.section,
-      label: it.label,
-      status: it.status,
-      notes: it.notes ?? null,
-      sort_order: it.sort_order,
-    }));
+    const rows = defaultReportItemRows(rep.id);
 
     const { error: itemsErr } = await sb.from("inspection_report_items").insert(rows);
     if (itemsErr) {
@@ -435,129 +427,17 @@ export async function submitReportForReviewAction(requestId: string): Promise<Ac
 export async function approveReportAction(requestId: string): Promise<ActionResult> {
   try {
     await assertInspectionMutationAllowed();
-    const sb = requireAdminClient();
-    const { data: req, error: fetchErr } = await sb
-      .from("inspection_requests")
-      .select("status, report_id")
-      .eq("id", requestId)
-      .single();
-
-    if (fetchErr || !req || req.status !== "pending_review" || !req.report_id) {
-      return { ok: false, message: "لا يوجد تقرير بانتظار المراجعة." };
-    }
-
-    const now = new Date().toISOString();
-    const { error: repErr } = await sb
-      .from("inspection_reports")
-      .update({
-        approved_at: now,
-        approved_by_role: ACTOR,
-        rejection_reason: null,
-      })
-      .eq("id", req.report_id);
-
-    if (repErr) return { ok: false, message: repErr.message };
-
-    const { error: reqErr } = await sb
-      .from("inspection_requests")
-      .update({ status: "approved" })
-      .eq("id", requestId);
-
-    if (reqErr) return { ok: false, message: reqErr.message };
-    await insertHistory(requestId, "approved", "تم اعتماد التقرير");
-
-    await syncApprovedReportToCoreAfterApprove(sb, requestId, req.report_id, now);
+    const result = await executeApproveInspectionReport(requestId, ACTOR);
+    if (!result.ok) return result;
 
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
-    revalidatePath(`/reports/${req.report_id}`);
+    revalidatePath(`/reports/${result.reportId}`);
     revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {
     return { ok: false, message: mapAccessError(e) };
   }
-}
-
-async function syncApprovedReportToCoreAfterApprove(
-  sb: ReturnType<typeof requireAdminClient>,
-  requestId: string,
-  reportId: string,
-  approvedAtIso: string
-): Promise<void> {
-  const { data: reqRow } = await sb
-    .from("inspection_requests")
-    .select(
-      "dasm_car_id, dasm_user_id, vehicle_label, title, workshop_id, inspection_workshops(name)"
-    )
-    .eq("id", requestId)
-    .single();
-
-  const row = reqRow as {
-    dasm_car_id?: string | null;
-    dasm_user_id?: string | null;
-    vehicle_label?: string | null;
-    title?: string | null;
-  } | null;
-
-  let carId = parseDasmCarId(row?.dasm_car_id);
-  if (!carId && row?.dasm_user_id && row.vehicle_label) {
-    const userId = Number.parseInt(String(row.dasm_user_id), 10);
-    if (Number.isFinite(userId) && userId > 0) {
-      const ensured = await ensureDasmCarOnCore({
-        userId,
-        vehicleLabel: row.vehicle_label,
-        inspectionRequestId: requestId,
-        title: row.title ?? undefined,
-      });
-      if (ensured) {
-        carId = ensured;
-        await sb
-          .from("inspection_requests")
-          .update({ dasm_car_id: String(ensured) })
-          .eq("id", requestId);
-      }
-    }
-  }
-
-  if (!carId) {
-    inspectionOpsLog("warn", "core_report_sync_skipped", {
-      reason: "missing_dasm_car_id",
-      inspection_request_id: requestId,
-      inspection_report_id: reportId,
-    });
-    return;
-  }
-
-  const { data: reportRow } = await sb
-    .from("inspection_reports")
-    .select("overall_summary")
-    .eq("id", reportId)
-    .single();
-
-  const { data: items } = await sb
-    .from("inspection_report_items")
-    .select("status")
-    .eq("report_id", reportId);
-
-  const workshop = (reqRow as { inspection_workshops?: { name?: string } | { name?: string }[] | null })
-    ?.inspection_workshops;
-  const workshopName = Array.isArray(workshop)
-    ? workshop[0]?.name
-    : workshop?.name;
-
-  const payload = buildReportSyncPayload({
-    carId,
-    requestId,
-    reportId,
-    workshopId: (reqRow as { workshop_id?: string | null })?.workshop_id ?? null,
-    workshopName: workshopName ?? null,
-    overallSummary:
-      (reportRow as { overall_summary?: string | null } | null)?.overall_summary ?? null,
-    approvedAtIso,
-    items: (items ?? []) as { status: ReportItemStatus }[],
-  });
-
-  await pushApprovedReportToCore(payload);
 }
 
 export async function updateReportItemAction(
@@ -599,40 +479,12 @@ export async function rejectReportAction(
 ): Promise<ActionResult> {
   try {
     await assertInspectionMutationAllowed();
-    const r = reason.trim();
-    if (!r) return { ok: false, message: "اذكر سبب الرفض." };
-    const sb = requireAdminClient();
-    const { data: req, error: fetchErr } = await sb
-      .from("inspection_requests")
-      .select("status, report_id")
-      .eq("id", requestId)
-      .single();
+    const result = await executeRejectInspectionReport(requestId, reason, ACTOR);
+    if (!result.ok) return result;
 
-    if (fetchErr || !req || req.status !== "pending_review" || !req.report_id) {
-      return { ok: false, message: "لا يوجد تقرير بانتظار المراجعة." };
-    }
-
-    const { error: repErr } = await sb
-      .from("inspection_reports")
-      .update({
-        approved_at: null,
-        approved_by_role: null,
-        rejection_reason: r,
-      })
-      .eq("id", req.report_id);
-
-    if (repErr) return { ok: false, message: repErr.message };
-
-    const { error: reqErr } = await sb
-      .from("inspection_requests")
-      .update({ status: "rejected" })
-      .eq("id", requestId);
-
-    if (reqErr) return { ok: false, message: reqErr.message };
-    await insertHistory(requestId, "rejected", r);
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
-    revalidatePath(`/reports/${req.report_id}`);
+    revalidatePath(`/reports/${result.reportId}`);
     revalidatePath("/my-inspections");
     return { ok: true };
   } catch (e) {

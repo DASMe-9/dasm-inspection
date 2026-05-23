@@ -14,6 +14,10 @@ import {
   effectiveServiceMode,
 } from "@/lib/inspection-request-transitions";
 import { requireAdminClient } from "@/lib/supabase/admin";
+import {
+  executeApproveInspectionReport,
+  executeRejectInspectionReport,
+} from "@/lib/inspection/report-approval-core";
 import type {
   InspectionReport,
   InspectionRequest,
@@ -72,6 +76,28 @@ export function canMutateMobileInspectorWorkflow(
     return req.inspectorId === normalized.inspectorRecordId;
   }
   return false;
+}
+
+export function canMutateMobileWorkshopApproval(
+  req: InspectionRequest,
+  normalized: NormalizedInspectionClaims
+): boolean {
+  const persona = personaOf(normalized);
+  if (persona === "inspection_admin" || persona === "super_admin") {
+    return true;
+  }
+  if (isWorkshopOperatorRole(persona) && normalized.workshopId) {
+    return req.workshopId === normalized.workshopId && req.status === "pending_review";
+  }
+  return false;
+}
+
+function workshopActorRole(normalized: NormalizedInspectionClaims): AppRole {
+  const persona = personaOf(normalized);
+  if (persona === "workshop_owner" || persona === "workshop_manager") {
+    return persona;
+  }
+  return "inspection_admin";
 }
 
 async function insertMobileHistory(
@@ -290,5 +316,46 @@ export async function mobileUpdateChecklistItem(
     .eq("id", itemId);
 
   if (error) return { ok: false, message: error.message };
+  return { ok: true };
+}
+
+export async function mobileApproveReport(
+  requestId: string,
+  normalized: NormalizedInspectionClaims
+): Promise<MobileActionResult> {
+  const req = await getInspectionRequest(requestId);
+  if (!req) return { ok: false, message: "الطلب غير موجود." };
+  if (!canMutateMobileWorkshopApproval(req, normalized)) {
+    return { ok: false, message: "ليس لديك صلاحية اعتماد هذا التقرير." };
+  }
+  if (!req.reportId) {
+    return { ok: false, message: "لا يوجد تقرير مرتبط." };
+  }
+
+  const result = await executeApproveInspectionReport(
+    requestId,
+    workshopActorRole(normalized)
+  );
+  if (!result.ok) return result;
+  return { ok: true };
+}
+
+export async function mobileRejectReport(
+  requestId: string,
+  reason: string,
+  normalized: NormalizedInspectionClaims
+): Promise<MobileActionResult> {
+  const req = await getInspectionRequest(requestId);
+  if (!req) return { ok: false, message: "الطلب غير موجود." };
+  if (!canMutateMobileWorkshopApproval(req, normalized)) {
+    return { ok: false, message: "ليس لديك صلاحية رفض هذا التقرير." };
+  }
+
+  const result = await executeRejectInspectionReport(
+    requestId,
+    reason,
+    workshopActorRole(normalized)
+  );
+  if (!result.ok) return result;
   return { ok: true };
 }
