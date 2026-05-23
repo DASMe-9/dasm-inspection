@@ -8,6 +8,7 @@ import {
 } from "@/lib/data/inspection";
 import { authenticateDasmToken } from "@/lib/auth/authenticate-dasm-token";
 import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
+import type { AppRole } from "@/types";
 import type { InspectionRequest, Workshop } from "@/types";
 import { getBearerToken } from "@/lib/api/inspection-http-auth";
 import type { NextRequest } from "next/server";
@@ -79,16 +80,17 @@ export async function listMobileRequestsForAuth(normalized: {
   workshopId: string | null;
   inspectorRecordId: string | null;
 }) {
-  const role = normalized.inspectionRole ?? "unknown";
+  const role = normalized.inspectionRole;
+  const persona = (role ?? "unknown") as AppRole | "unknown";
 
-  if (role === "dasm_user") {
+  if (persona === "dasm_user") {
     const rows = await listInspectionRequestsForDasmUser(normalized.userId, {
       sort: "updated_desc",
     });
     return { requests: rows.map(toMobileRequestRow), scope: "dasm_user" as const };
   }
 
-  if (isWorkshopOperatorRole(role) && normalized.workshopId) {
+  if (isWorkshopOperatorRole(persona) && normalized.workshopId) {
     const rows = await listInspectionRequests({
       workshopId: normalized.workshopId,
       sort: "updated_desc",
@@ -97,7 +99,7 @@ export async function listMobileRequestsForAuth(normalized: {
   }
 
   if (
-    (role === "inspector" || role === "mechanic") &&
+    (persona === "inspector" || persona === "mechanic") &&
     normalized.inspectorRecordId
   ) {
     const rows = await listInspectionRequests({
@@ -108,7 +110,7 @@ export async function listMobileRequestsForAuth(normalized: {
     return { requests: rows.map(toMobileRequestRow), scope: "inspector" as const };
   }
 
-  if (role === "inspection_admin" || role === "super_admin") {
+  if (persona === "inspection_admin" || persona === "super_admin") {
     const rows = await listInspectionRequests({ sort: "updated_desc" });
     return { requests: rows.map(toMobileRequestRow), scope: "admin" as const };
   }
