@@ -14,6 +14,7 @@ import type {
 
 type DbWorkshop = {
   id: string;
+  owner_user_id: string | null;
   slug: string;
   name: string;
   city: string;
@@ -110,6 +111,7 @@ function parseCoord(value: number | string | null | undefined): number | null {
 export function mapWorkshop(row: DbWorkshop): Workshop {
   return {
     id: row.id,
+    ownerUserId: row.owner_user_id ?? undefined,
     slug: row.slug,
     name: row.name,
     city: row.city,

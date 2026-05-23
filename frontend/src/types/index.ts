@@ -82,6 +82,8 @@ export interface WorkshopReview {
 
 export interface Workshop {
   id: string;
+  /** DASM Platform users.id لمالك الورشة. */
+  ownerUserId?: string;
   /** مسار عام: /workshops/[slug] */
   slug: string;
   name: string;

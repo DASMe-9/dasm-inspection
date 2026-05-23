@@ -250,6 +250,16 @@
 **Headers:** `X-DASM-Internal-Token: DASM_INSPECTION_INTERNAL_PULL_TOKEN`  
 **Env:** `DASM_CORE_API_URL`, `DASM_INSPECTION_SYNC_ENABLED` (افتراضي مفعّل)
 
+## 4.3 Mapping الهوية للورشة
+
+| الحقل | المصدر | الغرض |
+|-------|--------|-------|
+| `inspection_workshops.owner_user_id` | `DASM-Platform.users.id` | مالك الورشة في منصة داسم |
+| `inspection_workshops.dasm_partner_ref` | مرجع شريك/منشأة في داسم | ربط تجاري/تشغيلي غير مخصص للمستخدم |
+| JWT `workshop_id` أو `organization_id` | توكن صادر عن داسم | تحديد نطاق ورشة المستخدم داخل Inspection |
+
+لا تنسخ بيانات مستخدم داسم كاملة داخل Inspection؛ هذه الحقول مراجع ربط فقط.
+
 ---
 
 ## 5. ما هو خارج العقد
