@@ -6,6 +6,7 @@ import {
   RequestListFilters,
 } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { getPlatformDefaultPricing } from "@/lib/data/inspection-pricing-data";
@@ -116,6 +117,9 @@ export default async function RequestsListPage({
           </div>
         )}
       </SectionCard>
+
+      {/* W-007 — DASM Ads inline slot (booking surface) */}
+      <AdSlot slotKey="inspection.booking.inline" />
     </div>
   );
 }
