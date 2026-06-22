@@ -13,3 +13,6 @@ export { WorkshopApplyForm } from "./WorkshopApplyForm";
 export { NewInspectionRequestForm } from "./NewInspectionRequestForm";
 export { RequestAttachmentsSection } from "./RequestAttachmentsSection";
 export { RequestListFilters } from "./RequestListFilters";
+export { ExternalReportVault } from "./ExternalReportVault";
+export { VehicleMaintenanceLog } from "./VehicleMaintenanceLog";
+export { VehicleObdScanLog } from "./VehicleObdScanLog";
