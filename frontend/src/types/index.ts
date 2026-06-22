@@ -169,6 +169,100 @@ export interface InspectionAttachment {
   uploadedAt: string;
 }
 
+export type ExternalReportOcrStatus =
+  | "pending"
+  | "processing"
+  | "processed"
+  | "failed";
+
+export interface ExternalVehicleReport {
+  id: string;
+  dasmUserId: string;
+  dasmCarId?: string;
+  vehicleLabel?: string;
+  reportSource?: string;
+  reportDate?: string;
+  fileName: string;
+  mimeType: string;
+  ocrStatus: ExternalReportOcrStatus;
+  extractedSummary: Record<string, unknown>;
+  maintenanceReminders: unknown[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type VehicleMaintenanceServiceType =
+  | "oil_change"
+  | "oil_filter"
+  | "air_filter"
+  | "cabin_filter"
+  | "fuel_filter"
+  | "tires"
+  | "brakes"
+  | "battery"
+  | "coolant"
+  | "transmission"
+  | "obd_scan"
+  | "periodic_inspection"
+  | "other";
+
+export type VehicleMaintenanceRecordSource =
+  | "user_entry"
+  | "external_report"
+  | "workshop_entry"
+  | "core_import";
+
+export interface VehicleMaintenanceRecord {
+  id: string;
+  dasmUserId: string;
+  dasmCarId?: string;
+  vehicleLabel?: string;
+  serviceType: VehicleMaintenanceServiceType;
+  serviceDate: string;
+  odometerKm?: number;
+  nextDueDate?: string;
+  nextDueOdometerKm?: number;
+  providerName?: string;
+  notes?: string;
+  source: VehicleMaintenanceRecordSource;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type VehicleObdScanSeverity =
+  | "clear"
+  | "info"
+  | "warning"
+  | "critical"
+  | "unknown";
+
+export type VehicleObdScanSource =
+  | "user_entry"
+  | "mobile_reader"
+  | "workshop_entry"
+  | "external_report";
+
+export interface VehicleObdScan {
+  id: string;
+  dasmUserId: string;
+  dasmCarId?: string;
+  vehicleLabel?: string;
+  scanDate: string;
+  odometerKm?: number;
+  readerName?: string;
+  protocol?: string;
+  vin?: string;
+  dtcCodes: string[];
+  readinessMonitors: Record<string, unknown>;
+  liveData: Record<string, unknown>;
+  batteryVoltage?: number;
+  summary?: string;
+  severity: VehicleObdScanSeverity;
+  source: VehicleObdScanSource;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface InspectionStatusHistory {
   id: string;
   requestId: string;

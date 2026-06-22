@@ -1,7 +1,13 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { RequestCard, RequestListFilters } from "@/components/inspection";
+import {
+  ExternalReportVault,
+  RequestCard,
+  RequestListFilters,
+  VehicleMaintenanceLog,
+  VehicleObdScanLog,
+} from "@/components/inspection";
 import { EmptyState, SectionCard } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
@@ -10,6 +16,9 @@ import {
   listInspectionRequestsForDasmUser,
   listWorkshops,
 } from "@/lib/data/inspection";
+import { listExternalVehicleReportsForUser } from "@/lib/data/external-vehicle-reports";
+import { listVehicleMaintenanceRecordsForUser } from "@/lib/data/vehicle-maintenance-records";
+import { listVehicleObdScansForUser } from "@/lib/data/vehicle-obd-scans";
 import { listNotificationsForUser } from "@/lib/data/workshop-follows-data";
 
 export default async function MyInspectionsPage({
@@ -23,12 +32,15 @@ export default async function MyInspectionsPage({
   const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
   const scope = await buildRequestListScope(searchParams, workshopOptions);
 
-  const [list, notifications] = uid
+  const [list, notifications, externalReports, maintenanceRecords, obdScans] = uid
     ? await Promise.all([
         listInspectionRequestsForDasmUser(uid, scope.listOpts),
         listNotificationsForUser(uid),
+        listExternalVehicleReportsForUser(uid),
+        listVehicleMaintenanceRecordsForUser(uid),
+        listVehicleObdScansForUser(uid),
       ])
-    : [[], []];
+    : [[], [], [], [], []];
 
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
@@ -58,6 +70,9 @@ export default async function MyInspectionsPage({
         </SectionCard>
       ) : (
         <>
+          <VehicleMaintenanceLog records={maintenanceRecords} />
+          <VehicleObdScanLog scans={obdScans} />
+          <ExternalReportVault reports={externalReports} />
           <InspectionNotificationsPanel notifications={notifications} />
           <Suspense
             fallback={
