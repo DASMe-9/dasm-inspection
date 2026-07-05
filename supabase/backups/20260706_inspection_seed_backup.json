@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "captured_at": "2026-07-06",
+    "supabase_project": "DASM-services (bmfqfmsxtotdksvcqfrh)",
+    "purpose": "Pre-change snapshot of inspection_* seed rows before replacing demo seed with DASM-branded production-like test data.",
+    "restore_note": "Re-insert these rows (ON CONFLICT DO NOTHING) to roll back. Original inspectors were linked to real platform users 11 (فيصل الزهراني, type=user) and 40 (mazronix@gmail.com, type=dealer)."
+  },
+  "workshops": [
+    {"id":"a1b2c3d4-0001-4000-8000-000000000001","name":"ورشة الأمان للفحص","city":"الرياض","phone":"0112345678","email":"info@alaman-inspection.sa","is_verified":true,"dasm_partner_ref":"DASM-WS-001","slug":"workshop-a1b2c3d4"},
+    {"id":"a1b2c3d4-0002-4000-8000-000000000002","name":"مركز الخليج للفحص الفني","city":"جدة","phone":"0126789012","email":"contact@gulf-inspect.sa","is_verified":true,"dasm_partner_ref":"DASM-WS-002","slug":"workshop-a1b2c3d4-1"}
+  ],
+  "inspectors": [
+    {"id":"b2c3d4e5-0001-4000-8000-000000000001","workshop_id":"a1b2c3d4-0001-4000-8000-000000000001","full_name":"خالد المطيري","dasm_user_id":"11","active":true},
+    {"id":"b2c3d4e5-0002-4000-8000-000000000002","workshop_id":"a1b2c3d4-0002-4000-8000-000000000002","full_name":"عبدالرحمن الغامدي","dasm_user_id":"40","active":true}
+  ],
+  "requests": [
+    {"id":"c3d4e5f6-0001-4000-8000-000000000001","title":"فحص كامري 2023","dasm_car_id":"CAR-1001","vehicle_label":"تويوتا كامري 2023","dasm_user_id":"11","status":"submitted","workshop_id":null,"inspector_id":null,"service_mode":"workshop"},
+    {"id":"c3d4e5f6-0002-4000-8000-000000000002","title":"فحص سوناتا 2022","dasm_car_id":"CAR-1002","vehicle_label":"هيونداي سوناتا 2022","dasm_user_id":"33","status":"assigned","workshop_id":"a1b2c3d4-0001-4000-8000-000000000001","inspector_id":"b2c3d4e5-0001-4000-8000-000000000001","service_mode":"workshop"},
+    {"id":"c3d4e5f6-0003-4000-8000-000000000003","title":"فحص اكورد 2024","dasm_car_id":"CAR-1003","vehicle_label":"هوندا اكورد 2024","dasm_user_id":"40","status":"in_progress","workshop_id":"a1b2c3d4-0002-4000-8000-000000000002","inspector_id":"b2c3d4e5-0002-4000-8000-000000000002","service_mode":"workshop"}
+  ],
+  "reports": [],
+  "report_items": [],
+  "pricing": [
+    {"id":"429da630-a660-4fca-a599-f75cb55dcd59","workshop_id":null,"service_mode":"workshop","price_sar":350,"currency":"SAR","is_active":true,"notes":"سعر افتراضي — فحص في الورشة"},
+    {"id":"b61ec14d-7434-4af8-b2af-ecc62c442673","workshop_id":null,"service_mode":"field","price_sar":550,"currency":"SAR","is_active":true,"notes":"سعر افتراضي — فحص ميداني"},
+    {"id":"7a475e85-19cd-4c66-a50d-573c0f38396b","workshop_id":"a1b2c3d4-0001-4000-8000-000000000001","service_mode":"workshop","price_sar":380,"currency":"SAR","is_active":true,"notes":"ورشة الأمان للفحص — في الورشة"},
+    {"id":"93359ee2-1cfb-4fa5-8192-e268846334a3","workshop_id":"a1b2c3d4-0001-4000-8000-000000000001","service_mode":"field","price_sar":600,"currency":"SAR","is_active":true,"notes":"ورشة الأمان للفحص — ميداني"},
+    {"id":"37b9e090-5ed0-466b-8db2-4ec71eba3985","workshop_id":"a1b2c3d4-0002-4000-8000-000000000002","service_mode":"workshop","price_sar":320,"currency":"SAR","is_active":true,"notes":"مركز الخليج للفحص الفني — في الورشة"},
+    {"id":"0f20e750-d28c-489f-ac62-46fc771f70bb","workshop_id":"a1b2c3d4-0002-4000-8000-000000000002","service_mode":"field","price_sar":520,"currency":"SAR","is_active":true,"notes":"مركز الخليج للفحص الفني — ميداني"}
+  ],
+  "status_history": [
+    {"id":"6b555ffe-a836-4719-9835-b7b2459dab86","request_id":"c3d4e5f6-0001-4000-8000-000000000001","status":"submitted","note":"طلب فحص جديد","actor_role":"dasm_user"},
+    {"id":"ead74616-a3e4-4d71-8d7f-677bed820a1b","request_id":"c3d4e5f6-0002-4000-8000-000000000002","status":"submitted","note":"طلب فحص جديد","actor_role":"dasm_user"},
+    {"id":"ce0606bb-a4b2-4eb6-9307-585c46f741c8","request_id":"c3d4e5f6-0002-4000-8000-000000000002","status":"assigned","note":"تم تعيين ورشة الأمان","actor_role":"inspection_admin"},
+    {"id":"3bc275ed-4ef0-4ef2-94bc-aeffc2ca7450","request_id":"c3d4e5f6-0003-4000-8000-000000000003","status":"submitted","note":"طلب فحص جديد","actor_role":"dasm_user"},
+    {"id":"27433a17-2698-46ca-996d-f470a52c203e","request_id":"c3d4e5f6-0003-4000-8000-000000000003","status":"assigned","note":"تم تعيين مركز الخليج","actor_role":"inspection_admin"},
+    {"id":"12152e0c-c239-4f4f-ade6-fc8fd0d7e1b3","request_id":"c3d4e5f6-0003-4000-8000-000000000003","status":"in_progress","note":"بدأ الفحص","actor_role":"inspector"}
+  ]
+}
