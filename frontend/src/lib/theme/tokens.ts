@@ -7,6 +7,15 @@ export type AppRole = "customer" | "workshop" | "admin";
 
 export const TOKENS = {
   colors: {
+    // هوية داسم البصرية (من الشعار): كحلي غامق + تدرّج أزرق→أخضر.
+    brand: {
+      navy: "#0B1E3A",
+      navyDeep: "#071528",
+      navySoft: "#12294a",
+      blue: "#1E74E8",
+      green: "#2FBF4E",
+      gradient: "linear-gradient(135deg,#1E74E8 0%,#2FBF4E 100%)",
+    },
     semantic: {
       success: "#10B981",
       warning: "#F59E0B",

@@ -18,15 +18,15 @@ export function Sidebar({
   const groups: SidebarNavGroup[] = filterSidebarNavGroups(allowed);
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:right-0 bg-white/95 backdrop-blur-sm border-l border-gray-200/90 shadow-[4px_0_32px_-16px_rgba(15,23,42,0.18)] z-40">
-      {/* Logo */}
-      <div className="h-16 flex items-center gap-3 px-5 border-b border-gray-100">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-sm">
-          <span className="text-white font-bold text-sm">فحص</span>
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:right-0 bg-[#0B1E3A] border-l border-white/10 shadow-[4px_0_32px_-16px_rgba(2,8,20,0.6)] z-40">
+      {/* Logo — هوية داسم */}
+      <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10">
+        <div className="w-9 h-9 rounded-xl bg-[linear-gradient(135deg,#1E74E8_0%,#2FBF4E_100%)] flex items-center justify-center shadow-md">
+          <span className="text-white font-extrabold text-sm">DE</span>
         </div>
         <div>
-          <h1 className="font-bold text-gray-900 text-sm">داسم فحص</h1>
-          <p className="text-[10px] text-gray-500">الفحص الفني للمركبات</p>
+          <h1 className="font-bold text-white text-sm">داسم للفحص</h1>
+          <p className="text-[10px] text-slate-400">الفحص الفني للمركبات</p>
         </div>
       </div>
 
@@ -34,7 +34,7 @@ export function Sidebar({
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         {groups.map((group) => (
           <div key={group.label} className="mb-5">
-            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
+            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2">
               {group.label}
             </p>
             <div className="space-y-1">
@@ -50,8 +50,8 @@ export function Sidebar({
                     href={item.href}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? "bg-indigo-50 text-indigo-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-white/10 text-white ring-1 ring-inset ring-[#2FBF4E]/40"
+                        : "text-slate-300 hover:bg-white/5 hover:text-white"
                     }`}
                   >
                     <span className="text-base">{item.icon}</span>
@@ -65,9 +65,9 @@ export function Sidebar({
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-gray-200">
-        <p className="text-[10px] text-gray-400 text-center">
-          داسم فحص — منصة الفحص الفني
+      <div className="px-4 py-3 border-t border-white/10">
+        <p className="text-[10px] text-slate-500 text-center">
+          داسم للفحص — منصة الفحص الفني
         </p>
       </div>
     </aside>
