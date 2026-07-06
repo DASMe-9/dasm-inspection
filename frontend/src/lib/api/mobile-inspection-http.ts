@@ -16,6 +16,7 @@ import {
 } from "@/lib/api/mobile-inspection-mutations";
 import { listNotificationsForUser } from "@/lib/data/workshop-follows-data";
 import { listRepairRecommendationsForRequest } from "@/lib/data/repair-recommendations-data";
+import { listMessagesForRequest } from "@/lib/data/request-messages-data";
 import { listWorkshopReviewsForOwner } from "@/lib/data/workshop-insights-data";
 import {
   canConfirmOnSite,
@@ -206,6 +207,13 @@ export async function getMobileRequestDetail(
       severity: r.severity,
       estimated_cost_sar: r.estimatedCostSar,
       status: r.status,
+    })),
+    messages: (await listMessagesForRequest(req.id)).map((m) => ({
+      id: m.id,
+      sender_dasm_user_id: m.senderDasmUserId,
+      sender_role: m.senderRole,
+      body: m.body,
+      created_at: m.createdAt,
     })),
   };
 }

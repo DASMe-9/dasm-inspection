@@ -9,6 +9,7 @@ import {
   RequestAttachmentsSection,
 } from "@/components/inspection";
 import { RepairRecommendationsSection } from "@/components/inspection/RepairRecommendationsSection";
+import { RequestMessagesSection } from "@/components/inspection/RequestMessagesSection";
 import { SectionCard } from "@/components/shared";
 import {
   getHistoryForRequest,
@@ -160,6 +161,8 @@ export default async function RequestDetailPage({
         )}
 
       <RepairRecommendationsSection requestId={req.id} reportId={req.reportId} />
+
+      <RequestMessagesSection requestId={req.id} ownerId={req.dasm_user_id ?? null} />
 
       <SectionCard title="خط زمني للحالة">
         <StatusTimeline items={history} />
