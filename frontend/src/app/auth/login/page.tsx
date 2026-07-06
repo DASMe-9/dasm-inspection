@@ -189,16 +189,6 @@ function LoginPageInner() {
       {/* ── يسار: نموذج ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem 2.5rem" }}>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #8dc63f, #5a9a1a)", fontSize: 22, color: "white" }}>
-            🔧
-          </div>
-          <div>
-            <p style={{ margin: 0, fontWeight: 800, color: "white", fontSize: "1rem" }}>داسم فحص</p>
-            <p style={{ margin: 0, color: "#a5b4fc", fontSize: "0.75rem" }}>DASM Inspection — نظام داخلي</p>
-          </div>
-        </div>
-
         <div style={{ width: "100%", maxWidth: 380 }}>
           <h2 style={{ margin: "0 0 0.375rem", fontSize: "1.875rem", fontWeight: 800, color: "white" }}>تسجيل الدخول</h2>
           <p style={{ margin: "0 0 1.75rem", color: "rgba(165,180,252,0.45)", fontSize: "0.9rem" }}>منصة الفحص الفني للمركبات</p>
@@ -307,8 +297,8 @@ function LoginPageInner() {
         </div>
 
         <div style={{ textAlign: "center" }}>
-          <h1 style={{ margin: "0 0 0.25rem", fontSize: "2rem", fontWeight: 800, color: "white" }}>داسم فحص</h1>
-          <p style={{ margin: 0, color: "#a5b4fc", fontSize: "0.8125rem", letterSpacing: "0.05em" }}>DASM INSPECTION — INTERNAL</p>
+          <h1 style={{ margin: "0 0 0.25rem", fontSize: "2rem", fontWeight: 800, color: "white" }}>فحص داسم</h1>
+          <p style={{ margin: 0, color: "#a5b4fc", fontSize: "0.8125rem", letterSpacing: "0.05em" }}>DASM Vehicle Inspection</p>
         </div>
 
         <svg viewBox="0 0 200 160" style={{ width: 220, height: 176, opacity: 0.9 }}>
@@ -334,7 +324,7 @@ function LoginPageInner() {
           {[
             { icon: "🔍", text: "فحص شامل موثّق عبر الورش المعتمدة" },
             { icon: "📋", text: "تقارير فنية فورية مع الصور والبيانات" },
-            { icon: "🔒", text: "نظام داخلي — فريق داسم فقط" },
+            { icon: "🚗", text: "سجل فني موثّق دائم لكل مركبة" },
           ].map((f) => (
             <div key={f.text} style={{ display: "flex", alignItems: "center", gap: "0.75rem", borderRadius: 12, padding: "0.75rem 1rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(99,102,241,0.1)" }}>
               <span style={{ fontSize: "1.25rem" }}>{f.icon}</span>
@@ -343,7 +333,7 @@ function LoginPageInner() {
           ))}
         </div>
 
-        <p style={{ color: "rgba(79,70,229,0.4)", fontSize: "0.75rem", marginTop: "0.5rem" }}>داسم فحص — منظومة DASM</p>
+        <p style={{ color: "rgba(79,70,229,0.4)", fontSize: "0.75rem", marginTop: "0.5rem" }}>فحص داسم — منظومة DASM</p>
       </div>
 
       <style>{`
