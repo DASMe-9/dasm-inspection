@@ -15,6 +15,7 @@ import {
   ensureDraftChecklistReport,
 } from "@/lib/api/mobile-inspection-mutations";
 import { listNotificationsForUser } from "@/lib/data/workshop-follows-data";
+import { listRepairRecommendationsForRequest } from "@/lib/data/repair-recommendations-data";
 import { listWorkshopReviewsForOwner } from "@/lib/data/workshop-insights-data";
 import {
   canConfirmOnSite,
@@ -196,6 +197,16 @@ export async function getMobileRequestDetail(
     },
     checklist: report?.items.map(toMobileChecklistItem) ?? [],
     report_id: report?.id ?? null,
+    repair_recommendations: (
+      await listRepairRecommendationsForRequest(req.id)
+    ).map((r) => ({
+      id: r.id,
+      title: r.title,
+      description: r.description,
+      severity: r.severity,
+      estimated_cost_sar: r.estimatedCostSar,
+      status: r.status,
+    })),
   };
 }
 
