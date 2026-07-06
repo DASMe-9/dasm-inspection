@@ -1,4 +1,4 @@
-import { PublicSiteHeader } from "@/components/public-site";
+import { PublicSiteHeader, PublicSiteFooter } from "@/components/public-site";
 import { PUBLIC_BRAND } from "@/components/public-site/brand-tokens";
 
 export default function PublicSiteLayout({
@@ -14,6 +14,7 @@ export default function PublicSiteLayout({
     >
       <PublicSiteHeader />
       <main className="flex-1">{children}</main>
+      <PublicSiteFooter />
     </div>
   );
 }
