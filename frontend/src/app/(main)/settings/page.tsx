@@ -1,4 +1,5 @@
 import { WorkshopAdminModerationPanel } from "@/components/inspection/WorkshopAdminModerationPanel";
+import { WorkshopApplicationsPanel } from "@/components/inspection/WorkshopApplicationsPanel";
 import { WorkshopReviewModerationPanel } from "@/components/inspection/WorkshopReviewModerationPanel";
 import { SectionCard } from "@/components/shared";
 import { getInspectionAuthContext } from "@/lib/auth/inspection-context.server";
@@ -27,6 +28,7 @@ export default async function SettingsPage() {
 
       {canModerate && (
         <>
+          <WorkshopApplicationsPanel />
           <WorkshopReviewModerationPanel />
           <WorkshopAdminModerationPanel />
         </>
