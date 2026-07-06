@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "@/hooks";
 import { cn } from "@/lib/utils";
 export interface HeaderProps {
   title?: string;
@@ -25,13 +24,11 @@ export function Header({
   className,
 }: HeaderProps) {
   const pathname = usePathname();
-  const { colors } = useTheme({ role: "workshop" });
   const href = backHref ?? getBackHrefFromPath(pathname);
 
   return (
     <header
-      className={cn("px-4 py-3 flex items-center gap-3", className)}
-      style={{ backgroundColor: colors.primary }}
+      className={cn("px-4 py-3 flex items-center gap-3 bg-[#0B1E3A]", className)}
       dir="rtl"
     >
       {href && (
