@@ -72,6 +72,15 @@ function MobileNav({
           icon={item.icon}
         />
       ))}
+      <a
+        href="/api/auth/logout"
+        className="flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg py-1 px-0.5 text-[9px] font-medium text-slate-300 hover:bg-white/5 hover:text-white min-h-[52px] justify-center sm:text-[10px]"
+      >
+        <span className="text-base leading-none" aria-hidden>
+          ↩
+        </span>
+        <span className="truncate w-full text-center leading-tight">خروج</span>
+      </a>
     </nav>
   );
 }
