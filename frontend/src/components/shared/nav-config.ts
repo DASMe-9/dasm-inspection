@@ -34,8 +34,9 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     ],
   },
   {
-    label: "الاشتراك",
+    label: "المالية",
     items: [
+      { key: "wallet", href: "/wallet", label: "المحفظة", icon: "💰" },
       {
         key: "subscription",
         href: "/subscription",
@@ -67,12 +68,7 @@ export const MOBILE_BOTTOM_NAV_ITEMS: SidebarNavItem[] = [
     icon: "👤",
   },
   { key: "workshops", href: "/workshops", label: "الورش", icon: "🔧" },
-  {
-    key: "subscription",
-    href: "/subscription",
-    label: "الاشتراك",
-    icon: "💳",
-  },
+  { key: "wallet", href: "/wallet", label: "المحفظة", icon: "💰" },
   { key: "settings", href: "/settings", label: "الإعدادات", icon: "⚙️" },
 ];
 

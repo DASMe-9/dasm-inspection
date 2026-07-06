@@ -26,6 +26,7 @@ export type InspectionNavKey =
   | "requests"
   | "my_inspections"
   | "workshops"
+  | "wallet"
   | "subscription"
   | "settings";
 
@@ -92,6 +93,7 @@ export function visibleNavKeys(
     "requests",
     "my_inspections",
     "workshops",
+    "wallet",
     "subscription",
     "settings",
   ];
@@ -100,7 +102,10 @@ export function visibleNavKeys(
   // لهم حتى لا يظهر زرّ يؤدي لصفحة «غير متاحة».
   const withoutWorkshop = all.filter((k) => k !== "workshop_dashboard");
 
-  if (persona === "unknown") return new Set(withoutWorkshop);
+  // المحفظة تحتاج حساباً حقيقياً (رصيد/ليدجر) — تُخفى عن المجهول/العرض/الفاحص.
+  if (persona === "unknown") {
+    return new Set(withoutWorkshop.filter((k) => k !== "wallet"));
+  }
 
   if (persona === "dasm_user") return new Set(withoutWorkshop);
 
@@ -108,19 +113,20 @@ export function visibleNavKeys(
     return new Set<InspectionNavKey>([
       "workshop_dashboard",
       "requests",
+      "wallet",
       "settings",
     ]);
   }
 
   if (persona === "inspector" || persona === "mechanic") {
     return new Set(
-      withoutWorkshop.filter((k) => k !== "subscription")
+      withoutWorkshop.filter((k) => k !== "subscription" && k !== "wallet")
     );
   }
 
   if (persona === "viewer") {
     return new Set(
-      withoutWorkshop.filter((k) => k !== "subscription")
+      withoutWorkshop.filter((k) => k !== "subscription" && k !== "wallet")
     );
   }
 
@@ -128,5 +134,5 @@ export function visibleNavKeys(
     return new Set(all);
   }
 
-  return new Set(withoutWorkshop);
+  return new Set(withoutWorkshop.filter((k) => k !== "wallet"));
 }
