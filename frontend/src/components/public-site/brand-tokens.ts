@@ -1,11 +1,12 @@
-/** ألوان الواجهة العامة (أسلوب MVPI — أزرق داكن + أخضر ليموني) */
+/** ألوان الواجهة العامة — مُوائمة مع هوية شعار داسم (كحلي + أزرق→أخضر) */
 export const PUBLIC_BRAND = {
-  navy: "#0c1f3d",
-  navyDeep: "#071428",
-  navyGlass: "rgba(12, 31, 61, 0.92)",
-  green: "#8dc63f",
-  greenHover: "#7ab82f",
-  greenDark: "#5a9a1a",
+  navy: "#0B1E3A",
+  navyDeep: "#071528",
+  navyGlass: "rgba(11, 30, 58, 0.92)",
+  green: "#2FBF4E",
+  greenHover: "#28a944",
+  greenDark: "#1f8c38",
+  blue: "#1E74E8",
   white: "#ffffff",
   muted: "rgba(255,255,255,0.75)",
 } as const;
