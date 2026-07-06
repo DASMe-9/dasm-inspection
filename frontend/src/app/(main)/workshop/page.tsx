@@ -14,7 +14,6 @@ import {
   listWorkshops,
 } from "@/lib/data/inspection";
 import { getWorkshopDashboardStats } from "@/lib/data/workshop-dashboard-data";
-import { TOKENS } from "@/lib/theme";
 import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
 import {
   Building2,
@@ -139,24 +138,27 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     listInspectionRequests({ workshopId, sort: "updated_desc" }),
   ]);
 
-  const { primary } = TOKENS.colors.roles.workshop;
   const recentSlice = recent.slice(0, 6);
   const manageQ = `?workshop_id=${workshopId}`;
 
   return (
     <div className="space-y-8" dir="rtl">
       <WorkshopManageNav />
-      <section className="relative overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-bl from-white via-violet-50/50 to-white p-6 shadow-sm md:p-8">
+      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] p-6 shadow-md md:p-8">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#1E74E8_0%,#2FBF4E_100%)]"
+          aria-hidden
+        />
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-semibold text-violet-800/90">لوحة تشغيل الورشة</p>
-            <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold text-gray-900 md:text-3xl">
-              <Building2 className="h-7 w-7 text-violet-700" aria-hidden />
+            <p className="text-xs font-semibold text-sky-300">لوحة تشغيل الورشة</p>
+            <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold text-white md:text-3xl">
+              <Building2 className="h-7 w-7 text-[#2FBF4E]" aria-hidden />
               {workshop.name}
             </h1>
-            <p className="mt-1 text-sm text-gray-600">{workshop.city}</p>
+            <p className="mt-1 text-sm text-slate-300">{workshop.city}</p>
             {isWorkshopOperatorRole(access.persona) && (
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-slate-400">
                 دورك:{" "}
                 {access.persona === "workshop_owner" ? "مالك ورشة" : "مدير ورشة"}
               </p>
@@ -165,15 +167,14 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           <div className="flex flex-wrap gap-2">
             <Link
               href={`/workshops/${workshop.slug}`}
-              className="inline-flex items-center gap-2 rounded-xl border-2 bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:bg-violet-50"
-              style={{ borderColor: primary, color: primary }}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-white/20"
             >
               الصفحة العامة
               <ExternalLink className="h-4 w-4" aria-hidden />
             </Link>
             <Link
               href={`/requests?workshop=${workshopId}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-gray-800"
+              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#1E74E8_0%,#2FBF4E_100%)] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:opacity-90"
             >
               <ClipboardList className="h-4 w-4" aria-hidden />
               كل طلبات الورشة
