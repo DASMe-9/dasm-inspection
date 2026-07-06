@@ -36,7 +36,7 @@ export default async function MainShellLayout({
 
   return (
     <div
-      className="flex min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_55%,#eef2f7_100%)]"
+      className="flex min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_55%,#eef2f7_100%)] dark:bg-none dark:bg-[#0a1626]"
       dir="rtl"
     >
       <Sidebar allowedNavKeys={allowedNavKeys} />
