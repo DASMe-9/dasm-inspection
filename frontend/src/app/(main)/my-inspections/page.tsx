@@ -43,6 +43,18 @@ export default async function MyInspectionsPage({
       ])
     : [[], [], [], [], []];
 
+  // فهرس مركبات العميل (لملف فني لكل سيارة).
+  const carFileMap = new Map<string, string>();
+  const noteCar = (id: string | undefined, label: string | undefined) => {
+    if (!id) return;
+    carFileMap.set(id, label ?? carFileMap.get(id) ?? id);
+  };
+  for (const r of list) noteCar(r.dasmCarId, r.vehicleLabel ?? undefined);
+  for (const m of maintenanceRecords) noteCar(m.dasmCarId, m.vehicleLabel);
+  for (const o of obdScans) noteCar(o.dasmCarId, o.vehicleLabel);
+  for (const e of externalReports) noteCar(e.dasmCarId, e.vehicleLabel);
+  const cars = Array.from(carFileMap.entries());
+
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
       <div>
@@ -72,6 +84,23 @@ export default async function MyInspectionsPage({
       ) : (
         <>
           <MaintenanceReminders records={maintenanceRecords} />
+          {cars.length > 0 && (
+            <SectionCard title="مركباتي">
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {cars.map(([id, lbl]) => (
+                  <li key={id}>
+                    <Link
+                      href={`/my-inspections/vehicle/${encodeURIComponent(id)}`}
+                      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm hover:border-indigo-300"
+                    >
+                      <span className="font-medium text-gray-900">{lbl}</span>
+                      <span className="text-xs text-indigo-600">الملف الفني ←</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
+          )}
           <VehicleMaintenanceLog records={maintenanceRecords} />
           <VehicleObdScanLog scans={obdScans} />
           <ExternalReportVault reports={externalReports} />
