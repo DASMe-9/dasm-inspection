@@ -49,7 +49,7 @@ export default async function MyInspectionsPage({
     if (!id) return;
     carFileMap.set(id, label ?? carFileMap.get(id) ?? id);
   };
-  for (const r of list) noteCar(r.dasmCarId, r.vehicleLabel ?? undefined);
+  for (const r of list) noteCar(r.dasm_car_id, r.vehicleLabel ?? undefined);
   for (const m of maintenanceRecords) noteCar(m.dasmCarId, m.vehicleLabel);
   for (const o of obdScans) noteCar(o.dasmCarId, o.vehicleLabel);
   for (const e of externalReports) noteCar(e.dasmCarId, e.vehicleLabel);

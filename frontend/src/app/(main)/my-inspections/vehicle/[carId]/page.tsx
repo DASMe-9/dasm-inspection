@@ -41,7 +41,7 @@ export default async function VehicleFilePage({
     listExternalVehicleReportsForUser(uid),
   ]);
 
-  const carRequests = requests.filter((r) => r.dasmCarId === carId);
+  const carRequests = requests.filter((r) => r.dasm_car_id === carId);
   const carMaintenance = maintenance.filter((m) => m.dasmCarId === carId);
   const carObd = obdScans.filter((o) => o.dasmCarId === carId);
   const carReports = externalReports.filter((e) => e.dasmCarId === carId);
