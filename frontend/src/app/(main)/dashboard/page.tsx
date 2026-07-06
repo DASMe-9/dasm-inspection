@@ -112,7 +112,7 @@ export default async function DashboardPage() {
               <p className="text-gray-500">لا توجد طلبات فحص بعد</p>
               <Link
                 href="/requests"
-                className="inline-block mt-3 text-sm text-indigo-600 font-medium hover:underline"
+                className="inline-block mt-3 text-sm text-[#1E74E8] font-medium hover:underline"
               >
                 أنشئ أول طلب ←
               </Link>
@@ -124,7 +124,7 @@ export default async function DashboardPage() {
               ))}
               <Link
                 href="/requests"
-                className="block text-center text-sm font-medium py-2 text-indigo-600 hover:underline"
+                className="block text-center text-sm font-medium py-2 text-[#1E74E8] hover:underline"
               >
                 عرض كل الطلبات ({all.length}) ←
               </Link>

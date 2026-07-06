@@ -16,7 +16,7 @@ export function InspectionNotificationsPanel({
   return (
     <SectionCard title="التنبيهات">
       {unread.length > 0 && (
-        <p className="mb-3 text-xs font-medium text-violet-800">
+        <p className="mb-3 text-xs font-medium text-[#1857b8]">
           {unread.length} غير مقروء
         </p>
       )}
@@ -41,7 +41,7 @@ export function InspectionNotificationsPanel({
                   <input type="hidden" name="notification_id" value={n.id} />
                   <button
                     type="submit"
-                    className="text-[10px] font-semibold text-violet-700 hover:underline"
+                    className="text-[10px] font-semibold text-[#1E74E8] hover:underline"
                   >
                     تعليم كمقروء
                   </button>

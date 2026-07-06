@@ -38,7 +38,7 @@ function NavInner() {
             href={href}
             className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
               active
-                ? "bg-violet-100 text-violet-800"
+                ? "bg-violet-100 text-[#1857b8]"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >

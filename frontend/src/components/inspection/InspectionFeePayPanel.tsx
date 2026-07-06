@@ -78,7 +78,7 @@ export function InspectionFeePayPanel({
         type="button"
         disabled={pending}
         onClick={pay}
-        className="w-full py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+        className="w-full py-2.5 rounded-lg bg-[#1E74E8] text-white text-sm font-medium hover:bg-[#1857b8] disabled:opacity-50"
       >
         {pending ? "جاري التحضير…" : "ادفع عبر Paymob"}
       </button>

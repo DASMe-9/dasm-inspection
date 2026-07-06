@@ -74,7 +74,7 @@ export default async function MyInspectionsPage({
             action={
               <Link
                 href="/requests"
-                className="text-sm font-medium text-indigo-600 hover:underline min-h-[44px] inline-flex items-center"
+                className="text-sm font-medium text-[#1E74E8] hover:underline min-h-[44px] inline-flex items-center"
               >
                 الانتقال إلى طلبات الفحص →
               </Link>
@@ -94,7 +94,7 @@ export default async function MyInspectionsPage({
                       className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm hover:border-indigo-300"
                     >
                       <span className="font-medium text-gray-900">{lbl}</span>
-                      <span className="text-xs text-indigo-600">الملف الفني ←</span>
+                      <span className="text-xs text-[#1E74E8]">الملف الفني ←</span>
                     </Link>
                   </li>
                 ))}
@@ -131,7 +131,7 @@ export default async function MyInspectionsPage({
                 action={
                   <Link
                     href="/requests"
-                    className="inline-flex min-h-[44px] items-center rounded-xl bg-indigo-600 px-5 text-sm font-medium text-white hover:bg-indigo-700"
+                    className="inline-flex min-h-[44px] items-center rounded-xl bg-[#1E74E8] px-5 text-sm font-medium text-white hover:bg-[#1857b8]"
                   >
                     إنشاء طلب فحص
                   </Link>

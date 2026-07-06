@@ -77,7 +77,7 @@ export function WorkshopFollowPanel({
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex items-center gap-2 rounded-xl bg-violet-700 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-800 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#1E74E8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1857b8] disabled:opacity-60"
           >
             <Bell className="h-4 w-4" aria-hidden />
             متابعة الورشة

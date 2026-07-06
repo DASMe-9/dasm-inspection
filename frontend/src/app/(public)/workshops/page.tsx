@@ -27,7 +27,7 @@ export default async function WorkshopsPage() {
         />
         <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl space-y-3">
-            <p className="text-xs font-semibold text-violet-800/90">شبكة داسم للفحص الفني</p>
+            <p className="text-xs font-semibold text-[#1857b8]/90">شبكة داسم للفحص الفني</p>
             <h1
               id="workshops-hub-title"
               className="text-2xl font-bold leading-tight text-gray-900 md:text-3xl"

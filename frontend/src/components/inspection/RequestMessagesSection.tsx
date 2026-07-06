@@ -84,7 +84,7 @@ export async function RequestMessagesSection({
           />
           <button
             type="submit"
-            className="rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-violet-800"
+            className="rounded-xl bg-[#1E74E8] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1857b8]"
           >
             إرسال
           </button>

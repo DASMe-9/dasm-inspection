@@ -87,7 +87,7 @@ export function WorkshopReviewsPanel({
 
       <p className="text-xs text-gray-500">
         إدارة المنصّة:{" "}
-        <Link href="/settings" className="font-semibold text-violet-700 hover:underline">
+        <Link href="/settings" className="font-semibold text-[#1E74E8] hover:underline">
           الإعدادات → مراجعة التقييمات
         </Link>
       </p>

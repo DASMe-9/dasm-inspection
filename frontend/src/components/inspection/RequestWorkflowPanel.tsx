@@ -143,7 +143,7 @@ export function RequestWorkflowPanel({
               </select>
             </label>
             {previewFee != null && (
-              <p className="text-xs text-violet-800 rounded-lg bg-violet-50 px-2 py-1.5">
+              <p className="text-xs text-[#1857b8] rounded-lg bg-violet-50 px-2 py-1.5">
                 تقدير الرسوم: {formatInspectionPriceSar(previewFee)}
               </p>
             )}

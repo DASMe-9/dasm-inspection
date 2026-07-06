@@ -71,7 +71,7 @@ export function WorkshopInstallBanner() {
     >
       <div className="min-w-0">
         <p className="text-sm font-bold text-violet-900">ثبّت لوحة الورشة</p>
-        <p className="text-xs text-violet-800/90 mt-0.5">
+        <p className="text-xs text-[#1857b8]/90 mt-0.5">
           افتح الطلبات والميداني من الشاشة الرئيسية — يعمل كتطبيق على الجوال.
         </p>
       </div>
@@ -80,20 +80,20 @@ export function WorkshopInstallBanner() {
           <button
             type="button"
             onClick={() => void install()}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-600"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#1E74E8] px-3 py-2 text-xs font-semibold text-white hover:bg-violet-600"
           >
             <Download className="h-4 w-4" aria-hidden />
             تثبيت
           </button>
         ) : (
-          <span className="text-xs text-violet-700">
+          <span className="text-xs text-[#1E74E8]">
             من قائمة المتصفح: «إضافة إلى الشاشة الرئيسية»
           </span>
         )}
         <button
           type="button"
           onClick={dismiss}
-          className="rounded-lg p-2 text-violet-700 hover:bg-violet-100"
+          className="rounded-lg p-2 text-[#1E74E8] hover:bg-violet-100"
           aria-label="إخفاء"
         >
           <X className="h-4 w-4" />

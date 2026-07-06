@@ -64,7 +64,7 @@ export default async function VehicleFilePage({
       <div>
         <Link
           href="/my-inspections"
-          className="text-xs font-medium text-indigo-600 hover:underline"
+          className="text-xs font-medium text-[#1E74E8] hover:underline"
         >
           ← طلباتي
         </Link>

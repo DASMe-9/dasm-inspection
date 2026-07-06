@@ -51,7 +51,7 @@ export function WorkshopFieldMapPanel({
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-violet-700 hover:underline"
+                  className="font-semibold text-[#1E74E8] hover:underline"
                 >
                   فتح بملء الشاشة
                 </a>
@@ -75,7 +75,7 @@ export function WorkshopFieldMapPanel({
                     <MapPin className="h-4 w-4 shrink-0 text-emerald-700" aria-hidden />
                     <Link
                       href={`/requests/${r.id}`}
-                      className="hover:text-violet-800 hover:underline"
+                      className="hover:text-[#1857b8] hover:underline"
                     >
                       {r.vehicleLabel}
                     </Link>
@@ -113,7 +113,7 @@ export function WorkshopFieldMapPanel({
                   <p className="text-sm font-semibold text-gray-900">
                     <Link
                       href={`/requests/${r.id}`}
-                      className="hover:text-violet-800 hover:underline"
+                      className="hover:text-[#1857b8] hover:underline"
                     >
                       {r.vehicleLabel}
                     </Link>
@@ -133,7 +133,7 @@ export function WorkshopFieldMapPanel({
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#1E74E8] hover:underline"
                   >
                     <Navigation className="h-3.5 w-3.5" aria-hidden />
                     بحث العنوان

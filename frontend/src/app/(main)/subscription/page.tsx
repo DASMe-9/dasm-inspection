@@ -137,7 +137,7 @@ export default function SubscriptionPage() {
 
         <div className="bg-white rounded-xl border border-gray-200/90 shadow-sm ring-1 ring-black/[0.04] p-8 text-center space-y-4">
           <div className="w-16 h-16 mx-auto rounded-full bg-indigo-50 flex items-center justify-center">
-            <CreditCard className="w-8 h-8 text-indigo-600" />
+            <CreditCard className="w-8 h-8 text-[#1E74E8]" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900">ابدأ تجربتك المجانية</h3>
           <p className="text-sm text-gray-500 max-w-sm mx-auto">
@@ -146,7 +146,7 @@ export default function SubscriptionPage() {
           <button
             onClick={handleEnroll}
             disabled={enrolling}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-indigo-600 text-white font-medium text-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#1E74E8] text-white font-medium text-sm hover:bg-[#1857b8] disabled:opacity-50 transition-colors"
           >
             {enrolling
               ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -214,12 +214,12 @@ export default function SubscriptionPage() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-3 rounded-lg bg-gray-50">
-                <TrendingUp className="w-5 h-5 mx-auto text-indigo-600 mb-1" />
+                <TrendingUp className="w-5 h-5 mx-auto text-[#1E74E8] mb-1" />
                 <p className="text-lg font-bold text-gray-900">{sub.tier === 0 ? "—" : sub.tier}</p>
                 <p className="text-xs text-gray-500">الشريحة</p>
               </div>
               <div className="text-center p-3 rounded-lg bg-gray-50">
-                <CreditCard className="w-5 h-5 mx-auto text-indigo-600 mb-1" />
+                <CreditCard className="w-5 h-5 mx-auto text-[#1E74E8] mb-1" />
                 <p className="text-lg font-bold text-gray-900">
                   {sub.is_on_trial ? "0" : sub.effective_fee_sar}
                   <span className="text-xs font-normal"> ر.س</span>
@@ -227,7 +227,7 @@ export default function SubscriptionPage() {
                 <p className="text-xs text-gray-500">رسوم الشهر</p>
               </div>
               <div className="text-center p-3 rounded-lg bg-gray-50">
-                <Receipt className="w-5 h-5 mx-auto text-indigo-600 mb-1" />
+                <Receipt className="w-5 h-5 mx-auto text-[#1E74E8] mb-1" />
                 <p className="text-lg font-bold text-gray-900">
                   {sub.prev_month_income_sar.toLocaleString()}
                   <span className="text-xs font-normal"> ر.س</span>
@@ -306,14 +306,14 @@ function TierTable({ currentTier }: { currentTier?: number }) {
           >
             <div className="flex items-center gap-2">
               {currentTier === t.tier && (
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 inline-block" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#1E74E8] inline-block" />
               )}
-              <span className={`text-sm ${currentTier === t.tier ? "font-semibold text-indigo-700" : "text-gray-700"}`}>
+              <span className={`text-sm ${currentTier === t.tier ? "font-semibold text-[#1857b8]" : "text-gray-700"}`}>
                 {t.label}
               </span>
               <span className="text-xs text-gray-400 hidden sm:inline">({t.range})</span>
             </div>
-            <span className={`text-sm ${currentTier === t.tier ? "font-semibold text-indigo-700" : "text-gray-600"}`}>
+            <span className={`text-sm ${currentTier === t.tier ? "font-semibold text-[#1857b8]" : "text-gray-600"}`}>
               {t.fee} ر.س / شهر
             </span>
           </div>
