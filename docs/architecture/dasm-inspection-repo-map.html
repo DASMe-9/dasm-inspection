@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خريطة ريبو فحص داسم — التقرير المعماري الشامل</title>
+<style>
+  :root{
+    --navy:#0B1E3A; --navy2:#12294a; --blue:#1E74E8; --green:#2FBF4E;
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f6f8fb; --card:#fff;
+    --red:#dc2626; --amber:#d97706; --sky:#0284c7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{display:flex;max-width:1400px;margin:0 auto;gap:0}
+  /* Sidebar TOC */
+  nav.toc{position:sticky;top:0;align-self:flex-start;width:260px;height:100vh;overflow-y:auto;
+    background:var(--navy);color:#cbd5e1;padding:22px 16px;flex-shrink:0}
+  nav.toc .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  nav.toc .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--green));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px}
+  nav.toc h1{font-size:14px;color:#fff;margin:0}
+  nav.toc p{font-size:10px;color:#94a3b8;margin:2px 0 0}
+  nav.toc a{display:block;color:#cbd5e1;font-size:13px;padding:7px 10px;border-radius:8px;margin:2px 0}
+  nav.toc a:hover{background:rgba(255,255,255,.08);color:#fff;text-decoration:none}
+  main{flex:1;min-width:0;padding:32px 34px 80px}
+  header.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:20px;
+    padding:30px 28px;margin-bottom:26px;position:relative;overflow:hidden}
+  header.hero::before{content:"";position:absolute;inset-inline:0;top:0;height:5px;
+    background:linear-gradient(90deg,var(--blue),var(--green))}
+  header.hero h1{margin:0 0 6px;font-size:26px}
+  header.hero .sub{color:#93c5fd;font-size:13px}
+  header.hero .meta{margin-top:12px;font-size:12px;color:#cbd5e1}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:22px}
+  section h2{margin:0 0 14px;font-size:20px;color:var(--navy);border-bottom:2px solid var(--line);padding-bottom:8px}
+  section h3{font-size:15px;color:var(--navy2);margin:18px 0 8px}
+  p,li{font-size:14px}
+  code{background:#eef2f7;padding:1px 6px;border-radius:5px;font-size:12.5px;font-family:ui-monospace,Consolas,monospace;direction:ltr;display:inline-block}
+  pre{background:var(--navy);color:#e2e8f0;padding:16px;border-radius:12px;overflow-x:auto;font-size:12px;direction:ltr;text-align:left;line-height:1.5}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:12px 0}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:560px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 11px;text-align:right;vertical-align:top}
+  th{background:#f1f5f9;color:var(--navy);font-weight:700;position:sticky;top:0}
+  tr:hover td{background:#f8fafc}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;color:#fff}
+  .b-red{background:var(--red)} .b-amber{background:var(--amber)} .b-sky{background:var(--sky)}
+  .b-green{background:var(--green)} .b-navy{background:var(--navy)} .b-blue{background:var(--blue)}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:6px 0 4px}
+  .stat{background:linear-gradient(135deg,#f8fafc,#eef2f7);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  .stat .n{font-size:24px;font-weight:800;color:var(--blue)}
+  .stat .l{font-size:11px;color:var(--muted);margin-top:2px}
+  .callout{border-radius:12px;padding:14px 16px;margin:12px 0;font-size:13.5px;border-inline-start:4px solid}
+  .callout.ok{background:#f0fdf4;border-color:var(--green)}
+  .callout.warn{background:#fffbeb;border-color:var(--amber)}
+  .callout.crit{background:#fef2f2;border-color:var(--red)}
+  ul{padding-inline-start:22px}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+  @media(max-width:900px){nav.toc{display:none}main{padding:18px}header.hero h1{font-size:21px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <div class="brand">
+    <div class="logo">DE</div>
+    <div><h1>فحص داسم</h1><p>خريطة الريبو المعمارية</p></div>
+  </div>
+  <a href="#summary">0 · الخلاصة التنفيذية</a>
+  <a href="#layers">1 · طبقات النظام</a>
+  <a href="#routes">2 · المسارات (29)</a>
+  <a href="#api">3 · نقاط النهاية (28)</a>
+  <a href="#actions">4 · إجراءات الخادم</a>
+  <a href="#schema">5 · مخطّط قاعدة البيانات</a>
+  <a href="#bridge">6 · جسر المنصّة</a>
+  <a href="#auth">7 · المصادقة والهوية</a>
+  <a href="#env">8 · متغيّرات البيئة</a>
+  <a href="#assets">9 · مالنا وما علينا</a>
+  <a href="#plan">10 · خطة إعادة الربط</a>
+</nav>
+<main>
+<header class="hero">
+  <h1>خريطة ريبو «فحص داسم» (dasm-inspection)</h1>
+  <div class="sub">التقرير المعماري الشامل — كل الملفات والمسارات ونقاط النهاية والارتباطات</div>
+  <div class="meta">وثيقة حيّة · آخر تحديث 2026-07-07 · Next.js 14.2.35 + Supabase · النشر Vercel → inspect.dasm.com.sa</div>
+</header>
+
+<section id="summary">
+  <h2>0 · الخلاصة التنفيذية</h2>
+  <div class="stat-grid">
+    <div class="stat"><div class="n">29</div><div class="l">صفحة (Route)</div></div>
+    <div class="stat"><div class="n">28</div><div class="l">نقطة نهاية API</div></div>
+    <div class="stat"><div class="n">~30</div><div class="l">إجراء خادم</div></div>
+    <div class="stat"><div class="n">19</div><div class="l">جدول</div></div>
+    <div class="stat"><div class="n">28</div><div class="l">هجرة</div></div>
+    <div class="stat"><div class="n">~89</div><div class="l">ملف بيانات/منطق</div></div>
+  </div>
+  <p><b>ما هو:</b> تطبيق مستقل للفحص الفني للمركبات — واجهة + خلفية في ريبو واحد. قاعدة بياناته مشروع Supabase واحد <b>DASM-services</b> (<code>bmfqfmsxtotdksvcqfrh</code>) يحوي كل جداول <code>inspection_*</code>، ويشير إلى <b>DASM-core</b> (<code>ttkhiatwayvlfksvehzm</code>) للمستخدمين والسيارات <b>بالمرجع فقط</b>.</p>
+  <div class="callout ok"><b>الحكم على «التشوّه»:</b> بنيةً الريبو <b>متماسك أكثر مما يبدو</b> — لا روابط مكسورة، لا مسارات مكرّرة، كل مفاتيح التنقّل لها صفحات. الإحساس بالتشوّه مصدره أربعة أمور، عولج أهمها: <b>(1)</b> كسر القشرة (رابط داخل اللوحة يقذف للموقع العام) — <b>أُصلح بـ PR #70</b>؛ (2) ضعف اكتشاف صفحات التفاصيل — تصميم مقبول؛ (3) فجوات الوضع الداكن — متبقٍّ؛ (4) وثائق قديمة/مفقودة — متبقٍّ.</div>
+  <div class="callout crit"><b>أهم التزام تقني:</b> مزامنة Core (تقرير/سيارة/محفظة) <b>تفشل بصمت</b> بلا <code>DASM_INSPECTION_INTERNAL_PULL_TOKEN</code>.</div>
+</section>
+
+<section id="layers">
+  <h2>1 · طبقات النظام والارتباطات الخارجية</h2>
+<pre>
+المتصفّح / تطبيق الجوال (Flutter)
+        │ HTTPS
+تطبيق فحص داسم (Next.js 14 على Vercel — inspect.dasm.com.sa)
+  ├─ صفحات (29)  ├─ إجراءات خادم (~30)  ├─ نقاط نهاية /api/* (28)
+  └──────────── طبقة البيانات lib/data (~89) ────────────
+        │ service_role (خادم فقط)          │ HTTP + توكنات
+Supabase DASM-services                منصّة داسم (Laravel) — api.dasm.com.sa
+bmfqfmsxtotdksvcqfrh                  • تحقّق /api/user/profile
+كل جداول inspection_*                  • SSO /api/sso/verify
+        ▲ مرجع فقط                     • داخلي /api/internal/dasm-inspection/*
+Supabase DASM-core (المستخدمون/السيارات/المزادات)
+</pre>
+  <h3>الريبوهات المجاورة</h3>
+  <div class="tablewrap"><table>
+    <tr><th>الريبو</th><th>العلاقة</th><th>الارتباط</th></tr>
+    <tr><td>DASM-Platform (Laravel)</td><td>المنصّة الأم</td><td>تحقّق توكن + SSO + مزامنة داخلية؛ <code>dasm_user_id</code>/<code>dasm_car_id</code> مراجع نصّية</td></tr>
+    <tr><td>dasm-inspection-mobile (Flutter)</td><td>تطبيق الجوال</td><td><b>نفس مشروع Supabase ونفس الجداول</b>؛ يستهلك <code>/api/mobile/*</code> بـ Bearer (Sanctum)</td></tr>
+    <tr><td>السوق/المبوّبات (DASM-services)</td><td>خدمة شقيقة</td><td>ربط تقارير الفحص بالإعلانات — <b>عدم تطابق نوع: BIGINT ↔ UUID (هجرة معلّقة)</b></td></tr>
+  </table></div>
+</section>
+
+<section id="routes">
+  <h2>2 · المسارات (Routes) — 29 صفحة</h2>
+  <p><code>(main)</code> = قشرة اللوحة (محمية) · <code>(public)</code> = عامة <b>تكيّفية</b> (قشرة اللوحة إن كان المستخدم داخلاً، وإلا هيدر/فوتر عام) · <code>auth/*</code>+<code>offline</code> = مستقلّة.</p>
+  <div class="tablewrap"><table>
+    <tr><th>المسار</th><th>المجموعة</th><th>حماية</th><th>الدور</th><th>مربوط من</th></tr>
+    <tr><td><code>/</code></td><td>public</td><td>لا</td><td>—</td><td>هيدر عام</td></tr>
+    <tr><td><code>/about · /privacy · /terms</code></td><td>public</td><td>لا</td><td>—</td><td>فوتر</td></tr>
+    <tr><td><code>/workshops</code></td><td>public</td><td>لا</td><td>—</td><td>شريط جانبي + سفلي + هيدر</td></tr>
+    <tr><td><code>/workshops/apply · /[slug]</code></td><td>public</td><td>لا</td><td>—</td><td>من /workshops</td></tr>
+    <tr><td><code>/dashboard</code></td><td>main</td><td><b>نعم</b></td><td>متعدد</td><td>شريط جانبي + سفلي</td></tr>
+    <tr><td><code>/my-inspections</code> (+ vehicle/[carId])</td><td>main</td><td><b>نعم</b></td><td>dasm_user</td><td>شريط جانبي + سفلي</td></tr>
+    <tr><td><code>/requests</code> (+ /[id])</td><td>main</td><td><b>نعم</b></td><td>متعدد</td><td>شريط جانبي + سفلي</td></tr>
+    <tr><td><code>/reports/[id]</code></td><td>main</td><td><b>نعم</b></td><td>متعدد</td><td>من تفاصيل الطلب</td></tr>
+    <tr><td><code>/track/[id]</code></td><td>main</td><td><b>نعم</b></td><td>dasm_user</td><td><span class="badge b-sky">يتيم مقصود</span> عبر SSO</td></tr>
+    <tr><td><code>/settings · /subscription · /wallet</code></td><td>main</td><td><b>نعم</b></td><td>متعدد / dasm_user</td><td>شريط جانبي + سفلي</td></tr>
+    <tr><td><code>/workshop</code></td><td>main</td><td><b>نعم</b></td><td>ورشة/أدمن (يلزم workshop_id)</td><td>شريط جانبي + سفلي</td></tr>
+    <tr><td><code>/workshop/{team,pricing,areas,field,reviews,followers,export}</code></td><td>main</td><td><b>نعم</b> + requireWorkshopPage()</td><td>ورشة/أدمن</td><td>تبويبات + بطاقات من /workshop</td></tr>
+    <tr><td><code>/auth/login · /callback · /social/callback</code></td><td>مستقلّة</td><td>لا</td><td>—</td><td>دخول / إعادة توجيه OAuth</td></tr>
+    <tr><td><code>/offline</code></td><td>مستقلّة</td><td>لا</td><td>—</td><td><span class="badge b-sky">يتيم مقصود</span> احتياط PWA</td></tr>
+  </table></div>
+  <div class="callout ok">✅ لا روابط مكسورة · ✅ لا تكرار · ✅ كل مفتاح تنقّل له صفحة · ✅ كسر القشرة أُصلح (#70) · ⚠️ يتيمان مقصودان.</div>
+</section>
+
+<section id="api">
+  <h2>3 · نقاط النهاية (API) — 28</h2>
+  <div class="tablewrap"><table>
+    <tr><th>النقطة</th><th>الطرق</th><th>الغرض</th><th>يتصل بـ</th><th>الحماية</th></tr>
+    <tr><td><code>/api/gateway</code></td><td>GET/POST</td><td>دخول SSO + إنشاء طلب</td><td>منصّة + Supabase</td><td>توكن / مفتاح API + Bearer</td></tr>
+    <tr><td><code>/api/auth/login</code></td><td>POST</td><td>تمرير اعتماد</td><td>منصّة</td><td><span class="badge b-amber">بلا حماية</span></td></tr>
+    <tr><td><code>/api/auth/logout</code></td><td>GET/POST</td><td>مسح الكوكيز</td><td>—</td><td>عام</td></tr>
+    <tr><td><code>/api/auth/sso-callback</code></td><td>POST</td><td>تحقّق SSO + كوكيز</td><td>منصّة /sso/verify</td><td>sso_token</td></tr>
+    <tr><td><code>/api/auth/apple · /social-exchange</code></td><td>POST</td><td>دخول اجتماعي</td><td>منصّة</td><td><span class="badge b-amber">بلا حماية</span></td></tr>
+    <tr><td><code>/api/v1/inspection-requests</code> (+/[id])</td><td>POST/GET</td><td>تكامل خارجي</td><td>منصّة + Supabase</td><td>مفتاح API + Bearer + ملكية</td></tr>
+    <tr><td><code>/api/v1/service-pricing · /workshops/[slug]</code></td><td>GET</td><td>أسعار / ملف ورشة</td><td>Supabase</td><td>عام مخبّأ</td></tr>
+    <tr><td><code>/api/mobile/requests</code> (+ /[id], start, on-site, approve, reject)</td><td>GET/POST</td><td>تدفّق الفحص للجوال</td><td>منصّة + Supabase</td><td>Bearer + دور</td></tr>
+    <tr><td><code>/api/mobile/checklist-items/[itemId]</code></td><td>PATCH</td><td>تحديث بند فحص</td><td>منصّة + Supabase</td><td>Bearer</td></tr>
+    <tr><td><code>/api/mobile/reviews · notifications (+/read)</code></td><td>GET/POST</td><td>تقييمات/إشعارات</td><td>منصّة + Supabase</td><td>Bearer</td></tr>
+    <tr><td><code>/api/mobile/vehicle-history</code> (+ maintenance, obd-scans, external-reports)</td><td>GET/POST</td><td>سجلّ المركبة</td><td>منصّة + Supabase</td><td>Bearer</td></tr>
+    <tr><td><code>/api/mobile/workshops</code></td><td>GET</td><td>دليل الورش</td><td>Supabase</td><td>عام مخبّأ</td></tr>
+    <tr><td><code>/api/workshop/export</code></td><td>GET</td><td>تصدير CSV</td><td>Supabase</td><td>كوكي + دور الورشة</td></tr>
+    <tr><td><code>/api/ads/serve · /track</code></td><td>GET/POST</td><td>وسيط إعلانات</td><td>منصّة الإعلانات</td><td>عام (يفشل بأمان)</td></tr>
+  </table></div>
+  <div class="callout warn"><b>مخاطر:</b> وكلاء المصادقة الثلاثة بلا حدّ معدّل (تخمين اعتماد) · التقاطات صامتة <code>.catch(()=>({}))</code> · <code>DASM_GATEWAY_API_KEYS</code> فارغ ⇒ رفض كل الإنشاء عبر البوابة.</div>
+</section>
+
+<section id="actions">
+  <h2>4 · إجراءات الخادم — ~30 في 12 ملفاً</h2>
+  <p>كلها: <code>requireAdminClient()</code> (service_role) · تحقّق الدور · <code>revalidatePath()</code> · رسائل عربية + تحقّق مدخلات.</p>
+  <div class="tablewrap"><table>
+    <tr><th>الملف</th><th>الإجراءات الأبرز</th><th>الجداول</th></tr>
+    <tr><td><code>inspection-workflow.ts</code></td><td>إنشاء/إسناد/إرسال/بدء/ميداني/تقرير/اعتماد/رفض/إلغاء/عرض إصلاح/مرفق</td><td>requests · reports · report_items · status_history · attachments</td></tr>
+    <tr><td><code>workshop-management.ts</code></td><td>مفتش · أسعار · مناطق خدمة</td><td>inspectors · service_pricing · service_areas</td></tr>
+    <tr><td><code>workshop-admin.ts</code></td><td>تعليق ورشة · اعتماد/رفض انضمام</td><td>workshops · applications</td></tr>
+    <tr><td><code>workshop-reviews.ts</code></td><td>تقييم + إشراف</td><td>workshop_reviews</td></tr>
+    <tr><td><code>workshop-follows.ts</code></td><td>متابعة + إشعارات</td><td>workshop_follows · notifications</td></tr>
+    <tr><td><code>workshop-field.ts</code></td><td>جدولة ميدانية + إحداثيات</td><td>requests</td></tr>
+    <tr><td><code>repair-recommendations.ts</code></td><td>توصية إصلاح</td><td>repair_recommendations</td></tr>
+    <tr><td><code>request-messages.ts</code></td><td>محادثة عميل↔ورشة</td><td>request_messages</td></tr>
+    <tr><td><code>external-vehicle-reports · vehicle-maintenance-records · vehicle-obd-scans</code></td><td>خزنة سجلّ المركبة</td><td>external_vehicle_reports · maintenance_records · obd_scans</td></tr>
+  </table></div>
+</section>
+
+<section id="schema">
+  <h2>5 · مخطّط قاعدة البيانات — 19 جدولاً</h2>
+  <p>كلها على <b>DASM-services</b> · RLS مفعّل (deny-all) والخلفية تتجاوزه بـ service_role · محفّزات <code>updated_at</code>.</p>
+  <h3>جداول الفحص الأساسية</h3>
+  <div class="tablewrap"><table>
+    <tr><th>الجدول</th><th>الغرض</th><th>مفاتيح</th></tr>
+    <tr><td><code>inspection_requests</code></td><td><b>كيان التدفّق الرئيسي</b></td><td>dasm_car_id, dasm_user_id, status(10), workshop_id, inspector_id, report_id, service_mode, الرسوم, الدفع</td></tr>
+    <tr><td><code>inspection_reports</code></td><td>تقرير مكتمل (1/طلب)</td><td>request_id(unique), approved_by_role, rejection_reason</td></tr>
+    <tr><td><code>inspection_report_items</code></td><td>بنود القائمة</td><td>section, label, status(pass/warn/fail/na)</td></tr>
+    <tr><td><code>inspection_workshops · inspectors</code></td><td>الورشة + الروستر</td><td>slug, owner_user_id, is_verified · workshop_id, active</td></tr>
+    <tr><td><code>inspection_attachments · status_history</code></td><td>مرفقات + سجلّ حالات</td><td>storage_path · status, actor_role</td></tr>
+    <tr><td><code>inspection_service_pricing</code></td><td>أسعار (ورشة/افتراضي)</td><td>workshop_id(NULL=افتراضي), service_mode, price_sar</td></tr>
+    <tr><td><code>inspection_workshop_applications</code></td><td>طلبات الانضمام</td><td>commercial_registration, status</td></tr>
+    <tr><td><code>inspection_workshop_reviews · follows · notifications</code></td><td>تقييمات + متابعة + إشعارات</td><td>rating(1-5), status · dasm_user_id · kind, read_at</td></tr>
+    <tr><td><code>inspection_workshop_service_areas</code></td><td>مناطق الخدمة</td><td>city, district, supports_workshop/field</td></tr>
+    <tr><td><code>inspection_repair_recommendations</code></td><td>توصيات إصلاح</td><td>severity(4), estimated_cost_sar, status</td></tr>
+    <tr><td><code>inspection_request_messages</code></td><td>خيط الرسائل</td><td>sender_dasm_user_id, sender_role, body</td></tr>
+  </table></div>
+  <h3>خزنة سجلّ المركبة</h3>
+  <div class="tablewrap"><table>
+    <tr><th>الجدول</th><th>الغرض</th></tr>
+    <tr><td><code>inspection_external_vehicle_reports</code></td><td>تقارير خارجية للـOCR (ocr_status, extracted_summary JSONB, maintenance_reminders JSONB)</td></tr>
+    <tr><td><code>inspection_vehicle_maintenance_records</code></td><td>سجلّ الصيانة (service_type, عدّاد, due التالي, source)</td></tr>
+    <tr><td><code>inspection_vehicle_obd_scans</code></td><td>فحوص OBD (dtc_codes JSONB, readiness, severity, source)</td></tr>
+  </table></div>
+</section>
+
+<section id="bridge">
+  <h2>6 · الجسر إلى منصّة داسم (Laravel)</h2>
+  <div class="tablewrap"><table>
+    <tr><th>النقطة على المنصّة</th><th>من ملف الفحص</th><th>التوكن</th></tr>
+    <tr><td><code>POST /api/user/profile</code></td><td>inspection-http-auth.ts</td><td>Bearer</td></tr>
+    <tr><td><code>POST /api/login · /auth/apple · /auth/social/exchange</code></td><td>api/auth/*</td><td>تمرير</td></tr>
+    <tr><td><code>POST /api/sso/verify</code></td><td>api/auth/sso-callback</td><td>sso_token</td></tr>
+    <tr><td><code>POST /api/internal/dasm-inspection/cars/minimal</code></td><td>ensure-dasm-car-on-core.ts</td><td>X-DASM-Internal-Token</td></tr>
+    <tr><td><code>POST /api/internal/dasm-inspection/reports/sync</code></td><td>push-approved-report-to-core.ts</td><td>X-DASM-Internal-Token</td></tr>
+    <tr><td><code>GET /api/internal/dasm-inspection/wallet/balance · /ledger/summary</code></td><td>fetch-inspection-wallet.ts</td><td>X-DASM-Internal-Token</td></tr>
+  </table></div>
+  <div class="callout ok"><b>تدفّق SSO:</b> المنصّة → <code>/api/gateway?token=</code> → تحقّق عبر <code>/api/user/profile</code> → ضبط كوكيز <code>inspection_dasm_user_id</code> + <code>inspection_ui_role</code> (14يوم httpOnly) → توجيه إلى <code>/requests</code>.</div>
+  <p><b>خريطة الدور:</b> admin/super_admin/moderator/programmer → <code>inspection_admin</code> · venue_owner/dealer → <code>workshop_owner</code> · user → <code>dasm_user</code> · غيرها مرفوض.</p>
+</section>
+
+<section id="auth">
+  <h2>7 · المصادقة والهوية والكوكيز</h2>
+  <ul>
+    <li><b>استخراج التوكن:</b> Bearer ثم كوكي (<code>dasm_access_token</code> / <code>inspection_token</code>).</li>
+    <li><b>مساران:</b> تحقّق JWT (HS256/JWKS) عند <code>DASM_JWT_ENFORCE=true</code>؛ واحتياط تحقّق Sanctum عبر <code>/api/user/profile</code>.</li>
+    <li><b>الشخصية:</b> من ترويسات موثّقة يضبطها الوسيط (ثقة jwt) أو كوكيز البوابة (ثقة gateway_cookie).</li>
+    <li><b>الكوكيز:</b> <code>inspection_dasm_user_id</code> · <code>inspection_ui_role</code> (<b>عرض فقط — لا يُعتمد أمنياً</b>) · كوكيز Supabase.</li>
+    <li><b>الوسيط:</b> يعقّم الترويسات الداخلية (منع الانتحال) · يحدّث جلسة Supabase · يعفي <code>/</code>, <code>/auth/</code>, <code>/workshops/</code>, <code>/track/</code>.</li>
+  </ul>
+</section>
+
+<section id="env">
+  <h2>8 · متغيّرات البيئة — القائمة الرئيسية</h2>
+  <div class="tablewrap"><table>
+    <tr><th>المتغيّر</th><th>مطلوب</th><th>الغرض</th></tr>
+    <tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td><td><span class="badge b-green">✅</span></td><td>رابط مشروع Supabase</td></tr>
+    <tr><td><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> / PUBLISHABLE_DEFAULT</td><td><span class="badge b-green">✅</span></td><td>مفتاح المتصفّح</td></tr>
+    <tr><td><code>SUPABASE_SERVICE_ROLE_KEY</code></td><td><span class="badge b-green">✅ خادم</span></td><td>مفتاح الخدمة (كل الكتابة)</td></tr>
+    <tr><td><code>DASM_INSPECTION_INTERNAL_PULL_TOKEN</code></td><td><span class="badge b-red">مهم</span></td><td>التوكن الداخلي — بلا = مزامنة/محفظة تفشل بصمت</td></tr>
+    <tr><td><code>DASM_GATEWAY_API_KEYS</code></td><td><span class="badge b-amber">مهم</span></td><td>مفاتيح البوابة — فارغ = رفض الإنشاء</td></tr>
+    <tr><td><code>DASM_API_URL · DASM_CORE_API_URL</code></td><td>افتراضي</td><td>روابط المنصّة/Core</td></tr>
+    <tr><td><code>DASM_JWT_ENFORCE · _ISSUER · _SECRET · JWKS_URI</code></td><td>عند فرض JWT</td><td>إعداد التحقّق</td></tr>
+    <tr><td><code>INSPECTION_ATTACHMENTS_BUCKET · _SIGNED_URL_TTL_SEC</code></td><td>افتراضي</td><td>التخزين</td></tr>
+    <tr><td><code>INSPECTION_CREATE_RATE_LIMIT_PER_MIN</code></td><td>افتراضي 60</td><td>حدّ الإنشاء</td></tr>
+    <tr><td><code>NEXT_PUBLIC_INSPECTION_FEE_PAYMOB_ENABLED</code></td><td>افتراضي true</td><td>زر دفع PayMob</td></tr>
+    <tr><td><code>NEXT_PUBLIC_GOOGLE/APPLE_CLIENT_ID</code></td><td>اختياري</td><td>الدخول الاجتماعي</td></tr>
+  </table></div>
+</section>
+
+<section id="assets">
+  <h2>9 · «مالنا وما علينا»</h2>
+  <h3>✅ مالنا (أصول تعمل)</h3>
+  <ul>
+    <li>تدفّق فحص كامل: إنشاء → إسناد → تنفيذ (ورشة/ميداني) → تقرير → اعتماد/رفض، مع سجلّ ومرفقات.</li>
+    <li>لوحة ورشة كاملة (فريق، أسعار، مناطق، ميداني، تقييمات، متابعون، تصدير) مربوطة.</li>
+    <li>خزنة سجلّ المركبة + تذكيرات · توصيات إصلاح + محادثة داخل الطلب.</li>
+    <li>تكامل منصّة: SSO + بوابة + REST v1 + طبقة جوال كاملة.</li>
+    <li>هوية موحّدة + خروج + فوتر + قانوني + محفظة + وضع داكن + <b>قشرة تكيّفية (#70)</b>.</li>
+    <li>بنية سليمة: لا روابط مكسورة، لا تكرار، RLS مقفل.</li>
+  </ul>
+  <h3>⚠️ ما علينا (التزامات مرتّبة)</h3>
+  <div class="tablewrap"><table>
+    <tr><th>#</th><th>البند</th><th>الخطورة</th><th>الإصلاح</th></tr>
+    <tr><td>1</td><td>مزامنة Core تفشل بصمت بلا التوكن الداخلي</td><td><span class="badge b-red">عالٍ</span></td><td>ضبط التوكن + تنبيه عند غيابه</td></tr>
+    <tr><td>2</td><td>فجوات الوضع الداكن (لوحة الورشة + تفاصيل الطلب)</td><td><span class="badge b-amber">متوسط</span></td><td>أصناف <code>dark:</code> (الخطوة التالية)</td></tr>
+    <tr><td>3</td><td>عدم تطابق نوع مع السوق (BIGINT ↔ UUID)</td><td><span class="badge b-amber">متوسط</span></td><td>هجرة موافَق عليها قبل ربط التقارير</td></tr>
+    <tr><td>4</td><td>وكلاء المصادقة بلا حدّ معدّل + التقاطات صامتة</td><td><span class="badge b-amber">متوسط</span></td><td>حدّ معدّل + تسجيل</td></tr>
+    <tr><td>5</td><td>وثائق قديمة/مفقودة (DATABASE.md · V1_SCOPE.md · IMPLEMENTATION_STATUS.md)</td><td><span class="badge b-amber">متوسط</span></td><td>أرشفة/تحديث + اعتماد هذه الوثيقة</td></tr>
+    <tr><td>6</td><td>اكتشاف <code>/track/[id]</code> يعتمد على الرابط</td><td><span class="badge b-sky">منخفض</span></td><td>مقبول (يُذكر بوثيقة SSO)</td></tr>
+    <tr><td>7</td><td>روابط افتراضية ثابتة قد تصيب بيئة خاطئة</td><td><span class="badge b-sky">منخفض</span></td><td>تحقّق البيئة عند الإقلاع</td></tr>
+  </table></div>
+</section>
+
+<section id="plan">
+  <h2>10 · خطة إعادة الربط (بالترتيب)</h2>
+  <ol>
+    <li><b>تدقيق بيئة Vercel:</b> كل متغيّرات القسم 8 — خصوصاً التوكن الداخلي + مفاتيح البوابة + مفتاح الخدمة.</li>
+    <li><b>تلميع الوضع الداكن</b> على لوحة الورشة وتفاصيل الطلب — جاهز فوراً.</li>
+    <li><b>تنبيهات بدل الفشل الصامت</b> لمزامنة Core.</li>
+    <li><b>تنظيف الوثائق:</b> أرشفة DATABASE.md القديمة، اعتماد هذه الوثيقة، إنشاء IMPLEMENTATION_STATUS.md.</li>
+    <li><b>حسم ربط السوق</b> بهجرة موافَق عليها.</li>
+    <li><b>تصليب المصادقة:</b> حدّ معدّل + تسجيل.</li>
+  </ol>
+</section>
+
+<div class="foot">فحص داسم — التقرير المعماري الشامل · وثيقة حيّة · 2026-07-07</div>
+</main>
+</div>
+</body>
+</html>
