@@ -1,7 +1,4 @@
-"use client";
-
 import type { ReactNode } from "react";
-import { useTheme } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 export interface SectionCardProps {
@@ -11,22 +8,16 @@ export interface SectionCardProps {
 }
 
 export function SectionCard({ title, children, className }: SectionCardProps) {
-  const { colors } = useTheme({ role: "workshop" });
-
   return (
     <div
       className={cn(
-        "rounded-xl border overflow-hidden bg-white shadow-sm ring-1 ring-black/[0.04]",
+        "rounded-xl border overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 shadow-sm ring-1 ring-black/[0.04] dark:ring-white/10",
         className
       )}
-      style={{ borderColor: colors.secondary }}
       dir="rtl"
     >
       {title && (
-        <div
-          className="border-b px-4 py-3 text-sm font-semibold text-gray-900 bg-gradient-to-l from-gray-50/90 to-white"
-          style={{ borderColor: `${colors.secondary}33` }}
-        >
+        <div className="border-b border-slate-200 dark:border-slate-700 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-slate-100 bg-gradient-to-l from-gray-50/90 to-white dark:from-slate-800 dark:to-slate-900">
           {title}
         </div>
       )}
