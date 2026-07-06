@@ -96,9 +96,13 @@ export function visibleNavKeys(
     "settings",
   ];
 
-  if (persona === "unknown") return new Set(all);
+  // «لوحة الورشة» صفحة مقفلة لغير صاحب/مدير الورشة والأدمن — لا تُعرَض في القائمة
+  // لهم حتى لا يظهر زرّ يؤدي لصفحة «غير متاحة».
+  const withoutWorkshop = all.filter((k) => k !== "workshop_dashboard");
 
-  if (persona === "dasm_user") return new Set(all);
+  if (persona === "unknown") return new Set(withoutWorkshop);
+
+  if (persona === "dasm_user") return new Set(withoutWorkshop);
 
   if (persona === "workshop_owner" || persona === "workshop_manager") {
     return new Set<InspectionNavKey>([
@@ -109,16 +113,20 @@ export function visibleNavKeys(
   }
 
   if (persona === "inspector" || persona === "mechanic") {
-    return new Set(all.filter((k) => k !== "subscription"));
+    return new Set(
+      withoutWorkshop.filter((k) => k !== "subscription")
+    );
   }
 
   if (persona === "viewer") {
-    return new Set(all.filter((k) => k !== "subscription"));
+    return new Set(
+      withoutWorkshop.filter((k) => k !== "subscription")
+    );
   }
 
   if (persona === "super_admin" || persona === "inspection_admin") {
     return new Set(all);
   }
 
-  return new Set(all);
+  return new Set(withoutWorkshop);
 }
