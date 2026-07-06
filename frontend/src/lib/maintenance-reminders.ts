@@ -47,7 +47,7 @@ export function computeMaintenanceReminders(
   const today = startOfDay(now);
   const reminders: MaintenanceReminder[] = [];
 
-  for (const r of latestByKey.values()) {
+  for (const r of Array.from(latestByKey.values())) {
     // بلا تاريخ ولا عدّاد استحقاق ⇒ لا تذكير.
     if (!r.nextDueDate && r.nextDueOdometerKm == null) continue;
 
