@@ -62,6 +62,12 @@ describe("resolveInspectionPersona", () => {
     expect(keys.has("requests")).toBe(true);
   });
 
+  it("hides workshop dashboard nav from non-workshop personas", () => {
+    for (const p of ["dasm_user", "inspector", "viewer", "unknown"] as const) {
+      expect(visibleNavKeys(p).has("workshop_dashboard")).toBe(false);
+    }
+  });
+
   it("shows workshop dashboard nav for workshop_owner", () => {
     const keys = visibleNavKeys("workshop_owner");
     expect(keys.has("workshop_dashboard")).toBe(true);
