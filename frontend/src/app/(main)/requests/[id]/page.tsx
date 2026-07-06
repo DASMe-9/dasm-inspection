@@ -8,6 +8,7 @@ import {
   RequestWorkflowPanel,
   RequestAttachmentsSection,
 } from "@/components/inspection";
+import { RepairRecommendationsSection } from "@/components/inspection/RepairRecommendationsSection";
 import { SectionCard } from "@/components/shared";
 import {
   getHistoryForRequest,
@@ -157,6 +158,8 @@ export default async function RequestDetailPage({
             />
           </SectionCard>
         )}
+
+      <RepairRecommendationsSection requestId={req.id} reportId={req.reportId} />
 
       <SectionCard title="خط زمني للحالة">
         <StatusTimeline items={history} />
