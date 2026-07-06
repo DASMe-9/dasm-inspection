@@ -4,6 +4,10 @@ import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import { listExternalVehicleReportsForUser } from "@/lib/data/external-vehicle-reports";
 import { listVehicleMaintenanceRecordsForUser } from "@/lib/data/vehicle-maintenance-records";
 import { listVehicleObdScansForUser } from "@/lib/data/vehicle-obd-scans";
+import {
+  computeMaintenanceReminders,
+  type MaintenanceReminder,
+} from "@/lib/maintenance-reminders";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import type {
   ExternalVehicleReport,
@@ -156,6 +160,19 @@ function toMobileObdScan(row: VehicleObdScan) {
   };
 }
 
+function toMobileReminder(r: MaintenanceReminder) {
+  return {
+    record_id: r.recordId,
+    service_type: r.serviceType,
+    vehicle_label: r.vehicleLabel,
+    dasm_car_id: r.dasmCarId,
+    next_due_date: r.nextDueDate,
+    next_due_odometer_km: r.nextDueOdometerKm,
+    status: r.status,
+    days_until_due: r.daysUntilDue,
+  };
+}
+
 export async function listMobileVehicleHistory(dasmUserId: string) {
   const [maintenance, externalReports, obdScans] = await Promise.all([
     listVehicleMaintenanceRecordsForUser(dasmUserId),
@@ -167,6 +184,9 @@ export async function listMobileVehicleHistory(dasmUserId: string) {
     maintenance_records: maintenance.map(toMobileMaintenance),
     external_reports: externalReports.map(toMobileExternalReport),
     obd_scans: obdScans.map(toMobileObdScan),
+    maintenance_reminders: computeMaintenanceReminders(maintenance).map(
+      toMobileReminder
+    ),
   };
 }
 

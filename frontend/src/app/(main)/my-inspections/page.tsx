@@ -12,6 +12,7 @@ import { EmptyState, SectionCard } from "@/components/shared";
 import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { InspectionNotificationsPanel } from "@/components/inspection/InspectionNotificationsPanel";
+import { MaintenanceReminders } from "@/components/inspection/MaintenanceReminders";
 import {
   listInspectionRequestsForDasmUser,
   listWorkshops,
@@ -70,6 +71,7 @@ export default async function MyInspectionsPage({
         </SectionCard>
       ) : (
         <>
+          <MaintenanceReminders records={maintenanceRecords} />
           <VehicleMaintenanceLog records={maintenanceRecords} />
           <VehicleObdScanLog scans={obdScans} />
           <ExternalReportVault reports={externalReports} />
