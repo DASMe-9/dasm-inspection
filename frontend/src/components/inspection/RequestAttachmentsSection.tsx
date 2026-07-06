@@ -34,7 +34,7 @@ export async function RequestAttachmentsSection({
                   href={a.signedUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 text-indigo-600 font-medium hover:underline min-h-[44px] inline-flex items-center"
+                  className="shrink-0 text-[#1E74E8] font-medium hover:underline min-h-[44px] inline-flex items-center"
                 >
                   فتح / تحميل
                 </Link>

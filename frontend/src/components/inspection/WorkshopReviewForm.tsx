@@ -118,7 +118,7 @@ export function WorkshopReviewForm({
       <button
         type="submit"
         disabled={pending || ok}
-        className="rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-800 disabled:opacity-60"
+        className="rounded-xl bg-[#1E74E8] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1857b8] disabled:opacity-60"
       >
         {pending ? "جاري الإرسال…" : ok ? "تم الإرسال" : "إرسال التقييم للمراجعة"}
       </button>

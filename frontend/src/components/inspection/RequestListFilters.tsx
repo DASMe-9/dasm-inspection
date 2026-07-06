@@ -239,7 +239,7 @@ export function RequestListFilters({
                   sort: null,
                 })
               }
-              className="text-xs font-semibold text-gray-500 hover:text-indigo-700"
+              className="text-xs font-semibold text-gray-500 hover:text-[#1857b8]"
             >
               مسح الفلاتر
             </button>

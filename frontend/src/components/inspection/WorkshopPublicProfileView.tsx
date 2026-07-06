@@ -25,7 +25,7 @@ export function WorkshopPublicProfileView({
   return (
     <div className="space-y-8" dir="rtl">
       <nav className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-        <Link href="/workshops" className="font-medium transition hover:text-violet-700">
+        <Link href="/workshops" className="font-medium transition hover:text-[#1E74E8]">
           الورش
         </Link>
         <span className="text-gray-300">/</span>
@@ -122,7 +122,7 @@ export function WorkshopPublicProfileView({
               {profile.phone && (
                 <li className="flex gap-3">
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#1E74E8]"
                     aria-hidden
                   >
                     <Phone className="h-4 w-4" />
@@ -131,7 +131,7 @@ export function WorkshopPublicProfileView({
                     <p className="text-xs font-medium text-gray-500">هاتف</p>
                     <a
                       href={`tel:${profile.phone.replace(/\s+/g, "")}`}
-                      className="font-semibold text-gray-900 hover:text-violet-700"
+                      className="font-semibold text-gray-900 hover:text-[#1E74E8]"
                     >
                       {profile.phone}
                     </a>
@@ -141,7 +141,7 @@ export function WorkshopPublicProfileView({
               {profile.email && (
                 <li className="flex gap-3">
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#1E74E8]"
                     aria-hidden
                   >
                     <Mail className="h-4 w-4" />
@@ -150,7 +150,7 @@ export function WorkshopPublicProfileView({
                     <p className="text-xs font-medium text-gray-500">بريد</p>
                     <a
                       href={`mailto:${profile.email}`}
-                      className="break-all font-semibold text-gray-900 hover:text-violet-700"
+                      className="break-all font-semibold text-gray-900 hover:text-[#1E74E8]"
                     >
                       {profile.email}
                     </a>

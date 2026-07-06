@@ -67,7 +67,7 @@ export function WorkshopAreasPanel({
           <button
             type="submit"
             disabled={pending}
-            className="sm:col-span-2 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-violet-800 disabled:opacity-60"
+            className="sm:col-span-2 rounded-xl bg-[#1E74E8] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1857b8] disabled:opacity-60"
           >
             {pending ? "جارٍ الحفظ…" : "إضافة منطقة"}
           </button>
@@ -98,7 +98,7 @@ export function WorkshopAreasPanel({
                   <p className="font-semibold text-gray-900">
                     {a.city}
                     {a.isPrimary && (
-                      <span className="mr-2 rounded bg-violet-100 px-2 py-0.5 text-xs text-violet-800">
+                      <span className="mr-2 rounded bg-violet-100 px-2 py-0.5 text-xs text-[#1857b8]">
                         رئيسية
                       </span>
                     )}

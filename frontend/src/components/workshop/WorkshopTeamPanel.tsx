@@ -56,7 +56,7 @@ export function WorkshopTeamPanel({
           <button
             type="submit"
             disabled={pending}
-            className="sm:col-span-2 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-violet-800 disabled:opacity-60"
+            className="sm:col-span-2 rounded-xl bg-[#1E74E8] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1857b8] disabled:opacity-60"
           >
             {pending ? "جارٍ الحفظ…" : "إضافة للفريق"}
           </button>
@@ -105,7 +105,7 @@ export function WorkshopTeamPanel({
                     />
                     <button
                       type="submit"
-                      className="text-xs font-semibold text-violet-700 hover:underline"
+                      className="text-xs font-semibold text-[#1E74E8] hover:underline"
                     >
                       {ins.active ? "إيقاف" : "تفعيل"}
                     </button>

@@ -100,7 +100,7 @@ export function WorkshopPricingPanel({
           <button
             type="submit"
             disabled={pending}
-            className="rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-violet-800 disabled:opacity-60"
+            className="rounded-xl bg-[#1E74E8] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1857b8] disabled:opacity-60"
           >
             {pending ? "جارٍ الحفظ…" : "حفظ الأسعار"}
           </button>

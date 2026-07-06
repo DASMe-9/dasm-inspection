@@ -107,7 +107,7 @@ export function WorkshopFieldCalendarPanel({
                         <div>
                           <Link
                             href={`/requests/${r.id}`}
-                            className="text-sm font-semibold text-violet-800 hover:underline"
+                            className="text-sm font-semibold text-[#1857b8] hover:underline"
                           >
                             {r.vehicleLabel}
                           </Link>
@@ -175,7 +175,7 @@ export function WorkshopFieldCalendarPanel({
                         <div className="flex items-end sm:col-span-2 lg:col-span-4">
                           <button
                             type="submit"
-                            className="rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800"
+                            className="rounded-lg bg-[#1E74E8] px-3 py-2 text-xs font-semibold text-white hover:bg-[#1857b8]"
                           >
                             حفظ الموعد
                           </button>

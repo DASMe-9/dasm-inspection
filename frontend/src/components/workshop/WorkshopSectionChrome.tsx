@@ -19,12 +19,12 @@ export function WorkshopSectionChrome({
     <div className="space-y-6" dir="rtl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-violet-800/90">{title}</p>
+          <p className="text-xs font-semibold text-[#1857b8]/90">{title}</p>
           <h1 className="text-xl font-bold text-gray-900">{workshop.name}</h1>
         </div>
         <Link
           href={`/workshop?${q}`}
-          className="text-sm font-semibold text-gray-600 hover:text-violet-700"
+          className="text-sm font-semibold text-gray-600 hover:text-[#1E74E8]"
         >
           ← لوحة الورشة
         </Link>

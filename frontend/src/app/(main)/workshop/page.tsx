@@ -52,7 +52,7 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
             action={
               <Link
                 href="/dashboard"
-                className="text-sm font-semibold text-indigo-600 hover:underline"
+                className="text-sm font-semibold text-[#1E74E8] hover:underline"
               >
                 العودة للوحة العامة
               </Link>
@@ -233,7 +233,7 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
             ))}
             <Link
               href={`/requests?workshop=${workshopId}`}
-              className="block text-center text-sm font-semibold text-violet-700 hover:underline"
+              className="block text-center text-sm font-semibold text-[#1E74E8] hover:underline"
             >
               عرض كل الطلبات ({recent.length}) ←
             </Link>
@@ -293,7 +293,7 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
               href={`/workshop/followers${manageQ}`}
               className="flex items-center gap-3 rounded-xl border border-indigo-100 bg-indigo-50/40 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-indigo-50"
             >
-              <UserPlus className="h-4 w-4 text-indigo-700" aria-hidden />
+              <UserPlus className="h-4 w-4 text-[#1857b8]" aria-hidden />
               قائمة المتابعين
             </Link>
           </li>
