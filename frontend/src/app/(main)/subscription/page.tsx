@@ -132,7 +132,7 @@ export default function SubscriptionPage() {
       <div className="space-y-6 max-w-2xl" dir="rtl">
         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
           <CreditCard className="w-5 h-5" />
-          اشتراك داسم فحص
+          اشتراك فحص داسم
         </h2>
 
         <div className="bg-white rounded-xl border border-gray-200/90 shadow-sm ring-1 ring-black/[0.04] p-8 text-center space-y-4">
@@ -165,7 +165,7 @@ export default function SubscriptionPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
           <CreditCard className="w-5 h-5" />
-          اشتراك داسم فحص
+          اشتراك فحص داسم
         </h2>
         <button onClick={load} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
           <RefreshCw className="w-4 h-4 text-gray-500" />

@@ -25,7 +25,7 @@ export function Sidebar({
           <span className="text-white font-extrabold text-sm">DE</span>
         </div>
         <div>
-          <h1 className="font-bold text-white text-sm">داسم للفحص</h1>
+          <h1 className="font-bold text-white text-sm">فحص داسم</h1>
           <p className="text-[10px] text-slate-400">الفحص الفني للمركبات</p>
         </div>
       </div>
@@ -74,7 +74,7 @@ export function Sidebar({
           تسجيل الخروج
         </a>
         <p className="text-[10px] text-slate-500 text-center">
-          داسم للفحص — منصة الفحص الفني
+          فحص داسم — منصة الفحص الفني
         </p>
       </div>
     </aside>

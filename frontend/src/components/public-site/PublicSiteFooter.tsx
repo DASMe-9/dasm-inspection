@@ -31,7 +31,7 @@ export function PublicSiteFooter() {
                 DE
               </span>
               <div>
-                <p className="text-sm font-bold">داسم للفحص</p>
+                <p className="text-sm font-bold">فحص داسم</p>
                 <p className="text-[11px] text-white/70">
                   منصّة الفحص الفني للمركبات
                 </p>
@@ -60,7 +60,7 @@ export function PublicSiteFooter() {
         </div>
 
         <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-5 text-[11px] text-white/60 md:flex-row md:items-center md:justify-between">
-          <p>© {year}هـ داسم للفحص الفني. جميع الحقوق محفوظة.</p>
+          <p>© {year}هـ فحص داسم الفني. جميع الحقوق محفوظة.</p>
           <p>
             <a
               href="mailto:support@dasm.com.sa"
