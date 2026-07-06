@@ -192,9 +192,26 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
       )}
 
       {stats && (
-        <section className="grid gap-4 md:grid-cols-3">
+        <section className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          <StatCard
+            value={`${stats.revenueSar.toLocaleString("en-US")} ر.س`}
+            label="إيراد الفحوص المعتمدة"
+          />
+          <StatCard
+            value={
+              stats.avgTurnaroundDays != null
+                ? `${stats.avgTurnaroundDays} يوم`
+                : "—"
+            }
+            label="متوسط زمن الإنجاز"
+          />
           <StatCard value={stats.teamSize} label="المفتشون" />
           <StatCard value={stats.followerCount} label="المتابعون" />
+        </section>
+      )}
+
+      {stats && (
+        <section className="grid gap-4 md:grid-cols-3">
           <StatCard
             value={stats.averageRating ?? "—"}
             label={`تقييم (${stats.reviewCount})`}
