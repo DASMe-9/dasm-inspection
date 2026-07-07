@@ -41,6 +41,8 @@ export async function verifyDasmUserToken(
   try {
     const res = await fetch(`${DASM_API_URL}/api/user/profile`, {
       headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      // per-user auth — must never be cached (would leak one user's profile to another)
+      cache: "no-store",
     });
     if (!res.ok) return null;
     const data = await res.json();

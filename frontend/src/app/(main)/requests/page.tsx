@@ -7,7 +7,7 @@ import {
 } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
+import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { getPlatformDefaultPricing } from "@/lib/data/inspection-pricing-data";
 import {
@@ -31,7 +31,7 @@ export default async function RequestsListPage({
         ? searchParams?.dasm_user_id[0]
         : ""
     )?.trim() ||
-    cookieStore.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ||
+    (await resolveDasmUserId()) ||
     "";
 
   const headersList = headers();

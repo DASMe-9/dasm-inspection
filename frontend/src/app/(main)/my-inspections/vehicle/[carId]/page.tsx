@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import {
   ExternalReportVault,
   RequestCard,
@@ -8,7 +7,7 @@ import {
 } from "@/components/inspection";
 import { MaintenanceReminders } from "@/components/inspection/MaintenanceReminders";
 import { EmptyState, SectionCard } from "@/components/shared";
-import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
+import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import { listInspectionRequestsForDasmUser } from "@/lib/data/inspection";
 import { listExternalVehicleReportsForUser } from "@/lib/data/external-vehicle-reports";
 import { listVehicleMaintenanceRecordsForUser } from "@/lib/data/vehicle-maintenance-records";
@@ -21,7 +20,7 @@ export default async function VehicleFilePage({
   params: { carId: string };
 }) {
   const carId = decodeURIComponent(params.carId);
-  const uid = cookies().get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ?? "";
+  const uid = (await resolveDasmUserId()) ?? "";
 
   if (!uid) {
     return (
