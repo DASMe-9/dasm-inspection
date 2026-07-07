@@ -61,6 +61,32 @@ export function canAccessMobileRequest(
   return false;
 }
 
+/** إرسال رسالة على خيط الطلب من الجوال — لصاحب الطلب أو الطاقم المُسنَد فقط. */
+export async function mobileSendRequestMessage(
+  requestId: string,
+  body: string,
+  normalized: NormalizedInspectionClaims
+): Promise<MobileActionResult> {
+  const text = (body ?? "").trim();
+  if (!text) return { ok: false, message: "الرسالة فارغة" };
+
+  const req = await getInspectionRequest(requestId);
+  if (!req) return { ok: false, message: "الطلب غير موجود" };
+  if (!canAccessMobileRequest(req, normalized)) {
+    return { ok: false, message: "غير مصرّح بالمراسلة على هذا الطلب" };
+  }
+
+  const sb = requireAdminClient();
+  const { error } = await sb.from("inspection_request_messages").insert({
+    request_id: requestId,
+    sender_dasm_user_id: normalized.userId,
+    sender_role: normalized.inspectionRole ?? null,
+    body: text.slice(0, 4000),
+  });
+  if (error) return { ok: false, message: error.message ?? "تعذّر إرسال الرسالة" };
+  return { ok: true };
+}
+
 export function canMutateMobileInspectorWorkflow(
   req: InspectionRequest,
   normalized: NormalizedInspectionClaims
