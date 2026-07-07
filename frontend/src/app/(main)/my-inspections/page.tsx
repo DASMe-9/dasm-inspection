@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import {
   ExternalReportVault,
   RequestCard,
@@ -9,7 +8,7 @@ import {
   VehicleObdScanLog,
 } from "@/components/inspection";
 import { EmptyState, SectionCard } from "@/components/shared";
-import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
+import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { InspectionNotificationsPanel } from "@/components/inspection/InspectionNotificationsPanel";
 import { MaintenanceReminders } from "@/components/inspection/MaintenanceReminders";
@@ -27,8 +26,7 @@ export default async function MyInspectionsPage({
 }: {
   searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  const c = cookies();
-  const uid = c.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ?? "";
+  const uid = (await resolveDasmUserId()) ?? "";
   const workshops = await listWorkshops();
   const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
   const scope = await buildRequestListScope(searchParams, workshopOptions);

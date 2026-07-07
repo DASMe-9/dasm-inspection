@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { EmptyState, SectionCard, StatCard } from "@/components/shared";
-import { INSPECTION_DASM_USER_COOKIE } from "@/lib/cookies/inspection-gateway";
+import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import {
   getInspectionLedgerSummary,
   getInspectionWalletBalance,
@@ -21,7 +20,7 @@ function fmt(n: number): string {
 }
 
 export default async function WalletPage() {
-  const uid = cookies().get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() ?? "";
+  const uid = (await resolveDasmUserId()) ?? "";
 
   if (!uid) {
     return (
