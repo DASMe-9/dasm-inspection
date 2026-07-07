@@ -15,10 +15,10 @@ describe("findMissingCriticalEnv", () => {
   });
 
   it("accepts either publishable or anon key for the browser key", () => {
-    const { NEXT_PUBLIC_SUPABASE_ANON_KEY, ...rest } = FULL;
     expect(
       findMissingCriticalEnv({
-        ...rest,
+        ...FULL,
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: undefined,
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: "pub",
       })
     ).toEqual([]);
@@ -33,8 +33,10 @@ describe("findMissingCriticalEnv", () => {
   });
 
   it("reports both browser-key alternatives when neither is set", () => {
-    const { NEXT_PUBLIC_SUPABASE_ANON_KEY, ...rest } = FULL;
-    const missing = findMissingCriticalEnv(rest);
+    const missing = findMissingCriticalEnv({
+      ...FULL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: undefined,
+    });
     expect(missing.some((m) => m.includes("NEXT_PUBLIC_SUPABASE_ANON_KEY"))).toBe(true);
   });
 
