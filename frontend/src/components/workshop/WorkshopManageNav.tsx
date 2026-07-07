@@ -23,7 +23,7 @@ function NavInner() {
 
   return (
     <nav
-      className="flex flex-wrap gap-2 border-b border-gray-200 pb-3"
+      className="flex flex-wrap gap-2 border-b border-gray-200 pb-3 dark:border-slate-700"
       aria-label="إدارة الورشة"
     >
       {TABS.map((tab) => {
@@ -38,8 +38,8 @@ function NavInner() {
             href={href}
             className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
               active
-                ? "bg-violet-100 text-[#1857b8]"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-violet-100 text-[#1857b8] dark:bg-slate-700 dark:text-sky-300"
+                : "text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800"
             }`}
           >
             {tab.label}
@@ -52,7 +52,7 @@ function NavInner() {
 
 export function WorkshopManageNav() {
   return (
-    <Suspense fallback={<div className="h-10 border-b border-gray-100" />}>
+    <Suspense fallback={<div className="h-10 border-b border-gray-100 dark:border-slate-800" />}>
       <NavInner />
     </Suspense>
   );

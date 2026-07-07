@@ -25,14 +25,14 @@ import { TOKENS } from "@/lib/theme";
 
 function AttachmentsSectionSkeleton() {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
       <div
-        className="h-4 w-28 bg-gray-200 rounded animate-pulse mb-4"
+        className="h-4 w-28 bg-gray-200 rounded animate-pulse mb-4 dark:bg-slate-700"
         aria-hidden
       />
       <div className="space-y-2 animate-pulse">
-        <div className="h-12 rounded-xl bg-gray-100" />
-        <div className="h-12 rounded-xl bg-gray-100 w-11/12 max-w-full" />
+        <div className="h-12 rounded-xl bg-gray-100 dark:bg-slate-700" />
+        <div className="h-12 rounded-xl bg-gray-100 w-11/12 max-w-full dark:bg-slate-700" />
       </div>
     </div>
   );
@@ -72,7 +72,7 @@ export default async function RequestDetailPage({
   return (
     <div className="space-y-6" dir="rtl">
       <div className="flex flex-wrap items-center gap-2 justify-between">
-        <h2 className="text-lg font-bold text-gray-900">{req.title}</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100">{req.title}</h2>
         <RequestStatusBadge status={req.status} />
       </div>
 
@@ -87,56 +87,56 @@ export default async function RequestDetailPage({
       <SectionCard title="هوية DASM والمركبة">
         <dl className="text-sm space-y-2">
           <div>
-            <dt className="text-gray-600">dasm_car_id</dt>
-            <dd className="font-mono text-gray-900 break-all">{req.dasm_car_id}</dd>
+            <dt className="text-gray-600 dark:text-slate-400">dasm_car_id</dt>
+            <dd className="font-mono text-gray-900 break-all dark:text-slate-100">{req.dasm_car_id}</dd>
           </div>
           {req.dasm_user_id && (
             <div>
-              <dt className="text-gray-600">dasm_user_id</dt>
-              <dd className="font-mono text-gray-900 break-all">{req.dasm_user_id}</dd>
+              <dt className="text-gray-600 dark:text-slate-400">dasm_user_id</dt>
+              <dd className="font-mono text-gray-900 break-all dark:text-slate-100">{req.dasm_user_id}</dd>
             </div>
           )}
           {req.auction_reference && (
             <div>
-              <dt className="text-gray-600">مرجع مزاد</dt>
-              <dd className="text-gray-900">{req.auction_reference}</dd>
+              <dt className="text-gray-600 dark:text-slate-400">مرجع مزاد</dt>
+              <dd className="text-gray-900 dark:text-slate-100">{req.auction_reference}</dd>
             </div>
           )}
           <div>
-            <dt className="text-gray-600">المركبة</dt>
-            <dd className="text-gray-900 font-medium">{req.vehicleLabel}</dd>
+            <dt className="text-gray-600 dark:text-slate-400">المركبة</dt>
+            <dd className="text-gray-900 font-medium dark:text-slate-100">{req.vehicleLabel}</dd>
           </div>
         </dl>
       </SectionCard>
 
       <SectionCard title="الإسناد والخدمة">
         <p className="text-sm">
-          <span className="text-gray-500">الورشة:</span>{" "}
+          <span className="text-gray-500 dark:text-slate-400">الورشة:</span>{" "}
           {workshop?.name ?? "—"}
         </p>
         <p className="text-sm mt-1">
-          <span className="text-gray-500">المفتش:</span>{" "}
+          <span className="text-gray-500 dark:text-slate-400">المفتش:</span>{" "}
           {inspector?.fullName ?? "—"}
         </p>
         <p className="text-sm mt-1">
-          <span className="text-gray-500">نوع الخدمة:</span>{" "}
+          <span className="text-gray-500 dark:text-slate-400">نوع الخدمة:</span>{" "}
           {req.serviceMode === "field" ? "ميداني" : "في الورشة"}
         </p>
         {req.fieldServiceAddress && (
           <p className="text-sm mt-1">
-            <span className="text-gray-500">عنوان ميداني:</span>{" "}
+            <span className="text-gray-500 dark:text-slate-400">عنوان ميداني:</span>{" "}
             {req.fieldServiceAddress}
           </p>
         )}
         {req.quotedFeeSar != null && (
           <p className="text-sm mt-1">
-            <span className="text-gray-500">رسوم خدمة الفحص:</span>{" "}
+            <span className="text-gray-500 dark:text-slate-400">رسوم خدمة الفحص:</span>{" "}
             {req.quotedFeeSar} ر.س
           </p>
         )}
         {req.repairQuoteSar != null && (
           <p className="text-sm mt-1">
-            <span className="text-gray-500">عرض إصلاح (منفصل):</span>{" "}
+            <span className="text-gray-500 dark:text-slate-400">عرض إصلاح (منفصل):</span>{" "}
             {req.repairQuoteSar} ر.س
             {req.repairQuoteNotes && (
               <span className="block text-gray-600 text-xs mt-0.5">
@@ -177,7 +177,7 @@ export default async function RequestDetailPage({
 
       {report && (
         <SectionCard title="التقرير">
-          <p className="text-sm text-gray-600 mb-2">{report.overallSummary}</p>
+          <p className="text-sm text-gray-600 mb-2 dark:text-slate-300">{report.overallSummary}</p>
           <Link
             href={`/reports/${report.id}`}
             className="inline-block text-sm font-medium"
