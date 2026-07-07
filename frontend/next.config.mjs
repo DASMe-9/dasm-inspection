@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // يفعّل src/instrumentation.ts (فحص متغيّرات البيئة عند الإقلاع) على Next 14.
+  experimental: { instrumentationHook: true },
   async headers() {
     return [
       {
