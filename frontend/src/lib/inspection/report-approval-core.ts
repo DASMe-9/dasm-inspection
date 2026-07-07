@@ -9,6 +9,10 @@ import {
 import { ensureDasmCarOnCore } from "@/lib/core/ensure-dasm-car-on-core";
 import { pushApprovedReportToCore } from "@/lib/core/push-approved-report-to-core";
 import { requireAdminClient } from "@/lib/supabase/admin";
+import {
+  mapSyncResultToStatus,
+  type CoreSyncStatus,
+} from "@/lib/inspection/report-core-sync-status";
 import type { AppRole, InspectionRequestStatus, ReportItemStatus } from "@/types";
 
 export type ReportApprovalResult =
@@ -30,12 +34,41 @@ async function insertApprovalHistory(
   });
 }
 
+/**
+ * يثبّت نتيجة مزامنة التقرير إلى Core على صف التقرير (دائم وقابل للاستعلام/الإعادة)
+ * ويزيد عدّاد المحاولات. يستبدل السلوك القديم الذي كان يبتلع الفشل في لوق عابر.
+ */
+async function persistCoreSyncStatus(
+  sb: ReturnType<typeof requireAdminClient>,
+  reportId: string,
+  status: CoreSyncStatus,
+  error: string | null
+): Promise<void> {
+  const { data: cur } = await sb
+    .from("inspection_reports")
+    .select("core_sync_attempts")
+    .eq("id", reportId)
+    .single();
+  const attempts =
+    Number((cur as { core_sync_attempts?: number } | null)?.core_sync_attempts ?? 0) + 1;
+
+  await sb
+    .from("inspection_reports")
+    .update({
+      core_sync_status: status,
+      core_sync_error: error,
+      core_synced_at: status === "synced" ? new Date().toISOString() : null,
+      core_sync_attempts: attempts,
+    })
+    .eq("id", reportId);
+}
+
 async function syncApprovedReportToCoreAfterApprove(
   sb: ReturnType<typeof requireAdminClient>,
   requestId: string,
   reportId: string,
   approvedAtIso: string
-): Promise<void> {
+): Promise<CoreSyncStatus> {
   const { data: reqRow } = await sb
     .from("inspection_requests")
     .select(
@@ -77,7 +110,8 @@ async function syncApprovedReportToCoreAfterApprove(
       inspection_request_id: requestId,
       inspection_report_id: reportId,
     });
-    return;
+    await persistCoreSyncStatus(sb, reportId, "skipped", "missing_dasm_car_id");
+    return "skipped";
   }
 
   const { data: reportRow } = await sb
@@ -109,7 +143,29 @@ async function syncApprovedReportToCoreAfterApprove(
     items: (items ?? []) as { status: ReportItemStatus }[],
   });
 
-  await pushApprovedReportToCore(payload);
+  const result = await pushApprovedReportToCore(payload);
+  const status = mapSyncResultToStatus(result);
+  await persistCoreSyncStatus(sb, reportId, status, result.ok ? null : result.message ?? "unknown");
+  return status;
+}
+
+/**
+ * يعيد محاولة مزامنة تقرير معتمد إلى Core (للأدمن أو كرون لاحقًا).
+ * يعتمد على وجود approved_at + request_id على صف التقرير.
+ */
+export async function retryReportCoreSync(reportId: string): Promise<CoreSyncStatus> {
+  const sb = requireAdminClient();
+  const { data: rep } = await sb
+    .from("inspection_reports")
+    .select("request_id, approved_at")
+    .eq("id", reportId)
+    .single();
+  const r = rep as { request_id?: string; approved_at?: string | null } | null;
+  if (!r?.request_id || !r.approved_at) {
+    await persistCoreSyncStatus(sb, reportId, "skipped", "not_approved_or_no_request");
+    return "skipped";
+  }
+  return syncApprovedReportToCoreAfterApprove(sb, r.request_id, reportId, r.approved_at);
 }
 
 export async function executeApproveInspectionReport(

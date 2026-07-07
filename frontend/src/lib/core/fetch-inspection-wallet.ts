@@ -28,7 +28,13 @@ function internalHeaders(token: string): HeadersInit {
 
 async function callInternal<T>(path: string): Promise<T | null> {
   const token = process.env.DASM_INSPECTION_INTERNAL_PULL_TOKEN?.trim();
-  if (!token) return null;
+  if (!token) {
+    inspectionOpsLog("warn", "wallet_fetch_skipped", {
+      path,
+      reason: "missing_DASM_INSPECTION_INTERNAL_PULL_TOKEN",
+    });
+    return null;
+  }
   try {
     const res = await fetch(`${CORE_API_URL}/api/internal/dasm-inspection${path}`, {
       headers: internalHeaders(token),
