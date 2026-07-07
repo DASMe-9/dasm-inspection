@@ -98,7 +98,7 @@
   </div>
   <p><b>ما هو:</b> تطبيق مستقل للفحص الفني للمركبات — واجهة + خلفية في ريبو واحد. قاعدة بياناته مشروع Supabase واحد <b>DASM-services</b> (<code>bmfqfmsxtotdksvcqfrh</code>) يحوي كل جداول <code>inspection_*</code>، ويشير إلى <b>DASM-core</b> (<code>ttkhiatwayvlfksvehzm</code>) للمستخدمين والسيارات <b>بالمرجع فقط</b>.</p>
   <div class="callout ok"><b>الحكم على «التشوّه»:</b> بنيةً الريبو <b>متماسك أكثر مما يبدو</b> — لا روابط مكسورة، لا مسارات مكرّرة، كل مفاتيح التنقّل لها صفحات. الإحساس بالتشوّه مصدره أربعة أمور، عولج أهمها: <b>(1)</b> كسر القشرة (رابط داخل اللوحة يقذف للموقع العام) — <b>أُصلح بـ PR #70</b>؛ (2) ضعف اكتشاف صفحات التفاصيل — تصميم مقبول؛ (3) فجوات الوضع الداكن — متبقٍّ؛ (4) وثائق قديمة/مفقودة — متبقٍّ.</div>
-  <div class="callout ok"><b>تحديث 2026-07-07:</b> التزامات 1-3 <b>حُسمت</b> — مزامنة Core (#72) · الوضع الداكن (#73) · تطابق نوع السوق (#74). المتبقّي: حدّ معدّل المصادقة · تنظيف الوثائق · تدقيق بيئة Vercel.</div>
+  <div class="callout ok"><b>تحديث 2026-07-07 — ✅ خطة إعادة الربط مكتملة:</b> مزامنة Core (#72) · الوضع الداكن (#73) · تطابق نوع السوق (#74) · حدّ معدّل المصادقة (#76) · تنظيف الوثائق (#78) · فحص البيئة عند الإقلاع (#77) · القشرة التكيّفية (#70). المتبقّي الوحيد إجراء تشغيلي: تأكيد متغيّرات البيئة على Vercel.</div>
 </section>
 
 <section id="layers">
@@ -275,24 +275,25 @@ Supabase DASM-core (المستخدمون/السيارات/المزادات)
     <tr><td>1</td><td>مزامنة Core كانت تفشل بصمت</td><td><span class="badge b-red">عالٍ</span></td><td><span class="badge b-green">✅ حُسم #72</span> حالة دائمة + إعادة محاولة + كسر صمت المحفظة</td></tr>
     <tr><td>2</td><td>فجوات الوضع الداكن (لوحة الورشة + تفاصيل الطلب)</td><td><span class="badge b-amber">متوسط</span></td><td><span class="badge b-green">✅ حُسم #73</span> أصناف <code>dark:</code></td></tr>
     <tr><td>3</td><td>عدم تطابق نوع مع السوق (BIGINT ↔ UUID)</td><td><span class="badge b-amber">متوسط</span></td><td><span class="badge b-green">✅ حُسم #74</span> عمودا UUID + FKs (الجدول 0 صفوف)</td></tr>
-    <tr><td>4</td><td>وكلاء المصادقة بلا حدّ معدّل + التقاطات صامتة</td><td><span class="badge b-amber">متوسط</span></td><td>متبقٍّ: حدّ معدّل + تسجيل</td></tr>
-    <tr><td>5</td><td>وثائق قديمة (DATABASE.md وصف Laravel قديم)</td><td><span class="badge b-amber">متوسط</span></td><td><span class="badge b-green">✅ حُسم</span> إشعار إهمال يشير لهذه الوثيقة؛ V1_SCOPE/IMPLEMENTATION_STATUS موجودان فعلاً</td></tr>
-    <tr><td>6</td><td>توكنات/روابط بيئة قد تُنسى على Vercel (يشمل بند 1)</td><td><span class="badge b-sky">منخفض</span></td><td>متبقٍّ: تحقّق البيئة عند الإقلاع</td></tr>
+    <tr><td>4</td><td>وكلاء المصادقة بلا حدّ معدّل + التقاطات صامتة</td><td><span class="badge b-amber">متوسط</span></td><td><span class="badge b-green">✅ حُسم #76</span> proxyAuthToCore: حدّ معدّل + تسجيل (429/502)</td></tr>
+    <tr><td>5</td><td>وثائق قديمة (DATABASE.md وصف Laravel قديم)</td><td><span class="badge b-amber">متوسط</span></td><td><span class="badge b-green">✅ حُسم #78</span> إشعار إهمال؛ V1_SCOPE/IMPLEMENTATION_STATUS موجودان فعلاً</td></tr>
+    <tr><td>6</td><td>توكنات/روابط بيئة قد تُنسى على Vercel</td><td><span class="badge b-sky">منخفض</span></td><td><span class="badge b-green">✅ حُسم #77</span> فحص إقلاع يسجّل المفقود؛ يبقى تأكيد الضبط على Vercel</td></tr>
     <tr><td>7</td><td>اكتشاف <code>/track/[id]</code> يعتمد على الرابط</td><td><span class="badge b-sky">منخفض</span></td><td>مقبول (يُذكر بوثيقة SSO)</td></tr>
   </table></div>
 </section>
 
 <section id="plan">
-  <h2>10 · خطة إعادة الربط (التقدّم)</h2>
+  <h2>10 · خطة إعادة الربط — ✅ مكتملة</h2>
   <ul>
-    <li><span class="badge b-green">✅</span> <b>قشرة تكيّفية</b> (كسر الصفحات المستقلة + الفوتر) — #70.</li>
+    <li><span class="badge b-green">✅</span> <b>قشرة تكيّفية</b> — #70.</li>
     <li><span class="badge b-green">✅</span> <b>تأمين مزامنة Core</b> (بند 1) — #72.</li>
     <li><span class="badge b-green">✅</span> <b>تلميع الوضع الداكن</b> (بند 2) — #73.</li>
     <li><span class="badge b-green">✅</span> <b>حسم ربط السوق</b> (بند 3) — #74.</li>
-    <li>🔲 <b>تصليب المصادقة</b> (بند 4): حدّ معدّل + تسجيل لوكلاء login/apple/social-exchange.</li>
-    <li>🔲 <b>تنظيف الوثائق</b> (بند 5): أرشفة DATABASE.md + إنشاء IMPLEMENTATION_STATUS.md.</li>
-    <li>🔲 <b>تدقيق بيئة Vercel</b> (بند 6): تأكيد التوكن الداخلي + مفاتيح البوابة + مفتاح الخدمة + تحقّق عند الإقلاع.</li>
+    <li><span class="badge b-green">✅</span> <b>تصليب المصادقة</b> (بند 4) — #76.</li>
+    <li><span class="badge b-green">✅</span> <b>تنظيف الوثائق</b> (بند 5) — #78.</li>
+    <li><span class="badge b-green">✅</span> <b>فحص البيئة عند الإقلاع</b> (بند 6) — #77.</li>
   </ul>
+  <div class="callout ok"><b>إجراء تشغيلي متبقٍّ (خارج الكود):</b> التأكّد من ضبط المتغيّرات الحرجة فعلاً على Vercel — فحص الإقلاع سيسجّلها إن غابت.</div>
 </section>
 
 <div class="foot">فحص داسم — التقرير المعماري الشامل · وثيقة حيّة · 2026-07-07</div>
