@@ -41,7 +41,7 @@ export async function RequestMessagesSection({
   return (
     <SectionCard title="المحادثة مع الورشة">
       {messages.length === 0 ? (
-        <p className="text-sm text-gray-500">لا رسائل بعد. ابدأ المحادثة.</p>
+        <p className="text-sm text-gray-500 dark:text-slate-400">لا رسائل بعد. ابدأ المحادثة.</p>
       ) : (
         <ul className="space-y-2">
           {messages.map((m) => {
@@ -54,8 +54,8 @@ export async function RequestMessagesSection({
                   mine
                     ? "ms-auto bg-violet-600 text-white"
                     : staffMsg
-                      ? "bg-indigo-50 text-gray-900"
-                      : "bg-gray-100 text-gray-900"
+                      ? "bg-indigo-50 text-gray-900 dark:bg-indigo-950 dark:text-slate-100"
+                      : "bg-gray-100 text-gray-900 dark:bg-slate-700 dark:text-slate-100"
                 }`}
               >
                 <p className="mb-0.5 text-[11px] opacity-70">
@@ -71,7 +71,7 @@ export async function RequestMessagesSection({
       {canPost && (
         <form
           action={sendRequestMessageFormAction}
-          className="mt-4 flex items-end gap-2 border-t border-gray-100 pt-4"
+          className="mt-4 flex items-end gap-2 border-t border-gray-100 pt-4 dark:border-slate-700"
         >
           <input type="hidden" name="request_id" value={requestId} />
           <textarea
@@ -79,7 +79,7 @@ export async function RequestMessagesSection({
             required
             rows={2}
             maxLength={4000}
-            className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
             placeholder="اكتب رسالتك…"
           />
           <button
