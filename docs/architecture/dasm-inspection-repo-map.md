@@ -102,10 +102,10 @@
 | النقطة | الطرق | الغرض | يتصل بـ | الحماية |
 |---|---|---|---|---|
 | `/api/gateway` | GET/POST | دخول SSO (يضبط كوكيز) · إنشاء طلب فحص | منصّة + Supabase | GET: توكن؛ POST: مفتاح API + Bearer |
-| `/api/auth/login` | POST | تمرير اعتماد للمنصّة | منصّة `/api/login` | **بلا حماية** (تمرير) |
+| `/api/auth/login` | POST | تمرير اعتماد للمنصّة | منصّة `/api/login` | حدّ معدّل لكل عنوان + تسجيل (#76) |
 | `/api/auth/logout` | GET/POST | مسح الكوكيز | — | عام |
 | `/api/auth/sso-callback` | POST | تحقّق SSO + ضبط كوكيز | منصّة `/api/sso/verify` | يتطلّب sso_token |
-| `/api/auth/apple` · `/api/auth/social-exchange` | POST | تمرير دخول اجتماعي | منصّة | **بلا حماية** (تمرير) |
+| `/api/auth/apple` · `/api/auth/social-exchange` | POST | تمرير دخول اجتماعي | منصّة | حدّ معدّل لكل عنوان + تسجيل (#76) |
 | `/api/v1/inspection-requests` (+`/[id]`) | POST/GET | إنشاء/جلب طلب (تكامل خارجي) | منصّة + Supabase | مفتاح API + Bearer + ملكية |
 | `/api/v1/service-pricing` | GET | أسعار الخدمة | Supabase (service_role) | عام مخبّأ |
 | `/api/v1/workshops/[slug]` | GET | ملف ورشة عام + تقييمات | Supabase | عام مخبّأ |
@@ -117,7 +117,7 @@
 | `/api/workshop/export` | GET | تصدير CSV (طلبات/تقييمات/متابعون) | Supabase | كوكي + دور الورشة |
 | `/api/ads/serve` · `/api/ads/track` | GET/POST | وسيط إعلانات داسم | منصّة الإعلانات | عام (يفشل بأمان) |
 
-**مخاطر النقاط:** وكلاء المصادقة الثلاثة (login/apple/social-exchange) **بلا حدّ معدّل** (عرضة لتخمين الاعتماد) · التقاطات صامتة `.catch(()=>({}))` تبتلع الأخطاء · لو كان `DASM_GATEWAY_API_KEYS` فارغاً تُرفض كل عمليات الإنشاء عبر البوابة.
+**حالة الأمان (محدّثة):** وكلاء المصادقة الثلاثة (login/apple/social-exchange) **صار لها حدّ معدّل لكل عنوان + تسجيل أخطاء المنبع/الشبكة عبر `proxyAuthToCore` (#76)** — لم تعد تبتلع الأخطاء صامتةً (429 عند التجاوز، 502 عند خطأ الشبكة). ملاحظة: هي مسارات تمرير لتسجيل الدخول بطبيعتها (المصادقة الفعلية على Core)، فلا «توكن» يسبقها. · `DASM_GATEWAY_API_KEYS` مضبوط (فارغ = رفض الإنشاء عبر البوابة).
 
 ---
 
