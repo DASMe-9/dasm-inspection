@@ -75,4 +75,60 @@ describe("resolveInspectionPersona", () => {
     expect(keys.has("my_inspections")).toBe(false);
     expect(keys.has("requests")).toBe(true);
   });
+
+  // Regression guard: without DASM_JWT_ENFORCE every non-dasm_user role used to
+  // collapse to "unknown" and get a generic nav. Each role must now resolve
+  // from the gateway cookie so it gets its intended nav.
+  it.each([
+    "inspector",
+    "mechanic",
+    "workshop_owner",
+    "workshop_manager",
+    "viewer",
+    "inspection_admin",
+    "super_admin",
+  ] as const)("resolves %s from the gateway cookie (no JWT)", (role) => {
+    const c = cookiesFrom({
+      [INSPECTION_UI_ROLE_COOKIE]: role,
+      [INSPECTION_DASM_USER_COOKIE]: "319",
+    });
+    const r = resolveInspectionPersona(new Headers(), c as never);
+    expect(r.persona).toBe(role);
+    expect(r.trust).toBe("gateway_cookie");
+    // non-dasm_user personas do not scope requests to a platform user
+    expect(shouldScopeRequestsToPlatformUser(r)).toBe(false);
+  });
+
+  it("inspector resolved from cookie gets the inspector nav (no الاشتراك/المحفظة)", () => {
+    const c = cookiesFrom({
+      [INSPECTION_UI_ROLE_COOKIE]: "inspector",
+      [INSPECTION_DASM_USER_COOKIE]: "319",
+    });
+    const r = resolveInspectionPersona(new Headers(), c as never);
+    const keys = visibleNavKeys(r.persona);
+    expect(r.persona).toBe("inspector");
+    expect(keys.has("subscription")).toBe(false);
+    expect(keys.has("wallet")).toBe(false);
+    expect(keys.has("workshops")).toBe(true);
+    expect(keys.has("requests")).toBe(true);
+  });
+
+  it("dasm_user without a user id falls back to unknown (cannot scope)", () => {
+    const c = cookiesFrom({ [INSPECTION_UI_ROLE_COOKIE]: "dasm_user" });
+    const r = resolveInspectionPersona(new Headers(), c as never);
+    expect(r.persona).toBe("unknown");
+  });
+
+  // Per-persona nav snapshot — locks each role's intended sidebar so a future
+  // change to visibleNavKeys can't silently regress role scoping.
+  it.each([
+    ["dasm_user", ["dashboard", "requests", "my_inspections", "workshops", "wallet", "subscription", "settings"]],
+    ["inspector", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
+    ["mechanic", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
+    ["workshop_owner", ["workshop_dashboard", "requests", "wallet", "settings"]],
+    ["workshop_manager", ["workshop_dashboard", "requests", "wallet", "settings"]],
+  ] as const)("nav for %s matches its intent", (persona, expected) => {
+    const keys = [...visibleNavKeys(persona)].sort();
+    expect(keys).toEqual([...expected].sort());
+  });
 });

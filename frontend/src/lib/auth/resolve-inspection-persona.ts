@@ -65,9 +65,29 @@ export function resolveInspectionPersona(
   const cookieUserId =
     cookieStore.get(INSPECTION_DASM_USER_COOKIE)?.value?.trim() || null;
 
-  if (cookieRole === "dasm_user" && cookieUserId) {
+  // dasm_user drives request-scoping (see shouldScopeRequestsToPlatformUser),
+  // so it needs the platform user id; without it we cannot scope → unknown.
+  if (cookieRole === "dasm_user") {
+    if (cookieUserId) {
+      return {
+        persona: "dasm_user",
+        platformUserId: cookieUserId,
+        trust: "gateway_cookie",
+      };
+    }
+    return { persona: "unknown", platformUserId: null, trust: "none" };
+  }
+
+  // Any other recognised role (inspector / mechanic / workshop_* / viewer /
+  // admin) resolves from the gateway cookie too, so each persona gets its
+  // intended nav even when DASM_JWT_ENFORCE is off — previously every non
+  // dasm_user role collapsed to "unknown" and got a generic nav (e.g. an
+  // inspector wrongly saw «الاشتراك»). The cookie is set server-side (httpOnly)
+  // from the verified platform profile and is used for nav display only, not
+  // for sensitive authorization (that stays server-side / behind JWT).
+  if (cookieRole) {
     return {
-      persona: "dasm_user",
+      persona: cookieRole,
       platformUserId: cookieUserId,
       trust: "gateway_cookie",
     };
