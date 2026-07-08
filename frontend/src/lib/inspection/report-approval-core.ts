@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomUUID } from "crypto";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
 import {
@@ -117,7 +118,7 @@ async function syncApprovedReportToCoreAfterApprove(
 
   const { data: reportRow } = await sb
     .from("inspection_reports")
-    .select("overall_summary")
+    .select("overall_summary, public_token")
     .eq("id", reportId)
     .single();
 
@@ -162,6 +163,8 @@ async function syncApprovedReportToCoreAfterApprove(
     approvedAtIso,
     items: itemRows,
     weighted,
+    publicToken:
+      (reportRow as { public_token?: string | null } | null)?.public_token ?? null,
   });
 
   const result = await pushApprovedReportToCore(payload);
@@ -212,6 +215,8 @@ export async function executeApproveInspectionReport(
       approved_at: now,
       approved_by_role: approvedByRole,
       rejection_reason: null,
+      // Issue the public share token strictly on approval.
+      public_token: randomUUID(),
     })
     .eq("id", reportId);
 
@@ -256,6 +261,8 @@ export async function executeRejectInspectionReport(
       approved_at: null,
       approved_by_role: null,
       rejection_reason: r,
+      // Revoke the public link in the same write that un-approves the report.
+      public_token: null,
     })
     .eq("id", reportId);
 

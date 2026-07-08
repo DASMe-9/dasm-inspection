@@ -5,6 +5,13 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // Public tokenized report pages must never be indexed.
+        source: "/r/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
+      {
         source: "/sw-workshop.js",
         headers: [
           {
