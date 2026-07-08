@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EmptyState, SectionCard, StatCard } from "@/components/shared";
 import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
+import { resolveIsWorkshopFinancialViewer } from "@/lib/auth/require-workshop-persona.server";
 import {
   getInspectionLedgerSummary,
   getInspectionWalletBalance,
@@ -20,6 +21,25 @@ function fmt(n: number): string {
 }
 
 export default async function WalletPage() {
+  // المحفظة = أرباح/صرف الورشة لمالك/مدير الورشة والأدمن فقط. العميل يدفع رسوم
+  // الفحص مباشرةً عبر PayMob ولا يملك رصيد محفظة.
+  const allowed = await resolveIsWorkshopFinancialViewer();
+  if (!allowed) {
+    return (
+      <div className="space-y-5" dir="rtl">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-slate-100">
+          المحفظة
+        </h2>
+        <SectionCard>
+          <EmptyState
+            title="صفحة مخصّصة للورش"
+            description="المحفظة والأرباح والصرف متاحة لأصحاب ومديري الورش المعتمدة فقط."
+          />
+        </SectionCard>
+      </div>
+    );
+  }
+
   const uid = (await resolveDasmUserId()) ?? "";
 
   if (!uid) {
