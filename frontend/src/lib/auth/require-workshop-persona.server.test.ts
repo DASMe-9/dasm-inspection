@@ -20,7 +20,10 @@ vi.mock("next/headers", () => ({
   headers: async () => new Headers(),
 }));
 
-import { resolveIsWorkshopFinancialViewer } from "./require-workshop-persona.server";
+import {
+  resolveIsWorkshopFinancialViewer,
+  resolveWalletAudience,
+} from "./require-workshop-persona.server";
 
 function setRole(role: string) {
   cookieState.current = {
@@ -54,4 +57,36 @@ describe("resolveIsWorkshopFinancialViewer", () => {
       await expect(resolveIsWorkshopFinancialViewer()).resolves.toBe(true);
     }
   );
+});
+
+describe("resolveWalletAudience", () => {
+  afterEach(() => {
+    cookieState.current = {};
+  });
+
+  it("customer (dasm_user) → customer wallet view", async () => {
+    setRole("dasm_user");
+    await expect(resolveWalletAudience()).resolves.toBe("customer");
+  });
+
+  it.each(["workshop_owner", "workshop_manager", "super_admin", "inspection_admin"])(
+    "%s → workshop wallet view",
+    async (role) => {
+      setRole(role);
+      await expect(resolveWalletAudience()).resolves.toBe("workshop");
+    }
+  );
+
+  it.each(["inspector", "mechanic", "viewer"])(
+    "field role %s → no wallet",
+    async (role) => {
+      setRole(role);
+      await expect(resolveWalletAudience()).resolves.toBe("none");
+    }
+  );
+
+  it("unknown/unauthenticated → no wallet", async () => {
+    cookieState.current = {};
+    await expect(resolveWalletAudience()).resolves.toBe("none");
+  });
 });

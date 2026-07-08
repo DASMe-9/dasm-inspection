@@ -80,7 +80,7 @@ describe("resolveInspectionPersona", () => {
     expect(keys.has("requests")).toBe(true);
   });
 
-  it("customer (dasm_user) nav excludes subscription + wallet (B2B financial)", () => {
+  it("customer (dasm_user) nav keeps wallet (prepaid) but excludes subscription (B2B)", () => {
     const c = cookiesFrom({
       [INSPECTION_UI_ROLE_COOKIE]: "dasm_user",
       [INSPECTION_DASM_USER_COOKIE]: "319",
@@ -88,8 +88,8 @@ describe("resolveInspectionPersona", () => {
     const r = resolveInspectionPersona(new Headers(), c as never);
     const keys = visibleNavKeys(r.persona);
     expect(r.persona).toBe("dasm_user");
-    expect(keys.has("subscription")).toBe(false);
-    expect(keys.has("wallet")).toBe(false);
+    expect(keys.has("subscription")).toBe(false); // workshop-only B2B tiers
+    expect(keys.has("wallet")).toBe(true); // customer prepaid spend wallet
     expect(keys.has("requests")).toBe(true);
     expect(keys.has("my_inspections")).toBe(true);
     expect(keys.has("workshops")).toBe(true);
@@ -141,7 +141,7 @@ describe("resolveInspectionPersona", () => {
   // Per-persona nav snapshot — locks each role's intended sidebar so a future
   // change to visibleNavKeys can't silently regress role scoping.
   it.each([
-    ["dasm_user", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
+    ["dasm_user", ["dashboard", "requests", "my_inspections", "workshops", "wallet", "settings"]],
     ["inspector", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["mechanic", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["viewer", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],

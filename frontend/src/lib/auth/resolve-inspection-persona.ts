@@ -107,9 +107,9 @@ export function shouldScopeRequestsToPlatformUser(
 export function visibleNavKeys(
   persona: ResolvedInspectionPersona["persona"]
 ): Set<InspectionNavKey> {
-  // الصرف الماليّ للورشة: «الاشتراك الشهري» (شرائح عمولة الورشة B2B) و«المحفظة»
-  // (أرباح/صرف الورشة) لمالك/مدير الورشة والأدمن فقط — العميل يدفع رسوم الفحص
-  // مباشرةً عبر PayMob ولا يملك رصيد محفظة، فلا يجب أن يرى تسعير B2B.
+  // «الاشتراك الشهري» = شرائح عمولة الورشة (B2B) لمالك/مدير الورشة والأدمن فقط.
+  // «المحفظة» لها دلالتان: أرباح/صرف للورشة، ورصيد مسبق الدفع للعميل (dasm_user)
+  // للفحوصات المتكرّرة (شحن وخصم فقط). طاقم الميدان (فاحص/فنّي/عارض) والمجهول: لا محفظة.
   if (persona === "workshop_owner" || persona === "workshop_manager") {
     return new Set<InspectionNavKey>([
       "workshop_dashboard",
@@ -133,8 +133,19 @@ export function visibleNavKeys(
     ]);
   }
 
-  // العميل (dasm_user) + طاقم الميدان (inspector/mechanic/viewer) + المجهول:
-  // ناف موجّه للفحص فقط — بلا صفحات الورشة الماليّة (اشتراك/محفظة) ولا «لوحة الورشة».
+  // العميل (dasm_user): ناف الفحص + المحفظة (رصيد مسبق الدفع) — بلا اشتراك B2B.
+  if (persona === "dasm_user") {
+    return new Set<InspectionNavKey>([
+      "dashboard",
+      "requests",
+      "my_inspections",
+      "workshops",
+      "wallet",
+      "settings",
+    ]);
+  }
+
+  // طاقم الميدان (inspector/mechanic/viewer) + المجهول: ناف فحص فقط — بلا محفظة/اشتراك.
   return new Set<InspectionNavKey>([
     "dashboard",
     "requests",
