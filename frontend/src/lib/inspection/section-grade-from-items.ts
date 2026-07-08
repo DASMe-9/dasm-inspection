@@ -196,19 +196,21 @@ export function deriveSectionCondition(
 export function buildWorkshopLayerFromItems(
   items: ReadonlyArray<ReportItemLike>
 ): MinimalWorkshopLayer {
-  const buckets = new Map<SectionKey, { status: ReportItemStatus }[]>();
+  const buckets: Partial<Record<SectionKey, { status: ReportItemStatus }[]>> = {};
   for (const it of items) {
     const key = classifyItemToSection(it.section, it.label);
     if (!key) continue;
-    const list = buckets.get(key) ?? [];
+    const list = buckets[key] ?? (buckets[key] = []);
     list.push({ status: it.status });
-    buckets.set(key, list);
   }
 
   const layer: MinimalWorkshopLayer = {};
-  for (const [key, list] of buckets) {
-    layer[key] = { overall_status: deriveSectionCondition(list) };
-  }
+  (Object.keys(buckets) as SectionKey[]).forEach((key) => {
+    const list = buckets[key];
+    if (list && list.length > 0) {
+      layer[key] = { overall_status: deriveSectionCondition(list) };
+    }
+  });
   return layer;
 }
 
