@@ -68,7 +68,15 @@ export async function GET(request: NextRequest) {
         sessionToken = access;
         userId = String(u.id);
         userName = [u.first_name, u.last_name].filter(Boolean).join(" ").trim();
-        inspectionRole = resolveInspectionRoleFromPlatformUser({ type: u.type ?? null });
+        // The SSO verify payload carries `type` but not `inspection_role`, so a
+        // type-only resolve mislabels e.g. an inspector as `dasm_user` in the
+        // sidebar. Resolve the real role from the platform profile using the new
+        // session token; fall back to type-only if the profile call fails.
+        const profile = await verifyDasmUserToken(access);
+        inspectionRole =
+          profile?.inspectionRole ??
+          resolveInspectionRoleFromPlatformUser({ type: u.type ?? null });
+        if (!userName) userName = profile?.name ?? "";
       }
     }
   } catch {
