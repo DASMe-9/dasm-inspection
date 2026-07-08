@@ -18,3 +18,21 @@ export async function resolveIsWorkshopFinancialViewer(): Promise<boolean> {
   const { persona } = resolveInspectionPersona(headersList, cookieStore);
   return isWorkshopDashboardRole(persona);
 }
+
+/**
+ * جمهور المحفظة — بخلاف الاشتراك (ورشة فقط)، المحفظة لها دلالتان:
+ *  - `workshop`: أرباح/صرف الورشة (مالك/مدير/أدمن).
+ *  - `customer`: رصيد مسبق الدفع للعميل (dasm_user) للفحوصات المتكرّرة — شحن وخصم
+ *    فقط، لا يستقبل أرباحاً.
+ *  - `none`: طاقم الميدان (فاحص/فنّي/عارض) والمجهول — لا محفظة.
+ * تُحدّد أيّ عرض تُظهره صفحة /wallet بحسب الدور، فلا يرى العميل لغة صرف الورشة.
+ */
+export type WalletAudience = "workshop" | "customer" | "none";
+
+export async function resolveWalletAudience(): Promise<WalletAudience> {
+  const [cookieStore, headersList] = await Promise.all([cookies(), headers()]);
+  const { persona } = resolveInspectionPersona(headersList, cookieStore);
+  if (isWorkshopDashboardRole(persona)) return "workshop";
+  if (persona === "dasm_user") return "customer";
+  return "none";
+}
