@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getAdminClient } from "@/lib/supabase/admin";
+import { getAdminClient, getFreshAdminClient } from "@/lib/supabase/admin";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import {
   mapAttachment,
@@ -347,7 +347,8 @@ export async function getPublicReportByToken(
   token: string
 ): Promise<PublicReportView | null> {
   if (!/^[0-9a-f-]{36}$/i.test(token)) return null;
-  const sb = getAdminClient();
+  // no-store client: a revoked/unapproved report must never be served stale.
+  const sb = getFreshAdminClient();
   if (!sb) return null;
 
   const { data: rep, error } = await sb
