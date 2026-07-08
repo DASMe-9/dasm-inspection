@@ -107,52 +107,39 @@ export function shouldScopeRequestsToPlatformUser(
 export function visibleNavKeys(
   persona: ResolvedInspectionPersona["persona"]
 ): Set<InspectionNavKey> {
-  const all: InspectionNavKey[] = [
-    "dashboard",
-    "workshop_dashboard",
-    "requests",
-    "my_inspections",
-    "workshops",
-    "wallet",
-    "subscription",
-    "settings",
-  ];
-
-  // «لوحة الورشة» صفحة مقفلة لغير صاحب/مدير الورشة والأدمن — لا تُعرَض في القائمة
-  // لهم حتى لا يظهر زرّ يؤدي لصفحة «غير متاحة».
-  const withoutWorkshop = all.filter((k) => k !== "workshop_dashboard");
-
-  // المحفظة تحتاج حساباً حقيقياً (رصيد/ليدجر) — تُخفى عن المجهول/العرض/الفاحص.
-  if (persona === "unknown") {
-    return new Set(withoutWorkshop.filter((k) => k !== "wallet"));
-  }
-
-  if (persona === "dasm_user") return new Set(withoutWorkshop);
-
+  // الصرف الماليّ للورشة: «الاشتراك الشهري» (شرائح عمولة الورشة B2B) و«المحفظة»
+  // (أرباح/صرف الورشة) لمالك/مدير الورشة والأدمن فقط — العميل يدفع رسوم الفحص
+  // مباشرةً عبر PayMob ولا يملك رصيد محفظة، فلا يجب أن يرى تسعير B2B.
   if (persona === "workshop_owner" || persona === "workshop_manager") {
     return new Set<InspectionNavKey>([
       "workshop_dashboard",
       "requests",
       "wallet",
+      "subscription",
       "settings",
     ]);
   }
 
-  if (persona === "inspector" || persona === "mechanic") {
-    return new Set(
-      withoutWorkshop.filter((k) => k !== "subscription" && k !== "wallet")
-    );
-  }
-
-  if (persona === "viewer") {
-    return new Set(
-      withoutWorkshop.filter((k) => k !== "subscription" && k !== "wallet")
-    );
-  }
-
   if (persona === "super_admin" || persona === "inspection_admin") {
-    return new Set(all);
+    return new Set<InspectionNavKey>([
+      "dashboard",
+      "workshop_dashboard",
+      "requests",
+      "my_inspections",
+      "workshops",
+      "wallet",
+      "subscription",
+      "settings",
+    ]);
   }
 
-  return new Set(withoutWorkshop.filter((k) => k !== "wallet"));
+  // العميل (dasm_user) + طاقم الميدان (inspector/mechanic/viewer) + المجهول:
+  // ناف موجّه للفحص فقط — بلا صفحات الورشة الماليّة (اشتراك/محفظة) ولا «لوحة الورشة».
+  return new Set<InspectionNavKey>([
+    "dashboard",
+    "requests",
+    "my_inspections",
+    "workshops",
+    "settings",
+  ]);
 }

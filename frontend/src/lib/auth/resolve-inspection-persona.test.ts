@@ -50,10 +50,12 @@ describe("resolveInspectionPersona", () => {
     expect(shouldScopeRequestsToPlatformUser(r)).toBe(true);
   });
 
-  it("falls back to unknown", () => {
+  it("falls back to unknown (and never exposes workshop financial nav)", () => {
     const r = resolveInspectionPersona(new Headers(), cookiesFrom({}) as never);
     expect(r.persona).toBe("unknown");
-    expect(visibleNavKeys(r.persona).has("subscription")).toBe(true);
+    // subscription (B2B workshop tiers) + wallet are workshop/admin only.
+    expect(visibleNavKeys(r.persona).has("subscription")).toBe(false);
+    expect(visibleNavKeys(r.persona).has("wallet")).toBe(false);
   });
 
   it("hides subscription from inspector nav", () => {
@@ -68,12 +70,29 @@ describe("resolveInspectionPersona", () => {
     }
   });
 
-  it("shows workshop dashboard nav for workshop_owner", () => {
+  it("shows workshop dashboard + subscription nav for workshop_owner", () => {
     const keys = visibleNavKeys("workshop_owner");
     expect(keys.has("workshop_dashboard")).toBe(true);
+    expect(keys.has("subscription")).toBe(true); // workshops need their tiers page
+    expect(keys.has("wallet")).toBe(true);
     expect(keys.has("dashboard")).toBe(false);
     expect(keys.has("my_inspections")).toBe(false);
     expect(keys.has("requests")).toBe(true);
+  });
+
+  it("customer (dasm_user) nav excludes subscription + wallet (B2B financial)", () => {
+    const c = cookiesFrom({
+      [INSPECTION_UI_ROLE_COOKIE]: "dasm_user",
+      [INSPECTION_DASM_USER_COOKIE]: "319",
+    });
+    const r = resolveInspectionPersona(new Headers(), c as never);
+    const keys = visibleNavKeys(r.persona);
+    expect(r.persona).toBe("dasm_user");
+    expect(keys.has("subscription")).toBe(false);
+    expect(keys.has("wallet")).toBe(false);
+    expect(keys.has("requests")).toBe(true);
+    expect(keys.has("my_inspections")).toBe(true);
+    expect(keys.has("workshops")).toBe(true);
   });
 
   // Regression guard: without DASM_JWT_ENFORCE every non-dasm_user role used to
@@ -122,11 +141,13 @@ describe("resolveInspectionPersona", () => {
   // Per-persona nav snapshot — locks each role's intended sidebar so a future
   // change to visibleNavKeys can't silently regress role scoping.
   it.each([
-    ["dasm_user", ["dashboard", "requests", "my_inspections", "workshops", "wallet", "subscription", "settings"]],
+    ["dasm_user", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["inspector", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["mechanic", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
-    ["workshop_owner", ["workshop_dashboard", "requests", "wallet", "settings"]],
-    ["workshop_manager", ["workshop_dashboard", "requests", "wallet", "settings"]],
+    ["viewer", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
+    ["unknown", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
+    ["workshop_owner", ["workshop_dashboard", "requests", "wallet", "subscription", "settings"]],
+    ["workshop_manager", ["workshop_dashboard", "requests", "wallet", "subscription", "settings"]],
   ] as const)("nav for %s matches its intent", (persona, expected) => {
     const keys = [...visibleNavKeys(persona)].sort();
     expect(keys).toEqual([...expected].sort());
