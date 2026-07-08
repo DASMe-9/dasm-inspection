@@ -30,7 +30,7 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     items: [
       { key: "requests", href: "/requests", label: "طلبات الفحص", icon: "📋" },
       { key: "my_inspections", href: "/my-inspections", label: "طلباتي", icon: "👤" },
-      { key: "workshops", href: "/workshops", label: "الورش المعتمدة", icon: "🔧" },
+      { key: "workshops", href: "/directory", label: "الورش المعتمدة", icon: "🔧" },
     ],
   },
   {
@@ -67,7 +67,7 @@ export const MOBILE_BOTTOM_NAV_ITEMS: SidebarNavItem[] = [
     label: "طلباتي",
     icon: "👤",
   },
-  { key: "workshops", href: "/workshops", label: "الورش", icon: "🔧" },
+  { key: "workshops", href: "/directory", label: "الورش", icon: "🔧" },
   { key: "wallet", href: "/wallet", label: "المحفظة", icon: "💰" },
   { key: "settings", href: "/settings", label: "الإعدادات", icon: "⚙️" },
 ];
