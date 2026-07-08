@@ -4,18 +4,12 @@ import {
   INSPECTION_UI_ROLE_COOKIE,
 } from "@/lib/cookies/inspection-gateway";
 
-// hoisted so the vi.mock factories below can reference them safely.
-const { redirectMock, cookieState } = vi.hoisted(() => ({
-  redirectMock: vi.fn((url: string) => {
-    throw new Error(`REDIRECT:${url}`);
-  }),
+// hoisted so the vi.mock factory below can reference it safely.
+const { cookieState } = vi.hoisted(() => ({
   cookieState: { current: {} as Record<string, string> },
 }));
 
 vi.mock("server-only", () => ({}));
-vi.mock("next/navigation", () => ({
-  redirect: (url: string) => redirectMock(url),
-}));
 vi.mock("next/headers", () => ({
   cookies: async () => ({
     get: (name: string) =>
@@ -26,7 +20,7 @@ vi.mock("next/headers", () => ({
   headers: async () => new Headers(),
 }));
 
-import { requireWorkshopDashboardPersona } from "./require-workshop-persona.server";
+import { resolveIsWorkshopFinancialViewer } from "./require-workshop-persona.server";
 
 function setRole(role: string) {
   cookieState.current = {
@@ -35,39 +29,29 @@ function setRole(role: string) {
   };
 }
 
-describe("requireWorkshopDashboardPersona", () => {
+describe("resolveIsWorkshopFinancialViewer", () => {
   afterEach(() => {
-    redirectMock.mockClear();
     cookieState.current = {};
   });
 
-  it("redirects a customer (dasm_user) away from workshop financial pages", async () => {
-    setRole("dasm_user");
-    await expect(requireWorkshopDashboardPersona()).rejects.toThrow(
-      "REDIRECT:/dashboard"
-    );
-    expect(redirectMock).toHaveBeenCalledWith("/dashboard");
-  });
-
-  it.each(["inspector", "mechanic", "viewer"])(
-    "redirects field role %s",
+  it.each(["dasm_user", "inspector", "mechanic", "viewer"])(
+    "denies non-workshop role %s (customer never sees B2B tiers)",
     async (role) => {
       setRole(role);
-      await expect(requireWorkshopDashboardPersona()).rejects.toThrow("REDIRECT");
+      await expect(resolveIsWorkshopFinancialViewer()).resolves.toBe(false);
     }
   );
 
-  it("redirects an unknown/unauthenticated persona", async () => {
+  it("denies an unknown/unauthenticated persona", async () => {
     cookieState.current = {};
-    await expect(requireWorkshopDashboardPersona()).rejects.toThrow("REDIRECT");
+    await expect(resolveIsWorkshopFinancialViewer()).resolves.toBe(false);
   });
 
   it.each(["workshop_owner", "workshop_manager", "super_admin", "inspection_admin"])(
-    "allows workshop/admin role %s (no redirect)",
+    "allows workshop/admin role %s",
     async (role) => {
       setRole(role);
-      await expect(requireWorkshopDashboardPersona()).resolves.toBeUndefined();
-      expect(redirectMock).not.toHaveBeenCalled();
+      await expect(resolveIsWorkshopFinancialViewer()).resolves.toBe(true);
     }
   );
 });
