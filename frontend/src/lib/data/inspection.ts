@@ -19,6 +19,7 @@ import type {
   InspectionRequest,
   InspectionStatusHistory,
   Inspector,
+  ReportItemStatus,
   Workshop,
 } from "@/types";
 import type { ListInspectionRequestsQueryOptions } from "@/lib/inspection-request-list-options";
@@ -317,6 +318,91 @@ export async function getReportByRequestId(
     .maybeSingle();
   if (error || !rep) return null;
   return getReport(rep.id);
+}
+
+export type PublicReportItem = {
+  id: string;
+  section: string;
+  label: string;
+  status: ReportItemStatus;
+  notes: string | null;
+};
+
+export type PublicReportView = {
+  workshopName: string | null;
+  approvedAt: string;
+  overallSummary: string;
+  finalScore: number | null;
+  letterGrade: string | null;
+  harajTrack: string | null;
+  items: PublicReportItem[];
+};
+
+/**
+ * Public, PII-free view of an APPROVED report, reachable only via its unguessable
+ * token. Returns null for missing/revoked tokens or unapproved reports — the
+ * caller renders notFound(), never leaking existence.
+ */
+export async function getPublicReportByToken(
+  token: string
+): Promise<PublicReportView | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(token)) return null;
+  const sb = getAdminClient();
+  if (!sb) return null;
+
+  const { data: rep, error } = await sb
+    .from("inspection_reports")
+    .select(
+      "id, workshop_id, approved_at, overall_summary, final_score, letter_grade, haraj_track"
+    )
+    .eq("public_token", token)
+    .not("approved_at", "is", null)
+    .maybeSingle();
+  if (error || !rep) return null;
+
+  const r = rep as {
+    id: string;
+    workshop_id: string;
+    approved_at: string;
+    overall_summary: string;
+    final_score: number | string | null;
+    letter_grade: string | null;
+    haraj_track: string | null;
+  };
+
+  const { data: itemRows } = await sb
+    .from("inspection_report_items")
+    .select("id, section, label, status, notes, sort_order")
+    .eq("report_id", r.id)
+    .order("sort_order", { ascending: true });
+
+  const workshop = await getWorkshop(r.workshop_id);
+
+  const items: PublicReportItem[] = (
+    (itemRows ?? []) as Array<{
+      id: string;
+      section: string;
+      label: string;
+      status: ReportItemStatus;
+      notes: string | null;
+    }>
+  ).map((i) => ({
+    id: i.id,
+    section: i.section,
+    label: i.label,
+    status: i.status,
+    notes: i.notes ?? null,
+  }));
+
+  return {
+    workshopName: workshop?.name ?? null,
+    approvedAt: r.approved_at,
+    overallSummary: r.overall_summary,
+    finalScore: r.final_score != null ? Number(r.final_score) : null,
+    letterGrade: r.letter_grade,
+    harajTrack: r.haraj_track,
+    items,
+  };
 }
 
 export async function getAttachmentsForRequest(

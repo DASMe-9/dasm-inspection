@@ -36,6 +36,8 @@ export function buildReportSyncPayload(input: {
   items: ReportItemRow[];
   /** Weighted grade from the signed-off section model (section-grade-from-items). */
   weighted?: ComputedGrade | null;
+  /** Public share token; when present the report_url points at the public page. */
+  publicToken?: string | null;
 }): CoreReportSyncPayload {
   const base =
     process.env.INSPECTION_PUBLIC_BASE_URL?.replace(/\/$/, "") ||
@@ -50,7 +52,9 @@ export function buildReportSyncPayload(input: {
     overall_grade: gradeFromItems(input.items),
     summary: countSummary(input.items),
     overall_summary: input.overallSummary ?? null,
-    report_url: `${base}/reports/${input.reportId}`,
+    report_url: input.publicToken
+      ? `${base}/r/${input.publicToken}`
+      : `${base}/reports/${input.reportId}`,
     approved_at: input.approvedAtIso,
     is_primary: true,
     final_score: input.weighted ? input.weighted.finalScore : null,
