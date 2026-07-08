@@ -12,6 +12,11 @@ export type CoreReportSyncPayload = {
   report_url?: string | null;
   approved_at?: string;
   is_primary?: boolean;
+  // Weighted scoring (signed-off model) — enriches carDetails on Core.
+  final_score?: number | null;
+  grade_letter?: "A" | "B" | "C" | "D" | "F" | null;
+  haraj_track?: "haraj_live" | "instant" | "delayed" | "fixed" | "rejected" | null;
+  section_grades?: Record<string, number | null> | null;
 };
 
 const CORE_API_URL =

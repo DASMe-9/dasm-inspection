@@ -1,5 +1,6 @@
 import type { ReportItemStatus } from "@/types";
 import type { CoreReportSyncPayload } from "@/lib/core/push-approved-report-to-core";
+import type { ComputedGrade } from "@/lib/inspection/scoring";
 
 type ReportItemRow = {
   status: ReportItemStatus;
@@ -33,6 +34,8 @@ export function buildReportSyncPayload(input: {
   overallSummary?: string | null;
   approvedAtIso: string;
   items: ReportItemRow[];
+  /** Weighted grade from the signed-off section model (section-grade-from-items). */
+  weighted?: ComputedGrade | null;
 }): CoreReportSyncPayload {
   const base =
     process.env.INSPECTION_PUBLIC_BASE_URL?.replace(/\/$/, "") ||
@@ -50,6 +53,10 @@ export function buildReportSyncPayload(input: {
     report_url: `${base}/reports/${input.reportId}`,
     approved_at: input.approvedAtIso,
     is_primary: true,
+    final_score: input.weighted ? input.weighted.finalScore : null,
+    grade_letter: input.weighted ? input.weighted.letterGrade : null,
+    haraj_track: input.weighted ? input.weighted.auctionTrack : null,
+    section_grades: input.weighted ? input.weighted.sectionScores : null,
   };
 }
 

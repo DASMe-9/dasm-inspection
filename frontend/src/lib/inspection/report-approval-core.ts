@@ -8,6 +8,7 @@ import {
 } from "@/lib/core/build-report-sync-payload";
 import { ensureDasmCarOnCore } from "@/lib/core/ensure-dasm-car-on-core";
 import { pushApprovedReportToCore } from "@/lib/core/push-approved-report-to-core";
+import { computeGradeFromReportItems } from "@/lib/inspection/section-grade-from-items";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import {
   mapSyncResultToStatus,
@@ -122,8 +123,27 @@ async function syncApprovedReportToCoreAfterApprove(
 
   const { data: items } = await sb
     .from("inspection_report_items")
-    .select("status")
+    .select("section, label, status")
     .eq("report_id", reportId);
+
+  const itemRows = (items ?? []) as {
+    section: string;
+    label: string;
+    status: ReportItemStatus;
+  }[];
+
+  // Weighted grade from the signed-off section model; persisted so it is stable
+  // and queryable regardless of Core sync outcome.
+  const weighted = computeGradeFromReportItems(itemRows);
+  await sb
+    .from("inspection_reports")
+    .update({
+      final_score: weighted.finalScore,
+      letter_grade: weighted.letterGrade,
+      haraj_track: weighted.auctionTrack,
+      section_grades: weighted.sectionScores,
+    })
+    .eq("id", reportId);
 
   const workshop = (reqRow as { inspection_workshops?: { name?: string } | { name?: string }[] | null })
     ?.inspection_workshops;
@@ -140,7 +160,8 @@ async function syncApprovedReportToCoreAfterApprove(
     overallSummary:
       (reportRow as { overall_summary?: string | null } | null)?.overall_summary ?? null,
     approvedAtIso,
-    items: (items ?? []) as { status: ReportItemStatus }[],
+    items: itemRows,
+    weighted,
   });
 
   const result = await pushApprovedReportToCore(payload);
