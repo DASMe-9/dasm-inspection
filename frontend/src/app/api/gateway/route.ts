@@ -6,12 +6,17 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { setInspectionGatewayCookies } from "@/lib/cookies/set-inspection-gateway-cookies";
+import {
+  setInspectionGatewayCookies,
+  setInspectionSessionCookies,
+} from "@/lib/cookies/set-inspection-gateway-cookies";
 import {
   verifyGatewayApiKey,
   getBearerToken,
   verifyDasmUserToken,
+  DASM_API_URL,
 } from "@/lib/api/inspection-http-auth";
+import { resolveInspectionRoleFromPlatformUser } from "@/lib/auth/platform-inspection-role";
 import { insertInspectionRequestSubmitted } from "@/lib/api/inspection-request-http";
 import {
   consumeInspectionCreateRateLimit,
@@ -33,22 +38,70 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const user = await verifyDasmUserToken(token);
-  if (!user) {
-    return NextResponse.json(
-      { success: false, message: "توكن غير صالح" },
-      { status: 401 }
+  // Establish a real session, not just identity cookies. The protected (main)
+  // layout requires a dasm_access_token/inspection_token cookie; without it the
+  // handoff bounced to the login page. Exchange the single-use SSO token for a
+  // 30-day session token and set that cookie so the SPA lands authenticated
+  // (mirrors POST /api/auth/sso-callback, but as a browser-navigable GET).
+  let sessionToken: string | null = null;
+  let userId = "";
+  let userName = "";
+  let inspectionRole: string | null = null;
+
+  try {
+    const verifyRes = await fetch(
+      `${DASM_API_URL.replace(/\/+$/, "")}/api/sso/verify`,
+      {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ sso_token: token, platform: "inspection" }),
+        cache: "no-store",
+      }
     );
+    if (verifyRes.ok) {
+      const body = await verifyRes.json().catch(() => ({}));
+      const access = body?.data?.access_token as string | undefined;
+      const u = body?.data?.user as
+        | { id?: string | number; first_name?: string | null; last_name?: string | null; type?: string | null }
+        | undefined;
+      if (access && u?.id != null) {
+        sessionToken = access;
+        userId = String(u.id);
+        userName = [u.first_name, u.last_name].filter(Boolean).join(" ").trim();
+        inspectionRole = resolveInspectionRoleFromPlatformUser({ type: u.type ?? null });
+      }
+    }
+  } catch {
+    // fall through to direct identity verification below
+  }
+
+  // Fallback: the token is not a single-use SSO token (e.g. a raw Sanctum
+  // token) — verify identity directly and use the given token as the session.
+  if (!sessionToken) {
+    const user = await verifyDasmUserToken(token);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "توكن غير صالح" },
+        { status: 401 }
+      );
+    }
+    sessionToken = token;
+    userId = String(user.id);
+    userName = user.name || "";
+    inspectionRole = user.inspectionRole ?? null;
   }
 
   const redirectUrl = new URL("/requests", request.url);
   redirectUrl.searchParams.set("gateway", "dasm");
-  redirectUrl.searchParams.set("dasm_user_id", String(user.id));
-  redirectUrl.searchParams.set("user_name", user.name || "");
+  redirectUrl.searchParams.set("dasm_user_id", userId);
+  redirectUrl.searchParams.set("user_name", userName);
   if (returnUrl) redirectUrl.searchParams.set("return_url", returnUrl);
 
   const res = NextResponse.redirect(redirectUrl);
-  setInspectionGatewayCookies(res, String(user.id), user.inspectionRole);
+  // Session cookie the (main) layout gate reads (mirrors manual login) …
+  setInspectionSessionCookies(res, sessionToken);
+  // … plus the existing identity cookies (user-id/role) for server actions.
+  setInspectionGatewayCookies(res, userId, inspectionRole);
   return res;
 }
 
