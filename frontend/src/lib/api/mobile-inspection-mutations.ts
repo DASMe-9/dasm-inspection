@@ -294,6 +294,47 @@ export async function mobileStartInspection(
   return { ok: true };
 }
 
+/**
+ * Inspector submits the completed report for workshop review.
+ * in_progress → pending_review (the report was drafted on start). Approval stays
+ * the workshop's authority (canMutateMobileWorkshopApproval); this only moves the
+ * request into the review queue so can_approve can become true for the workshop.
+ */
+export async function mobileSubmitReport(
+  requestId: string,
+  normalized: NormalizedInspectionClaims
+): Promise<MobileActionResult> {
+  const req = await getInspectionRequest(requestId);
+  if (!req) return { ok: false, message: "الطلب غير موجود." };
+  if (!canMutateMobileInspectorWorkflow(req, normalized)) {
+    return { ok: false, message: "ليس لديك صلاحية على هذا الطلب." };
+  }
+  if (req.status !== "in_progress") {
+    return { ok: false, message: "يُرسل التقرير أثناء التنفيذ فقط." };
+  }
+
+  const draft = await ensureDraftChecklistReport(requestId);
+  if (!draft.ok) return draft;
+  if (!draft.report) {
+    return { ok: false, message: "لا يوجد تقرير للإرسال." };
+  }
+
+  const sb = requireAdminClient();
+  await sb
+    .from("inspection_reports")
+    .update({ submitted_at: new Date().toISOString() })
+    .eq("id", draft.report.id);
+
+  const { error } = await sb
+    .from("inspection_requests")
+    .update({ status: "pending_review" })
+    .eq("id", requestId);
+  if (error) return { ok: false, message: error.message };
+
+  await insertMobileHistory(requestId, "pending_review", "أُرسل التقرير للمراجعة");
+  return { ok: true };
+}
+
 export async function mobileUpdateChecklistItem(
   itemId: string,
   status: ReportItemStatus,
