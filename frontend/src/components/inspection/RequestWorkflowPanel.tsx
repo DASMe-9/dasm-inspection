@@ -37,7 +37,9 @@ export function RequestWorkflowPanel({
   const [msg, setMsg] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [cancelReason, setCancelReason] = useState("");
-  const [workshopId, setWorkshopId] = useState(request.workshopId ?? "");
+  const [workshopId, setWorkshopId] = useState(
+    request.workshopId || request.preferredWorkshopId || ""
+  );
   const [inspectorId, setInspectorId] = useState(request.inspectorId ?? "");
   const [serviceMode, setServiceMode] = useState<InspectionServiceMode>(
     request.serviceMode ?? "workshop"
@@ -45,6 +47,14 @@ export function RequestWorkflowPanel({
   const [fieldAddress, setFieldAddress] = useState(
     request.fieldServiceAddress ?? ""
   );
+
+  const preferredWorkshopName = useMemo(() => {
+    if (!request.preferredWorkshopId) return null;
+    return (
+      workshops.find((w) => w.id === request.preferredWorkshopId)?.name ??
+      request.preferredWorkshopId
+    );
+  }, [request.preferredWorkshopId, workshops]);
 
   const ctx = useMemo(
     () => ({
@@ -90,6 +100,23 @@ export function RequestWorkflowPanel({
           style={{ borderColor: colors.secondary }}
         >
           <p className="font-medium text-sm">إسناد الطلب</p>
+          {(preferredWorkshopName || request.preferredSlotAt) && (
+            <div className="rounded-lg border border-sky-100 bg-sky-50/80 px-3 py-2 text-xs text-sky-950 space-y-1">
+              <p className="font-semibold">تفضيل العميل</p>
+              {preferredWorkshopName ? (
+                <p>الورشة المفضّلة: {preferredWorkshopName}</p>
+              ) : null}
+              {request.preferredSlotAt ? (
+                <p>
+                  الموعد المفضّل:{" "}
+                  {new Date(request.preferredSlotAt).toLocaleString("ar-SA", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
+                </p>
+              ) : null}
+            </div>
+          )}
           <div className="space-y-2 text-sm">
             <fieldset className="space-y-2">
               <legend className="text-gray-500 text-xs">نوع الخدمة</legend>

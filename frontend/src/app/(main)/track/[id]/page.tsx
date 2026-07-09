@@ -75,6 +75,17 @@ export default async function CustomerTrackingPage({
               <dd>{request.auction_reference}</dd>
             </div>
           )}
+          {request.preferredSlotAt && (
+            <div>
+              <dt className="text-gray-500">الموعد المفضّل</dt>
+              <dd>
+                {new Date(request.preferredSlotAt).toLocaleString("ar-SA", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </dd>
+            </div>
+          )}
           <div>
             <dt className="text-gray-500">تاريخ الطلب</dt>
             <dd>{new Date(request.createdAt).toLocaleDateString("ar-SA")}</dd>

@@ -152,6 +152,21 @@ export function NewInspectionRequestForm({
         </div>
       </fieldset>
 
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-gray-700" htmlFor="preferred_slot_at">
+          الموعد المفضّل (اختياري)
+        </label>
+        <input
+          id="preferred_slot_at"
+          name="preferred_slot_at"
+          type="datetime-local"
+          className="w-full border rounded-lg px-3 py-2 bg-white"
+        />
+        <p className="text-[11px] text-gray-500">
+          تفضيل زمني للعميل — ليس حجزاً نهائياً. للفحص الميداني قد يُنسخ إلى تقويم الورشة عند الإسناد.
+        </p>
+      </div>
+
       {displayPricing &&
         (displayPricing.workshopSar != null ||
           displayPricing.fieldSar != null) && (

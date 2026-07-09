@@ -132,6 +132,15 @@ export async function createInspectionRequestAction(formData: FormData): Promise
     ).trim();
     const preferredServiceMode =
       preferredServiceModeRaw === "field" ? "field" : "workshop";
+    const preferredSlotRaw = String(formData.get("preferred_slot_at") ?? "").trim();
+    let preferredSlotAt: string | null = null;
+    if (preferredSlotRaw) {
+      const parsed = new Date(preferredSlotRaw);
+      if (Number.isNaN(parsed.getTime())) {
+        return { ok: false, message: "موعد التفضيل غير صالح." };
+      }
+      preferredSlotAt = parsed.toISOString();
+    }
 
     if (!title || !vehicle_label) {
       return { ok: false, message: "عنوان الطلب ووصف المركبة مطلوبان." };
@@ -145,6 +154,26 @@ export async function createInspectionRequestAction(formData: FormData): Promise
     }
 
     const sb = requireAdminClient();
+
+    if (preferredWorkshopId) {
+      const { data: preferredWorkshop, error: preferredWorkshopErr } = await sb
+        .from("inspection_workshops")
+        .select("id, is_verified, is_suspended")
+        .eq("id", preferredWorkshopId)
+        .maybeSingle();
+      if (
+        preferredWorkshopErr ||
+        !preferredWorkshop ||
+        preferredWorkshop.is_verified !== true ||
+        preferredWorkshop.is_suspended === true
+      ) {
+        return {
+          ok: false,
+          message: "الورشة المفضّلة غير متاحة أو غير معتمدة.",
+        };
+      }
+    }
+
     const { data, error } = await sb
       .from("inspection_requests")
       .insert({
@@ -155,6 +184,8 @@ export async function createInspectionRequestAction(formData: FormData): Promise
         auction_reference,
         status: "submitted",
         service_mode: preferredServiceMode,
+        preferred_workshop_id: preferredWorkshopId,
+        preferred_slot_at: preferredSlotAt,
       })
       .select("id")
       .single();
@@ -222,7 +253,7 @@ export async function assignInspectionRequestAction(
     const sb = requireAdminClient();
     const { data: req, error: fetchErr } = await sb
       .from("inspection_requests")
-      .select("status")
+      .select("status, preferred_slot_at, preferred_workshop_id")
       .eq("id", requestId)
       .single();
     if (fetchErr || !req || req.status !== "submitted") {
@@ -230,6 +261,10 @@ export async function assignInspectionRequestAction(
     }
 
     const quotedFee = await resolveQuotedFeeForAssign(workshopId, serviceMode);
+    const preferredSlotAt =
+      typeof req.preferred_slot_at === "string" && req.preferred_slot_at.trim()
+        ? req.preferred_slot_at
+        : null;
 
     const { error } = await sb
       .from("inspection_requests")
@@ -239,6 +274,10 @@ export async function assignInspectionRequestAction(
         status: "assigned",
         service_mode: serviceMode,
         field_service_address: serviceMode === "field" ? fieldAddress : null,
+        // Seed field calendar from customer preference when assigning field mode
+        ...(serviceMode === "field" && preferredSlotAt
+          ? { field_scheduled_at: preferredSlotAt }
+          : {}),
         quoted_fee_sar: quotedFee,
         inspection_fee_payment_status:
           quotedFee != null && quotedFee > 0 ? "unpaid" : "waived",
@@ -250,10 +289,16 @@ export async function assignInspectionRequestAction(
       .eq("id", requestId);
 
     if (error) return { ok: false, message: error.message };
+    const preferenceHint =
+      req.preferred_workshop_id && req.preferred_workshop_id === workshopId
+        ? " (مطابق لتفضيل العميل)"
+        : req.preferred_workshop_id
+          ? " (تفضيل العميل كان ورشة أخرى)"
+          : "";
     const modeNote =
       serviceMode === "field"
-        ? `تم الإسناد — فحص ميداني: ${fieldAddress}`
-        : "تم الإسناد — فحص في الورشة";
+        ? `تم الإسناد — فحص ميداني: ${fieldAddress}${preferenceHint}`
+        : `تم الإسناد — فحص في الورشة${preferenceHint}`;
     await insertHistory(requestId, "assigned", modeNote);
     revalidatePath("/requests");
     revalidatePath(`/requests/${requestId}`);
