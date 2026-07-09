@@ -10,6 +10,8 @@ interface InspectorAssignmentPanelProps {
   requestId: string;
   currentWorkshopId?: string;
   currentInspectorId?: string;
+  preferredWorkshopId?: string;
+  preferredSlotAt?: string;
   workshops: Workshop[];
   inspectors: Inspector[];
 }
@@ -18,18 +20,27 @@ export function InspectorAssignmentPanel({
   requestId,
   currentWorkshopId,
   currentInspectorId,
+  preferredWorkshopId,
+  preferredSlotAt,
   workshops,
   inspectors,
 }: InspectorAssignmentPanelProps) {
   const { colors } = useTheme({ role: "workshop" });
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [workshopId, setWorkshopId] = useState(currentWorkshopId ?? "");
+  const [workshopId, setWorkshopId] = useState(
+    currentWorkshopId || preferredWorkshopId || ""
+  );
   const [inspectorId, setInspectorId] = useState(currentInspectorId ?? "");
   const [feedback, setFeedback] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
+
+  const preferredWorkshopName = useMemo(() => {
+    if (!preferredWorkshopId) return null;
+    return workshops.find((w) => w.id === preferredWorkshopId)?.name ?? preferredWorkshopId;
+  }, [preferredWorkshopId, workshops]);
 
   const filteredInspectors = useMemo(() => {
     if (!workshopId) return inspectors;
@@ -55,6 +66,23 @@ export function InspectorAssignmentPanel({
 
   return (
     <div className="space-y-3 text-sm" dir="rtl">
+      {(preferredWorkshopName || preferredSlotAt) && (
+        <div className="rounded-lg border border-sky-100 bg-sky-50/80 px-3 py-2 text-xs text-sky-950 space-y-1">
+          <p className="font-semibold">تفضيل العميل عند الإنشاء</p>
+          {preferredWorkshopName ? (
+            <p>الورشة المفضّلة: {preferredWorkshopName}</p>
+          ) : null}
+          {preferredSlotAt ? (
+            <p>
+              الموعد المفضّل:{" "}
+              {new Date(preferredSlotAt).toLocaleString("ar-SA", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
+            </p>
+          ) : null}
+        </div>
+      )}
       <div>
         <label className="block text-gray-500 mb-1">الورشة</label>
         <select

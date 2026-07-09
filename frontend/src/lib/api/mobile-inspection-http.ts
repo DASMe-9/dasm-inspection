@@ -200,6 +200,15 @@ export async function getMobileRequestDetail(
       field_service_lng: req.fieldServiceLng ?? null,
       workshop_phone: workshop?.phone?.trim() || null,
       customer_phone: null,
+      preferred_workshop_id: req.preferredWorkshopId ?? null,
+      preferred_slot_at: req.preferredSlotAt ?? null,
+      quoted_fee_sar: req.quotedFeeSar ?? null,
+      inspection_fee_payment_status: req.inspectionFeePaymentStatus ?? "unpaid",
+      can_pay_fee:
+        (req.quotedFeeSar != null &&
+          req.quotedFeeSar > 0 &&
+          (req.inspectionFeePaymentStatus === "unpaid" ||
+            req.inspectionFeePaymentStatus === "pending")) === true,
       can_confirm_on_site: canConfirmOnSite(ctx),
       can_start: canStartInspection(ctx),
       checklist_editable: req.status === "in_progress",

@@ -60,6 +60,8 @@ type DbRequest = {
   on_site_at: string | null;
   workshop_id: string | null;
   inspector_id: string | null;
+  preferred_workshop_id: string | null;
+  preferred_slot_at: string | null;
   report_id: string | null;
   created_at: string;
   updated_at: string;
@@ -170,6 +172,8 @@ export function mapRequest(row: DbRequest): InspectionRequest {
     onSiteAt: row.on_site_at ?? undefined,
     workshopId: row.workshop_id ?? undefined,
     inspectorId: row.inspector_id ?? undefined,
+    preferredWorkshopId: row.preferred_workshop_id ?? undefined,
+    preferredSlotAt: row.preferred_slot_at ?? undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     reportId: row.report_id ?? undefined,

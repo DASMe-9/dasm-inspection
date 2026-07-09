@@ -133,6 +133,10 @@ export interface InspectionRequest {
   onSiteAt?: string;
   workshopId?: string;
   inspectorId?: string;
+  /** تفضيل العميل عند الإنشاء — ليس إسناداً نهائياً */
+  preferredWorkshopId?: string;
+  /** موعد مفضّل عند الإنشاء — قد يُنسخ إلى field_scheduled_at عند الإسناد الميداني */
+  preferredSlotAt?: string;
   createdAt: string;
   updatedAt: string;
   reportId?: string;
