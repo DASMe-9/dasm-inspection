@@ -1,0 +1,38 @@
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateMobileRequest } from "@/lib/api/mobile-inspection-http";
+import { mobileSubmitReport } from "@/lib/api/mobile-inspection-mutations";
+
+/**
+ * POST /api/mobile/requests/:id/submit
+ * Inspector submits the completed report for workshop review (→ pending_review).
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const auth = await authenticateMobileRequest(request);
+  if (!auth.ok) {
+    return NextResponse.json(
+      { error: "unauthorized", message: auth.message },
+      { status: auth.status }
+    );
+  }
+
+  const id = params.id?.trim();
+  if (!id) {
+    return NextResponse.json(
+      { error: "bad_request", message: "معرّف الطلب مطلوب" },
+      { status: 400 }
+    );
+  }
+
+  const result = await mobileSubmitReport(id, auth.normalized);
+  if (!result.ok) {
+    return NextResponse.json(
+      { error: "forbidden", message: result.message },
+      { status: 400 }
+    );
+  }
+
+  return NextResponse.json({ ok: true });
+}
