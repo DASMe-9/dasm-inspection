@@ -5,6 +5,7 @@ import {
   getInspectionRequest,
   getReport,
   getReportByRequestId,
+  getWorkshop,
   listInspectionRequests,
   listInspectionRequestsForDasmUser,
   listWorkshopsForDirectory,
@@ -183,6 +184,12 @@ export async function getMobileRequestDetail(
     if (draft.ok && draft.report) report = draft.report;
   }
 
+  // Contact enrichment for the mobile details screen (NO DEAD CONTROLS):
+  // workshop phone lives on inspection_workshops. Customer phone is NOT in the
+  // inspection schema — only dasm_user_id — and Core has no internal lookup
+  // endpoint for it yet, so customer_phone stays null until that lands.
+  const workshop = req.workshopId ? await getWorkshop(req.workshopId) : null;
+
   return {
     ok: true as const,
     request: {
@@ -190,6 +197,8 @@ export async function getMobileRequestDetail(
       field_service_address: req.fieldServiceAddress ?? null,
       field_service_lat: req.fieldServiceLat ?? null,
       field_service_lng: req.fieldServiceLng ?? null,
+      workshop_phone: workshop?.phone?.trim() || null,
+      customer_phone: null,
       can_confirm_on_site: canConfirmOnSite(ctx),
       can_start: canStartInspection(ctx),
       checklist_editable: req.status === "in_progress",
