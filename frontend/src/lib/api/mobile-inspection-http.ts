@@ -24,6 +24,7 @@ import {
   canStartInspection,
   effectiveServiceMode,
 } from "@/lib/inspection-request-transitions";
+import { toMobileApprovedReportSummary } from "@/lib/api/mobile-approved-report-summary";
 import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
 import { authenticateDasmToken } from "@/lib/auth/authenticate-dasm-token";
 import { requireAdminClient } from "@/lib/supabase/admin";
@@ -31,6 +32,8 @@ import type { AppRole } from "@/types";
 import type { InspectionReportItem, InspectionRequest, Workshop } from "@/types";
 import { getBearerToken } from "@/lib/api/inspection-http-auth";
 import type { NextRequest } from "next/server";
+
+export { toMobileApprovedReportSummary } from "@/lib/api/mobile-approved-report-summary";
 
 export function mobileBearerFromRequest(request: NextRequest): string | null {
   return getBearerToken(request);
@@ -217,6 +220,7 @@ export async function getMobileRequestDetail(
     },
     checklist: report?.items.map(toMobileChecklistItem) ?? [],
     report_id: report?.id ?? null,
+    approved_report: toMobileApprovedReportSummary(report, req.status),
     repair_recommendations: (
       await listRepairRecommendationsForRequest(req.id)
     ).map((r) => ({
