@@ -69,6 +69,7 @@ export function toMobileWorkshopRow(workshop: Workshop) {
     name: workshop.name,
     city: workshop.city,
     is_verified: workshop.isVerified,
+    phone: workshop.phone?.trim() || null,
     pricing: workshop.pricing ?? null,
   };
 }
