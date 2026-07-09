@@ -113,7 +113,7 @@ async function insertHistory(
 }
 
 export type ActionResult =
-  | { ok: true }
+  | { ok: true; requestId?: string }
   | { ok: false; message: string };
 
 export async function createInspectionRequestAction(formData: FormData): Promise<ActionResult> {
@@ -125,6 +125,13 @@ export async function createInspectionRequestAction(formData: FormData): Promise
     const dasm_user_id = String(formData.get("dasm_user_id") ?? "").trim() || null;
     const auction_reference =
       String(formData.get("auction_reference") ?? "").trim() || null;
+    const preferredWorkshopId =
+      String(formData.get("preferred_workshop_id") ?? "").trim() || null;
+    const preferredServiceModeRaw = String(
+      formData.get("preferred_service_mode") ?? "workshop"
+    ).trim();
+    const preferredServiceMode =
+      preferredServiceModeRaw === "field" ? "field" : "workshop";
 
     if (!title || !vehicle_label) {
       return { ok: false, message: "عنوان الطلب ووصف المركبة مطلوبان." };
@@ -147,6 +154,7 @@ export async function createInspectionRequestAction(formData: FormData): Promise
         dasm_user_id,
         auction_reference,
         status: "submitted",
+        service_mode: preferredServiceMode,
       })
       .select("id")
       .single();
@@ -173,11 +181,19 @@ export async function createInspectionRequestAction(formData: FormData): Promise
       }
     }
 
-    await insertHistory(data.id, "submitted");
+    const preferenceParts: string[] = [
+      `نوع الخدمة المفضّل: ${preferredServiceMode === "field" ? "ميداني" : "في الورشة"}`,
+    ];
+    if (preferredWorkshopId) {
+      preferenceParts.push(`ورشة مفضّلة (تفضيل عميل): ${preferredWorkshopId}`);
+    }
+
+    await insertHistory(data.id, "submitted", preferenceParts.join(" — "));
     revalidatePath("/");
     revalidatePath("/requests");
     revalidatePath("/my-inspections");
-    return { ok: true };
+    revalidatePath(`/track/${data.id}`);
+    return { ok: true, requestId: data.id };
   } catch (e) {
     return { ok: false, message: mapAccessError(e) };
   }

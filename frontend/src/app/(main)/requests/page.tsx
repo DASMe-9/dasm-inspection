@@ -51,6 +51,15 @@ export default async function RequestsListPage({
 
   const platformPricing = await getPlatformDefaultPricing();
   const hideNewRequestForm = isWorkshopOperatorRole(personaCtx.persona);
+  const createFormWorkshops = workshops
+    .filter((w) => w.isVerified && !w.isSuspended)
+    .map((w) => ({
+      id: w.id,
+      name: w.name,
+      city: w.city,
+      isVerified: w.isVerified,
+      pricing: w.pricing,
+    }));
 
   const scopedNote = scope.scopedNote;
 
@@ -72,6 +81,7 @@ export default async function RequestsListPage({
           <NewInspectionRequestForm
             defaultDasmUserId={presetDasmUserId}
             platformPricing={platformPricing}
+            workshops={createFormWorkshops}
           />
         </SectionCard>
       ) : null}
