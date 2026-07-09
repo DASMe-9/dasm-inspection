@@ -161,6 +161,13 @@ export interface InspectionReport {
   approvedAt?: string;
   approvedByRole?: AppRole;
   rejectionReason?: string;
+  /** Persisted on approve (weighted model). Null for drafts / pre-approve. */
+  finalScore?: number | null;
+  letterGrade?: string | null;
+  harajTrack?: string | null;
+  sectionGrades?: Record<string, number | null> | null;
+  /** Unguessable public share token — only meaningful after approve. */
+  publicToken?: string | null;
 }
 
 export interface InspectionAttachment {

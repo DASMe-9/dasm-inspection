@@ -77,6 +77,11 @@ type DbReport = {
   approved_at: string | null;
   approved_by_role: AppRole | null;
   rejection_reason: string | null;
+  final_score?: number | string | null;
+  letter_grade?: string | null;
+  haraj_track?: string | null;
+  section_grades?: Record<string, number | null> | null;
+  public_token?: string | null;
 };
 
 type DbReportItem = {
@@ -194,6 +199,10 @@ export function mapReport(
   row: DbReport,
   items: InspectionReportItem[]
 ): InspectionReport {
+  const score =
+    row.final_score == null || row.final_score === ""
+      ? null
+      : Number(row.final_score);
   return {
     id: row.id,
     requestId: row.request_id,
@@ -205,6 +214,11 @@ export function mapReport(
     approvedAt: row.approved_at ?? undefined,
     approvedByRole: row.approved_by_role ?? undefined,
     rejectionReason: row.rejection_reason ?? undefined,
+    finalScore: Number.isFinite(score as number) ? (score as number) : null,
+    letterGrade: row.letter_grade ?? null,
+    harajTrack: row.haraj_track ?? null,
+    sectionGrades: row.section_grades ?? null,
+    publicToken: row.public_token ?? null,
   };
 }
 
