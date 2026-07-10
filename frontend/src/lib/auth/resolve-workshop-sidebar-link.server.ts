@@ -25,6 +25,8 @@ export async function resolveWorkshopSidebarProfileLink(
   return {
     publicHref: `/workshops/${workshop.slug}`,
     name: workshop.name,
+    workshopId: workshop.id,
+    city: workshop.city,
     profileHref: `/workshop/profile${q}`,
   };
 }

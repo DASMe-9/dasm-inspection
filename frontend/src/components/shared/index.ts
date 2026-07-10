@@ -7,5 +7,7 @@ export { EmptyState } from "./EmptyState";
 export { LoadingSpinner } from "./LoadingSpinner";
 export { SupabaseSetupWarning } from "./SupabaseSetupWarning";
 export { AppShell } from "./AppShell";
+export { InspectionTopNavbar } from "./InspectionTopNavbar";
+export { WorkshopWelcomeBanner } from "./WorkshopWelcomeBanner";
 export { PersonaPageHero } from "./PersonaPageHero";
 export { QuickActionCard } from "./QuickActionCard";

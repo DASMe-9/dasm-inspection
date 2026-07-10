@@ -5,7 +5,7 @@ import {
   resolveInspectionPersona,
   visibleNavKeys,
 } from "@/lib/auth/resolve-inspection-persona";
-import { resolveWorkshopSidebarProfileLink } from "@/lib/auth/resolve-workshop-sidebar-link.server";
+import { resolveInspectionShellContext } from "@/lib/auth/resolve-inspection-shell-context.server";
 import { isSupabaseConfigured } from "@/lib/data/inspection";
 
 export const dynamic = "force-dynamic";
@@ -30,13 +30,13 @@ export default async function MainShellLayout({
   const headersList = await headers();
   const personaCtx = resolveInspectionPersona(headersList, cookieStore);
   const allowedNavKeys = Array.from(visibleNavKeys(personaCtx.persona));
-  const workshopProfileLink = await resolveWorkshopSidebarProfileLink(personaCtx);
+  const shellContext = await resolveInspectionShellContext();
 
   return (
     <AppShell
       allowedNavKeys={allowedNavKeys}
       configured={configured}
-      workshopProfileLink={workshopProfileLink}
+      shellContext={shellContext}
     >
       {children}
     </AppShell>
