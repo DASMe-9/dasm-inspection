@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { assertInspectionMutationAllowed } from "@/lib/auth/access-layer.server";
+import { assertWorkshopManageAccess } from "@/lib/auth/workshop-scope.server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import type {
   InspectionRequestStatus,
@@ -224,6 +225,113 @@ export async function createInspectionRequestAction(formData: FormData): Promise
     revalidatePath("/requests");
     revalidatePath("/my-inspections");
     revalidatePath(`/track/${data.id}`);
+    return { ok: true, requestId: data.id };
+  } catch (e) {
+    return { ok: false, message: mapAccessError(e) };
+  }
+}
+
+export async function createWalkInInspectionRequestAction(
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    const workshopId = String(formData.get("workshop_id") ?? "").trim();
+    const inspectorId = String(formData.get("inspector_id") ?? "").trim();
+    const vehicleLabel = String(formData.get("vehicle_label") ?? "").trim();
+    const dasmUserIdRaw = String(formData.get("dasm_user_id") ?? "").trim();
+    const customerPhone = String(formData.get("customer_phone") ?? "").trim();
+    const customerName = String(formData.get("customer_name") ?? "").trim();
+    const startNow =
+      formData.get("start_now") === "on" ||
+      formData.get("start_now") === "true";
+
+    if (!workshopId) {
+      return { ok: false, message: "معرف الورشة مطلوب." };
+    }
+    await assertWorkshopManageAccess(workshopId);
+
+    if (!vehicleLabel) {
+      return { ok: false, message: "وصف المركبة مطلوب." };
+    }
+    if (!inspectorId) {
+      return { ok: false, message: "اختر المفتش." };
+    }
+
+    const sb = requireAdminClient();
+    const { data: inspector, error: inspectorErr } = await sb
+      .from("inspection_inspectors")
+      .select("id, workshop_id, active")
+      .eq("id", inspectorId)
+      .maybeSingle();
+    if (
+      inspectorErr ||
+      !inspector ||
+      inspector.workshop_id !== workshopId ||
+      inspector.active !== true
+    ) {
+      return { ok: false, message: "المفتش غير صالح لهذه الورشة." };
+    }
+
+    const serviceMode: InspectionServiceMode = "workshop";
+    const quotedFee = await resolveQuotedFeeForAssign(workshopId, serviceMode);
+    const initialStatus: InspectionRequestStatus = startNow ? "in_progress" : "assigned";
+    const title = `فحص زائر — ${vehicleLabel}`;
+    const dasmUserId = dasmUserIdRaw || null;
+
+    const { data, error } = await sb
+      .from("inspection_requests")
+      .insert({
+        title,
+        dasm_car_id: "pending",
+        vehicle_label: vehicleLabel,
+        dasm_user_id: dasmUserId,
+        status: initialStatus,
+        service_mode: serviceMode,
+        workshop_id: workshopId,
+        inspector_id: inspectorId,
+        preferred_workshop_id: workshopId,
+        quoted_fee_sar: quotedFee,
+        inspection_fee_payment_status:
+          quotedFee != null && quotedFee > 0 ? "unpaid" : "waived",
+        inspection_fee_payment_ref: null,
+        inspection_fee_paid_at: null,
+      })
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      return { ok: false, message: error?.message ?? "فشل إنشاء طلب الزائر." };
+    }
+
+    if (dasmUserId) {
+      const userId = Number.parseInt(dasmUserId, 10);
+      if (Number.isFinite(userId) && userId > 0) {
+        const carId = await ensureDasmCarOnCore({
+          userId,
+          vehicleLabel,
+          inspectionRequestId: data.id,
+          title,
+        });
+        if (carId) {
+          await sb
+            .from("inspection_requests")
+            .update({ dasm_car_id: String(carId) })
+            .eq("id", data.id);
+        }
+      }
+    }
+
+    const noteParts = ["مصدر: زائر الورشة (walk-in)"];
+    if (customerName) noteParts.push(`العميل: ${customerName}`);
+    if (customerPhone) noteParts.push(`الجوال: ${customerPhone}`);
+
+    await insertHistory(data.id, initialStatus, noteParts.join(" — "));
+
+    revalidatePath("/workshop");
+    revalidatePath("/requests");
+    revalidatePath("/my-inspections");
+    revalidatePath(`/track/${data.id}`);
+    revalidatePath(`/requests/${data.id}`);
     return { ok: true, requestId: data.id };
   } catch (e) {
     return { ok: false, message: mapAccessError(e) };

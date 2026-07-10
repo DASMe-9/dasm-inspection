@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReportChecklistRow, RequestStatusBadge } from "@/components/inspection";
+import { ReportPrintToolbar } from "@/components/inspection/ReportPrintToolbar";
 import { SectionCard } from "@/components/shared";
 import {
   getInspector,
@@ -10,6 +11,7 @@ import {
 } from "@/lib/data/inspection";
 import { TOKENS } from "@/lib/theme";
 import type { AppRole } from "@/types";
+import "@/styles/report-print.css";
 
 const ROLE_AR: Record<AppRole, string> = {
   super_admin: "مشرف عام",
@@ -36,6 +38,13 @@ export default async function ReportDetailPage({
 
   return (
     <div className="space-y-6" dir="rtl">
+      <ReportPrintToolbar
+        publicReportHref={
+          report.approvedAt && report.publicToken
+            ? `/r/${report.publicToken}`
+            : null
+        }
+      />
       <div>
         <h2 className="text-lg font-bold">تقرير الفحص</h2>
         {req && (
