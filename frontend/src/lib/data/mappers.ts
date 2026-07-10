@@ -1,3 +1,7 @@
+import {
+  parseEducationalVideos,
+  parseUrlList,
+} from "@/lib/workshop-showcase";
 import type {
   InspectionAttachment,
   InspectionReport,
@@ -39,6 +43,9 @@ type DbWorkshop = {
   views_count?: number | null;
   is_featured?: boolean | null;
   featured_program_label?: string | null;
+  gallery_urls?: unknown;
+  repair_showcase_urls?: unknown;
+  educational_videos?: unknown;
 };
 
 type DbInspector = {
@@ -160,6 +167,18 @@ export function mapWorkshop(row: DbWorkshop): Workshop {
     viewsCount: row.views_count ?? undefined,
     isFeatured: row.is_featured ?? undefined,
     featuredProgramLabel: row.featured_program_label ?? undefined,
+    galleryUrls: parseUrlList(row.gallery_urls),
+    repairShowcaseUrls: parseUrlList(row.repair_showcase_urls),
+    educationalVideos: parseEducationalVideos(row.educational_videos).map(
+      (video) => ({
+        id: video.id,
+        title: video.title,
+        description: video.description,
+        videoUrl: video.video_url,
+        thumbnailUrl: video.thumbnail_url,
+        sortOrder: video.sort_order,
+      })
+    ),
   };
 }
 

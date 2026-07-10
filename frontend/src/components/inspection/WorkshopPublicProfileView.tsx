@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import {
   ArrowLeft,
   Award,
@@ -7,16 +10,21 @@ import {
   ClipboardList,
   Clock,
   ExternalLink,
+  GraduationCap,
+  Images,
   LogIn,
   Mail,
   MapPin,
   Phone,
+  Sparkles,
   Star,
   Users,
+  Wrench,
 } from "lucide-react";
 import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { SectionCard } from "@/components/shared";
 import type { WorkshopPublicProfile } from "@/lib/workshop-public-profile";
+import type { WorkshopEducationalVideo } from "@/types";
 import { TOKENS } from "@/lib/theme";
 
 const HARAJ_LABELS: Record<string, string> = {
@@ -27,12 +35,154 @@ const HARAJ_LABELS: Record<string, string> = {
   rejected: "غير مؤهل",
 };
 
+type TabId = "home" | "gallery" | "repairs" | "education";
+
+const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
+  { id: "home", label: "الرئيسية", icon: Sparkles },
+  { id: "gallery", label: "صور الورشة", icon: Images },
+  { id: "repairs", label: "أعمال الإصلاح", icon: Wrench },
+  { id: "education", label: "تثقيفي", icon: GraduationCap },
+];
+
+function toVideoEmbedUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtu.be")) {
+      const id = parsed.pathname.replace("/", "");
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (parsed.hostname.includes("youtube.com")) {
+      const id = parsed.searchParams.get("v");
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) {
+      return url;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function MediaGrid({ urls, emptyLabel }: { urls: string[]; emptyLabel: string }) {
+  if (urls.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 py-16 text-center text-sm text-gray-400">
+        {emptyLabel}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+      {urls.map((url) => (
+        <a
+          key={url}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-gray-100 bg-gray-100"
+        >
+          <img
+            src={url}
+            alt=""
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function VideoGrid({
+  videos,
+  emptyLabel,
+}: {
+  videos: WorkshopEducationalVideo[];
+  emptyLabel: string;
+}) {
+  if (videos.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 py-16 text-center text-sm text-gray-400">
+        {emptyLabel}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-5 md:grid-cols-2">
+      {videos.map((video) => {
+        const embed = toVideoEmbedUrl(video.videoUrl);
+        const isDirect = embed && /\.(mp4|webm|mov)(\?|$)/i.test(embed);
+
+        return (
+          <article
+            key={video.id}
+            className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"
+          >
+            <div className="aspect-video bg-gray-900">
+              {embed ? (
+                isDirect ? (
+                  <video
+                    src={embed}
+                    controls
+                    className="h-full w-full object-cover"
+                    poster={video.thumbnailUrl}
+                  />
+                ) : (
+                  <iframe
+                    src={embed}
+                    title={video.title}
+                    className="h-full w-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )
+              ) : video.thumbnailUrl ? (
+                <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={video.thumbnailUrl}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </a>
+              ) : (
+                <a
+                  href={video.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-full items-center justify-center text-sm text-white/80 hover:text-white"
+                >
+                  مشاهدة الفيديو
+                  <ExternalLink className="mr-1 h-4 w-4" aria-hidden />
+                </a>
+              )}
+            </div>
+            <div className="p-4">
+              <h3 className="font-bold text-gray-900">{video.title}</h3>
+              {video.description && (
+                <p className="mt-1 text-sm text-gray-600">{video.description}</p>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 export function WorkshopPublicProfileView({
   profile,
 }: {
   profile: WorkshopPublicProfile;
 }) {
   const { primary, accent, secondary } = TOKENS.colors.roles.workshop;
+  const [tab, setTab] = useState<TabId>("home");
+
+  const hasShowcase =
+    profile.galleryUrls.length > 0 ||
+    profile.repairShowcaseUrls.length > 0 ||
+    profile.educationalVideos.length > 0;
 
   return (
     <div className="space-y-8" dir="rtl">
@@ -156,179 +306,227 @@ export function WorkshopPublicProfileView({
         </div>
       </section>
 
-      {profile.pricing && (
-        <SectionCard title="أسعار الفحص (تقديرية)">
-          <p className="mb-3 text-xs text-gray-600">
-            الأسعار المرجعية قبل تأكيد الورشة؛ قد تختلف حسب المركبة والمنطقة.
-          </p>
-          <WorkshopPricingBadges pricing={profile.pricing} />
+      {hasShowcase && (
+        <div className="flex flex-wrap gap-2 rounded-2xl border border-gray-100 bg-white p-2 shadow-sm">
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setTab(id)}
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+                tab === id
+                  ? "bg-violet-700 text-white shadow-sm"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <Icon className="h-4 w-4" aria-hidden />
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {tab === "gallery" && (
+        <SectionCard title="صور الورشة">
+          <MediaGrid urls={profile.galleryUrls} emptyLabel="لم تُضف صور للورشة بعد." />
         </SectionCard>
       )}
 
-      {profile.stats.recentInspections.length > 0 && (
-        <SectionCard title="سجل الفحوصات المعتمدة">
-          <p className="mb-4 text-xs text-gray-500">
-            عينة من آخر الفحوصات المنجزة — بدون بيانات شخصية للعملاء.
-          </p>
-          <ul className="space-y-3">
-            {profile.stats.recentInspections.map((item) => (
-              <li
-                key={item.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3 text-sm"
-              >
-                <span className="font-medium text-gray-900">{item.vehicleLabel}</span>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
-                  {item.finalScore != null && (
-                    <span>الدرجة: {item.finalScore}</span>
-                  )}
-                  {item.harajPath && (
-                    <span>{HARAJ_LABELS[item.harajPath] ?? item.harajPath}</span>
-                  )}
-                  <span>
-                    {new Date(item.approvedAt).toLocaleDateString("ar-SA")}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
+      {tab === "repairs" && (
+        <SectionCard title="أعمال الإصلاح">
+          <MediaGrid
+            urls={profile.repairShowcaseUrls}
+            emptyLabel="لم تُضف صور إصلاح بعد."
+          />
         </SectionCard>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <SectionCard title="جهات الاتصال">
-          {!profile.isVerified ? (
-            <p className="text-sm text-gray-600">
-              تُعرض بيانات الاتصال بعد اعتماد الورشة في منظومة داسم.
-            </p>
-          ) : (
-            <ul className="space-y-4 text-sm">
-              {profile.phone && (
-                <li className="flex gap-3">
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#1E74E8]"
-                    aria-hidden
-                  >
-                    <Phone className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium text-gray-500">هاتف</p>
-                    <a
-                      href={`tel:${profile.phone.replace(/\s+/g, "")}`}
-                      className="font-semibold text-gray-900 hover:text-[#1E74E8]"
-                    >
-                      {profile.phone}
-                    </a>
-                  </div>
-                </li>
-              )}
-              {profile.whatsapp && (
-                <li className="flex gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
-                    WA
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium text-gray-500">واتساب</p>
-                    <a
-                      href={`https://wa.me/${profile.whatsapp.replace(/\D/g, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-semibold text-gray-900 hover:text-emerald-700"
-                    >
-                      {profile.whatsapp}
-                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-                    </a>
-                  </div>
-                </li>
-              )}
-              {profile.email && (
-                <li className="flex gap-3">
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#1E74E8]"
-                    aria-hidden
-                  >
-                    <Mail className="h-4 w-4" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium text-gray-500">بريد</p>
-                    <a
-                      href={`mailto:${profile.email}`}
-                      className="break-all font-semibold text-gray-900 hover:text-[#1E74E8]"
-                    >
-                      {profile.email}
-                    </a>
-                  </div>
-                </li>
-              )}
-              {profile.instagram && (
-                <li className="flex gap-3">
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600 text-xs font-bold"
-                    aria-hidden
-                  >
-                    IG
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium text-gray-500">إنستغرام</p>
-                    <span className="font-semibold text-gray-900">{profile.instagram}</span>
-                  </div>
-                </li>
-              )}
-              {profile.workingHours && (
-                <li className="flex gap-3">
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600"
-                    aria-hidden
-                  >
-                    <Clock className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium text-gray-500">ساعات العمل</p>
-                    <p className="font-semibold text-gray-900">{profile.workingHours}</p>
-                  </div>
-                </li>
-              )}
-              {profile.mapLink && (
-                <li>
-                  <a
-                    href={profile.mapLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#1E74E8] hover:underline"
-                  >
-                    <MapPin className="h-4 w-4" aria-hidden />
-                    الموقع على الخريطة
-                    <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-                  </a>
-                </li>
-              )}
-              {!profile.phone &&
-                !profile.email &&
-                !profile.whatsapp &&
-                !profile.instagram && (
-                  <p className="text-sm text-gray-600">لا توجد جهات اتصال منشورة حالياً.</p>
-                )}
-            </ul>
-          )}
+      {tab === "education" && (
+        <SectionCard title="محتوى تثقيفي">
+          <VideoGrid
+            videos={profile.educationalVideos}
+            emptyLabel="لم تُضف فيديوهات تثقيفية بعد."
+          />
         </SectionCard>
+      )}
 
-        <SectionCard title="الفريق الميداني">
-          {profile.inspectors.length === 0 ? (
-            <p className="text-sm text-gray-600">لا مفتشين مرتبطين بهذه الورشة حالياً.</p>
-          ) : (
-            <ul className="space-y-3">
-              {profile.inspectors.map((i) => (
-                <li
-                  key={i.id}
-                  className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2.5 font-medium text-gray-900"
-                >
-                  <Users className="h-4 w-4 text-violet-600" aria-hidden />
-                  {i.fullName}
-                </li>
-              ))}
-            </ul>
+      {tab === "home" && (
+        <>
+          {profile.pricing && (
+            <SectionCard title="أسعار الفحص (تقديرية)">
+              <p className="mb-3 text-xs text-gray-600">
+                الأسعار المرجعية قبل تأكيد الورشة؛ قد تختلف حسب المركبة والمنطقة.
+              </p>
+              <WorkshopPricingBadges pricing={profile.pricing} />
+            </SectionCard>
           )}
-        </SectionCard>
-      </div>
+
+          {profile.stats.recentInspections.length > 0 && (
+            <SectionCard title="سجل الفحوصات المعتمدة">
+              <p className="mb-4 text-xs text-gray-500">
+                عينة من آخر الفحوصات المنجزة — بدون بيانات شخصية للعملاء.
+              </p>
+              <ul className="space-y-3">
+                {profile.stats.recentInspections.map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3 text-sm"
+                  >
+                    <span className="font-medium text-gray-900">{item.vehicleLabel}</span>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                      {item.finalScore != null && (
+                        <span>الدرجة: {item.finalScore}</span>
+                      )}
+                      {item.harajPath && (
+                        <span>{HARAJ_LABELS[item.harajPath] ?? item.harajPath}</span>
+                      )}
+                      <span>
+                        {new Date(item.approvedAt).toLocaleDateString("ar-SA")}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
+          )}
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <SectionCard title="جهات الاتصال">
+              {!profile.isVerified ? (
+                <p className="text-sm text-gray-600">
+                  تُعرض بيانات الاتصال بعد اعتماد الورشة في منظومة داسم.
+                </p>
+              ) : (
+                <ul className="space-y-4 text-sm">
+                  {profile.phone && (
+                    <li className="flex gap-3">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#1E74E8]"
+                        aria-hidden
+                      >
+                        <Phone className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium text-gray-500">هاتف</p>
+                        <a
+                          href={`tel:${profile.phone.replace(/\s+/g, "")}`}
+                          className="font-semibold text-gray-900 hover:text-[#1E74E8]"
+                        >
+                          {profile.phone}
+                        </a>
+                      </div>
+                    </li>
+                  )}
+                  {profile.whatsapp && (
+                    <li className="flex gap-3">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                        WA
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium text-gray-500">واتساب</p>
+                        <a
+                          href={`https://wa.me/${profile.whatsapp.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 font-semibold text-gray-900 hover:text-emerald-700"
+                        >
+                          {profile.whatsapp}
+                          <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                        </a>
+                      </div>
+                    </li>
+                  )}
+                  {profile.email && (
+                    <li className="flex gap-3">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#1E74E8]"
+                        aria-hidden
+                      >
+                        <Mail className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-gray-500">بريد</p>
+                        <a
+                          href={`mailto:${profile.email}`}
+                          className="break-all font-semibold text-gray-900 hover:text-[#1E74E8]"
+                        >
+                          {profile.email}
+                        </a>
+                      </div>
+                    </li>
+                  )}
+                  {profile.instagram && (
+                    <li className="flex gap-3">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600 text-xs font-bold"
+                        aria-hidden
+                      >
+                        IG
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium text-gray-500">إنستغرام</p>
+                        <span className="font-semibold text-gray-900">{profile.instagram}</span>
+                      </div>
+                    </li>
+                  )}
+                  {profile.workingHours && (
+                    <li className="flex gap-3">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600"
+                        aria-hidden
+                      >
+                        <Clock className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium text-gray-500">ساعات العمل</p>
+                        <p className="font-semibold text-gray-900">{profile.workingHours}</p>
+                      </div>
+                    </li>
+                  )}
+                  {profile.mapLink && (
+                    <li>
+                      <a
+                        href={profile.mapLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-[#1E74E8] hover:underline"
+                      >
+                        <MapPin className="h-4 w-4" aria-hidden />
+                        الموقع على الخريطة
+                        <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                      </a>
+                    </li>
+                  )}
+                  {!profile.phone &&
+                    !profile.email &&
+                    !profile.whatsapp &&
+                    !profile.instagram && (
+                      <p className="text-sm text-gray-600">لا توجد جهات اتصال منشورة حالياً.</p>
+                    )}
+                </ul>
+              )}
+            </SectionCard>
+
+            <SectionCard title="الفريق الميداني">
+              {profile.inspectors.length === 0 ? (
+                <p className="text-sm text-gray-600">لا مفتشين مرتبطين بهذه الورشة حالياً.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {profile.inspectors.map((i) => (
+                    <li
+                      key={i.id}
+                      className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2.5 font-medium text-gray-900"
+                    >
+                      <Users className="h-4 w-4 text-violet-600" aria-hidden />
+                      {i.fullName}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </SectionCard>
+          </div>
+        </>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-violet-200 bg-violet-50/30 px-4 py-3 text-sm text-gray-700">
         <span>لطلب فحص أو متابعة طلباتك سجّل الدخول بحساب داسم.</span>
