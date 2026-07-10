@@ -6,6 +6,7 @@ import {
   resolveInspectionPersona,
   visibleNavKeys,
 } from "@/lib/auth/resolve-inspection-persona";
+import { resolveWorkshopSidebarProfileLink } from "@/lib/auth/resolve-workshop-sidebar-link.server";
 
 // قشرة تكيّفية: نقرأ توكن الدخول لتحديد القشرة، فيلزم التصيير الديناميكي.
 export const dynamic = "force-dynamic";
@@ -26,7 +27,15 @@ export default async function PublicSiteLayout({
     const headersList = await headers();
     const personaCtx = resolveInspectionPersona(headersList, cookieStore);
     const allowedNavKeys = Array.from(visibleNavKeys(personaCtx.persona));
-    return <AppShell allowedNavKeys={allowedNavKeys}>{children}</AppShell>;
+    const workshopProfileLink = await resolveWorkshopSidebarProfileLink(personaCtx);
+    return (
+      <AppShell
+        allowedNavKeys={allowedNavKeys}
+        workshopProfileLink={workshopProfileLink}
+      >
+        {children}
+      </AppShell>
+    );
   }
 
   // زائر غير مسجّل: الموقع العام (هيدر + فوتر تسويقي).

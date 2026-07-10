@@ -35,6 +35,7 @@ function revalidateWorkshopPaths(workshopId: string, slug?: string) {
   revalidatePath("/workshop/team");
   revalidatePath("/workshop/pricing");
   revalidatePath("/workshop/areas");
+  revalidatePath("/workshop/profile");
   revalidatePath("/workshop/settings");
   revalidatePath(`/requests?workshop=${workshopId}`);
   if (slug) revalidatePath(`/workshops/${slug}`);

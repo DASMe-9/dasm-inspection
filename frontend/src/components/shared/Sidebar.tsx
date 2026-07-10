@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { WorkshopProfileSidebarCard } from "@/components/workshop/WorkshopProfileSidebarCard";
+import type { WorkshopSidebarProfileLink } from "@/lib/auth/workshop-sidebar-link";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import {
   filterSidebarNavGroups,
@@ -11,8 +13,10 @@ import {
 
 export function Sidebar({
   allowedNavKeys,
+  workshopProfileLink = null,
 }: {
   allowedNavKeys: InspectionNavKey[];
+  workshopProfileLink?: WorkshopSidebarProfileLink | null;
 }) {
   const pathname = usePathname();
   const allowed = new Set(allowedNavKeys);
@@ -64,6 +68,12 @@ export function Sidebar({
           </div>
         ))}
       </nav>
+
+      {workshopProfileLink ? (
+        <div className="px-3 pb-2">
+          <WorkshopProfileSidebarCard link={workshopProfileLink} />
+        </div>
+      ) : null}
 
       {/* Footer */}
       <div className="px-4 py-3 border-t border-white/10 space-y-2">
