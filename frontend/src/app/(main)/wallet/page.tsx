@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { EmptyState, SectionCard, StatCard } from "@/components/shared";
+import { Wallet as WalletIcon } from "lucide-react";
+import { EmptyState, PersonaPageHero, SectionCard, StatCard } from "@/components/shared";
 import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import { resolveWalletAudience } from "@/lib/auth/require-workshop-persona.server";
 import {
@@ -127,14 +128,21 @@ function CustomerWalletView({
 }) {
   return (
     <div className="space-y-6" dir="rtl">
-      <div>
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-slate-100">
-          محفظتي
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-          رصيدك المسبق لدفع رسوم الفحص — اشحن مرّة واستخدمه عبر فحوصاتك المتعدّدة.
-        </p>
-      </div>
+      <PersonaPageHero
+        variant="customer"
+        eyebrow="محفظة الفحص"
+        title="محفظتي"
+        description="رصيدك المسبق لدفع رسوم الفحص — اشحن مرّة واستخدمه عبر فحوصاتك المتعدّدة."
+        icon={WalletIcon}
+        actions={[{ href: "/requests", label: "طلبات الفحص", primary: true }]}
+        stats={[
+          {
+            label: "الرصيد القابل للصرف",
+            value: balance ? `${fmt(balance.balanceSar)} ر.س` : "—",
+          },
+          { label: "عدد الحركات", value: ledger ? String(ledger.entryCount) : "—" },
+        ]}
+      />
 
       <section className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
         <StatCard
@@ -149,15 +157,9 @@ function CustomerWalletView({
           <p className="text-sm text-gray-600 dark:text-slate-400">
             اشحن رصيدك لدفع رسوم الفحص بسرعة عند كل طلب.
           </p>
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className="inline-flex cursor-not-allowed items-center justify-center rounded-xl bg-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-500 dark:bg-slate-800 dark:text-slate-500"
-            title="سيُفعّل شحن الرصيد قريباً"
-          >
-            شحن الرصيد — قريباً
-          </button>
+          <span className="inline-flex items-center justify-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-200">
+            قريباً — شحن الرصيد
+          </span>
         </div>
       </SectionCard>
 
@@ -185,14 +187,25 @@ function WorkshopWalletView({
 }) {
   return (
     <div className="space-y-6" dir="rtl">
-      <div>
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-slate-100">
-          المحفظة
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-          رصيد محفظة الفحص وحركاتها المالية — من ليدجر داسم.
-        </p>
-      </div>
+      <PersonaPageHero
+        variant="workshop"
+        eyebrow="محفظة الورشة"
+        title="الأرباح والصرف"
+        description="رصيد محفظة الفحص وحركاتها المالية — من ليدجر داسم."
+        icon={WalletIcon}
+        actions={[{ href: "/workshop", label: "لوحة الورشة", primary: true }]}
+        stats={[
+          {
+            label: "الرصيد الحالي",
+            value: balance ? `${fmt(balance.balanceSar)} ر.س` : "—",
+          },
+          {
+            label: "إيرادات الفحص",
+            value: ledger ? `${fmt(ledger.inspectionRevenueSar)} ر.س` : "—",
+          },
+          { label: "عدد الحركات", value: ledger ? String(ledger.entryCount) : "—" },
+        ]}
+      />
 
       <section className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
         <StatCard
