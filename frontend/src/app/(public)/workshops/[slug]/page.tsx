@@ -13,7 +13,10 @@ import {
   getInspectorsForWorkshop,
   resolveWorkshopRouteParam,
 } from "@/lib/data/inspection";
+import { getWorkshopPublicStats } from "@/lib/data/workshop-public-stats";
+import { listApprovedWorkshopReviews } from "@/lib/data/workshop-reviews-data";
 import { toWorkshopPublicProfile } from "@/lib/workshop-public-profile";
+import { averageWorkshopRating } from "@/lib/workshop-reviews";
 import { isWorkshopUuid } from "@/lib/workshop-slug";
 
 export default async function WorkshopPublicPage({
@@ -35,14 +38,22 @@ export default async function WorkshopPublicPage({
   }
 
   const dasmUserId = await resolveDasmUserId();
-  const [inspectors, followerCount, following] = await Promise.all([
-    getInspectorsForWorkshop(resolved.workshop.id),
-    getWorkshopFollowerCount(resolved.workshop.id),
-    dasmUserId
-      ? isFollowingWorkshop(dasmUserId, resolved.workshop.id)
-      : Promise.resolve(false),
-  ]);
-  const profile = toWorkshopPublicProfile(resolved.workshop, inspectors);
+  const [inspectors, followerCount, following, reviews, stats] =
+    await Promise.all([
+      getInspectorsForWorkshop(resolved.workshop.id),
+      getWorkshopFollowerCount(resolved.workshop.id),
+      dasmUserId
+        ? isFollowingWorkshop(dasmUserId, resolved.workshop.id)
+        : Promise.resolve(false),
+      listApprovedWorkshopReviews(resolved.workshop.id),
+      getWorkshopPublicStats(resolved.workshop.id),
+    ]);
+
+  const ratingSummary = averageWorkshopRating(reviews.map((r) => r.rating));
+  const profile = toWorkshopPublicProfile(resolved.workshop, inspectors, {
+    ratingSummary,
+    stats,
+  });
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 md:px-6">

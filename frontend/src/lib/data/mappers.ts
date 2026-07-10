@@ -26,6 +26,19 @@ type DbWorkshop = {
   suspended_by?: string | null;
   suspension_reason?: string | null;
   dasm_partner_ref: string | null;
+  description?: string | null;
+  logo_url?: string | null;
+  cover_url?: string | null;
+  whatsapp?: string | null;
+  instagram?: string | null;
+  map_link?: string | null;
+  working_hours?: string | null;
+  commercial_registration?: string | null;
+  bank_iban?: string | null;
+  bank_beneficiary_name?: string | null;
+  views_count?: number | null;
+  is_featured?: boolean | null;
+  featured_program_label?: string | null;
 };
 
 type DbInspector = {
@@ -134,6 +147,19 @@ export function mapWorkshop(row: DbWorkshop): Workshop {
     suspendedBy: row.suspended_by ?? undefined,
     suspensionReason: row.suspension_reason ?? undefined,
     dasm_partner_ref: row.dasm_partner_ref ?? undefined,
+    description: row.description ?? undefined,
+    logoUrl: row.logo_url ?? undefined,
+    coverUrl: row.cover_url ?? undefined,
+    whatsapp: row.whatsapp ?? undefined,
+    instagram: row.instagram ?? undefined,
+    mapLink: row.map_link ?? undefined,
+    workingHours: row.working_hours ?? undefined,
+    commercialRegistration: row.commercial_registration ?? undefined,
+    bankIban: row.bank_iban ?? undefined,
+    bankBeneficiaryName: row.bank_beneficiary_name ?? undefined,
+    viewsCount: row.views_count ?? undefined,
+    isFeatured: row.is_featured ?? undefined,
+    featuredProgramLabel: row.featured_program_label ?? undefined,
   };
 }
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { assertWorkshopManageAccess } from "@/lib/auth/workshop-scope.server";
 import { requireAdminClient } from "@/lib/supabase/admin";
+import { normalizeSaudiIban } from "@/lib/workshop-kyc";
 import type { InspectionServiceMode } from "@/types";
 
 export type WorkshopManageResult =
@@ -27,6 +28,7 @@ function revalidateWorkshopPaths(workshopId: string, slug?: string) {
   revalidatePath("/workshop/team");
   revalidatePath("/workshop/pricing");
   revalidatePath("/workshop/areas");
+  revalidatePath("/workshop/settings");
   revalidatePath(`/requests?workshop=${workshopId}`);
   if (slug) revalidatePath(`/workshops/${slug}`);
 }
@@ -252,4 +254,107 @@ export async function setInspectorActiveFormAction(
   formData: FormData
 ): Promise<void> {
   await setWorkshopInspectorActiveAction(formData);
+}
+
+export async function saveWorkshopProfileAction(
+  formData: FormData
+): Promise<WorkshopManageResult> {
+  try {
+    const workshopId = String(formData.get("workshop_id") ?? "").trim();
+    const workshopSlug = String(formData.get("workshop_slug") ?? "").trim();
+    if (!workshopId) return { ok: false, message: "معرف الورشة مطلوب." };
+
+    await assertWorkshopManageAccess(workshopId);
+
+    const description =
+      String(formData.get("description") ?? "").trim() || null;
+    const logoUrl = String(formData.get("logo_url") ?? "").trim() || null;
+    const coverUrl = String(formData.get("cover_url") ?? "").trim() || null;
+    const whatsapp = String(formData.get("whatsapp") ?? "").trim() || null;
+    const instagram = String(formData.get("instagram") ?? "").trim() || null;
+    const mapLink = String(formData.get("map_link") ?? "").trim() || null;
+    const workingHours =
+      String(formData.get("working_hours") ?? "").trim() || null;
+    const isFeatured = formData.get("is_featured") === "on";
+    const featuredProgramLabel =
+      String(formData.get("featured_program_label") ?? "").trim() || null;
+
+    const sb = requireAdminClient();
+    const { error } = await sb
+      .from("inspection_workshops")
+      .update({
+        description,
+        logo_url: logoUrl,
+        cover_url: coverUrl,
+        whatsapp,
+        instagram,
+        map_link: mapLink,
+        working_hours: workingHours,
+        is_featured: isFeatured,
+        featured_program_label: featuredProgramLabel,
+      })
+      .eq("id", workshopId);
+
+    if (error) return { ok: false, message: error.message };
+
+    revalidateWorkshopPaths(workshopId, workshopSlug || undefined);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapError(e) };
+  }
+}
+
+export async function saveWorkshopKycAction(
+  formData: FormData
+): Promise<WorkshopManageResult> {
+  try {
+    const workshopId = String(formData.get("workshop_id") ?? "").trim();
+    const workshopSlug = String(formData.get("workshop_slug") ?? "").trim();
+    if (!workshopId) return { ok: false, message: "معرف الورشة مطلوب." };
+
+    await assertWorkshopManageAccess(workshopId);
+
+    const commercialRegistration =
+      String(formData.get("commercial_registration") ?? "").trim();
+    const bankBeneficiaryName =
+      String(formData.get("bank_beneficiary_name") ?? "").trim();
+    const bankIbanRaw = String(formData.get("bank_iban") ?? "").trim();
+
+    if (!commercialRegistration) {
+      return { ok: false, message: "السجل التجاري مطلوب." };
+    }
+    if (!bankBeneficiaryName) {
+      return { ok: false, message: "اسم المستفيد البنكي مطلوب." };
+    }
+
+    const bankIban = normalizeSaudiIban(bankIbanRaw);
+    if (!bankIban) {
+      return { ok: false, message: "رقم الآيبان غير صالح (صيغة SA + 22 رقم)." };
+    }
+
+    const sb = requireAdminClient();
+    const { error } = await sb
+      .from("inspection_workshops")
+      .update({
+        commercial_registration: commercialRegistration,
+        bank_iban: bankIban,
+        bank_beneficiary_name: bankBeneficiaryName,
+      })
+      .eq("id", workshopId);
+
+    if (error) return { ok: false, message: error.message };
+
+    revalidateWorkshopPaths(workshopId, workshopSlug || undefined);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapError(e) };
+  }
+}
+
+export async function saveProfileFormAction(formData: FormData): Promise<void> {
+  await saveWorkshopProfileAction(formData);
+}
+
+export async function saveKycFormAction(formData: FormData): Promise<void> {
+  await saveWorkshopKycAction(formData);
 }

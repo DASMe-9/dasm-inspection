@@ -1,19 +1,31 @@
 import Link from "next/link";
 import {
   ArrowLeft,
+  Award,
   BadgeCheck,
   Building2,
   ClipboardList,
+  Clock,
+  ExternalLink,
   LogIn,
   Mail,
   MapPin,
   Phone,
+  Star,
   Users,
 } from "lucide-react";
 import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { SectionCard } from "@/components/shared";
 import type { WorkshopPublicProfile } from "@/lib/workshop-public-profile";
 import { TOKENS } from "@/lib/theme";
+
+const HARAJ_LABELS: Record<string, string> = {
+  haraj_live: "حراج مباشر",
+  instant: "سوق فوري",
+  delayed: "سوق مؤجّل",
+  fixed: "سعر ثابت",
+  rejected: "غير مؤهل",
+};
 
 export function WorkshopPublicProfileView({
   profile,
@@ -33,22 +45,38 @@ export function WorkshopPublicProfileView({
       </nav>
 
       <section
-        className="relative overflow-hidden rounded-3xl border border-violet-100/90 bg-gradient-to-bl from-white via-violet-50/40 to-white p-6 shadow-sm ring-1 ring-violet-100/70 md:p-8"
+        className="relative overflow-hidden rounded-3xl border border-violet-100/90 bg-gradient-to-bl from-white via-violet-50/40 to-white shadow-sm ring-1 ring-violet-100/70"
         aria-labelledby="workshop-public-title"
       >
-        <div
-          className="pointer-events-none absolute -left-24 top-0 h-40 w-40 rounded-full opacity-35 blur-3xl"
-          style={{ background: `radial-gradient(circle, ${primary}55, transparent 70%)` }}
-        />
-        <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="flex min-w-0 flex-1 flex-col gap-3">
-            <div className="flex items-start gap-3">
-              <span
-                className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-white shadow-md"
-                style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
-              >
-                <Building2 className="h-5 w-5" aria-hidden />
-              </span>
+        {profile.coverUrl && (
+          <div
+            className="h-36 w-full bg-cover bg-center md:h-44"
+            style={{ backgroundImage: `url(${profile.coverUrl})` }}
+            role="img"
+            aria-label={`غلاف ${profile.name}`}
+          />
+        )}
+        <div className="relative p-6 md:p-8">
+          <div
+            className="pointer-events-none absolute -left-24 top-0 h-40 w-40 rounded-full opacity-35 blur-3xl"
+            style={{ background: `radial-gradient(circle, ${primary}55, transparent 70%)` }}
+          />
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+            <div className="flex min-w-0 flex-1 gap-4">
+              {profile.logoUrl ? (
+                <img
+                  src={profile.logoUrl}
+                  alt=""
+                  className="h-16 w-16 shrink-0 rounded-2xl border border-white object-cover shadow-md"
+                />
+              ) : (
+                <span
+                  className="mt-1 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-white shadow-md"
+                  style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
+                >
+                  <Building2 className="h-7 w-7" aria-hidden />
+                </span>
+              )}
               <div className="min-w-0">
                 <h1
                   id="workshop-public-title"
@@ -60,45 +88,71 @@ export function WorkshopPublicProfileView({
                   <MapPin className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
                   {profile.city}
                 </p>
+                {profile.ratingSummary && (
+                  <p className="mt-2 flex items-center gap-2 text-sm">
+                    <span className="inline-flex items-center gap-1 font-bold text-amber-700">
+                      <Star className="h-4 w-4 fill-amber-400 text-amber-500" aria-hidden />
+                      {profile.ratingSummary.average}
+                    </span>
+                    <span className="text-gray-500">
+                      ({profile.ratingSummary.count} تقييم)
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {profile.isVerified ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 ring-1 ring-emerald-100">
-                  <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
-                  معتمد في منظومة داسم
-                </span>
-              ) : (
-                <span className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-900 ring-1 ring-amber-100">
-                  قيد اعتماد داسم — التفاصيل محدودة
-                </span>
-              )}
+
+            <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col md:items-stretch">
+              <Link
+                href={`/auth/login?returnTo=${encodeURIComponent("/requests")}`}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-gray-800"
+              >
+                <LogIn className="h-4 w-4" aria-hidden />
+                تسجيل الدخول لطلب فحص
+              </Link>
+              <Link
+                href="/workshops/apply"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border-2 bg-white px-5 py-3 text-sm font-semibold shadow-sm transition hover:bg-violet-50"
+                style={{ borderColor: primary, color: primary }}
+              >
+                <ClipboardList className="h-4 w-4" aria-hidden />
+                انضم كورشة شريكة
+              </Link>
+            </div>
+          </div>
+
+          <div className="relative mt-4 flex flex-wrap gap-2">
+            {profile.isVerified ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 ring-1 ring-emerald-100">
+                <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
+                معتمد في منظومة داسم
+              </span>
+            ) : (
+              <span className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-900 ring-1 ring-amber-100">
+                قيد اعتماد داسم — التفاصيل محدودة
+              </span>
+            )}
+            {profile.isFeatured && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-900 ring-1 ring-violet-200">
+                <Award className="h-3.5 w-3.5" aria-hidden />
+                {profile.featuredProgramLabel ?? "برنامج مميز"}
+              </span>
+            )}
+            {profile.stats.approvedInspectionCount > 0 && (
               <span
                 className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-medium ring-1 ring-gray-100"
                 style={{ color: secondary }}
               >
-                صفحة عامة — لا تتطلب تسجيل دخول
+                {profile.stats.approvedInspectionCount} فحص معتمد
               </span>
-            </div>
+            )}
           </div>
 
-          <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col md:items-stretch">
-            <Link
-              href={`/auth/login?returnTo=${encodeURIComponent("/requests")}`}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-gray-800"
-            >
-              <LogIn className="h-4 w-4" aria-hidden />
-              تسجيل الدخول لطلب فحص
-            </Link>
-            <Link
-              href="/workshops/apply"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 bg-white px-5 py-3 text-sm font-semibold shadow-sm transition hover:bg-violet-50"
-              style={{ borderColor: primary, color: primary }}
-            >
-              <ClipboardList className="h-4 w-4" aria-hidden />
-              انضم كورشة شريكة
-            </Link>
-          </div>
+          {profile.description && (
+            <p className="relative mt-4 max-w-3xl text-sm leading-relaxed text-gray-700">
+              {profile.description}
+            </p>
+          )}
         </div>
       </section>
 
@@ -108,6 +162,35 @@ export function WorkshopPublicProfileView({
             الأسعار المرجعية قبل تأكيد الورشة؛ قد تختلف حسب المركبة والمنطقة.
           </p>
           <WorkshopPricingBadges pricing={profile.pricing} />
+        </SectionCard>
+      )}
+
+      {profile.stats.recentInspections.length > 0 && (
+        <SectionCard title="سجل الفحوصات المعتمدة">
+          <p className="mb-4 text-xs text-gray-500">
+            عينة من آخر الفحوصات المنجزة — بدون بيانات شخصية للعملاء.
+          </p>
+          <ul className="space-y-3">
+            {profile.stats.recentInspections.map((item) => (
+              <li
+                key={item.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3 text-sm"
+              >
+                <span className="font-medium text-gray-900">{item.vehicleLabel}</span>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                  {item.finalScore != null && (
+                    <span>الدرجة: {item.finalScore}</span>
+                  )}
+                  {item.harajPath && (
+                    <span>{HARAJ_LABELS[item.harajPath] ?? item.harajPath}</span>
+                  )}
+                  <span>
+                    {new Date(item.approvedAt).toLocaleDateString("ar-SA")}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
         </SectionCard>
       )}
 
@@ -138,6 +221,25 @@ export function WorkshopPublicProfileView({
                   </div>
                 </li>
               )}
+              {profile.whatsapp && (
+                <li className="flex gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                    WA
+                  </span>
+                  <div>
+                    <p className="text-xs font-medium text-gray-500">واتساب</p>
+                    <a
+                      href={`https://wa.me/${profile.whatsapp.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-semibold text-gray-900 hover:text-emerald-700"
+                    >
+                      {profile.whatsapp}
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                    </a>
+                  </div>
+                </li>
+              )}
               {profile.email && (
                 <li className="flex gap-3">
                   <span
@@ -157,9 +259,54 @@ export function WorkshopPublicProfileView({
                   </div>
                 </li>
               )}
-              {!profile.phone && !profile.email && (
-                <p className="text-sm text-gray-600">لا توجد جهات اتصال منشورة حالياً.</p>
+              {profile.instagram && (
+                <li className="flex gap-3">
+                  <span
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600 text-xs font-bold"
+                    aria-hidden
+                  >
+                    IG
+                  </span>
+                  <div>
+                    <p className="text-xs font-medium text-gray-500">إنستغرام</p>
+                    <span className="font-semibold text-gray-900">{profile.instagram}</span>
+                  </div>
+                </li>
               )}
+              {profile.workingHours && (
+                <li className="flex gap-3">
+                  <span
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600"
+                    aria-hidden
+                  >
+                    <Clock className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <p className="text-xs font-medium text-gray-500">ساعات العمل</p>
+                    <p className="font-semibold text-gray-900">{profile.workingHours}</p>
+                  </div>
+                </li>
+              )}
+              {profile.mapLink && (
+                <li>
+                  <a
+                    href={profile.mapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#1E74E8] hover:underline"
+                  >
+                    <MapPin className="h-4 w-4" aria-hidden />
+                    الموقع على الخريطة
+                    <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                  </a>
+                </li>
+              )}
+              {!profile.phone &&
+                !profile.email &&
+                !profile.whatsapp &&
+                !profile.instagram && (
+                  <p className="text-sm text-gray-600">لا توجد جهات اتصال منشورة حالياً.</p>
+                )}
             </ul>
           )}
         </SectionCard>

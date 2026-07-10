@@ -98,6 +98,19 @@ export interface Workshop {
   dasm_partner_ref?: string;
   /** أسعار فعّالة (تخصيص الورشة مع fallback للمنصّة) */
   pricing?: WorkshopServicePricing;
+  description?: string;
+  logoUrl?: string;
+  coverUrl?: string;
+  whatsapp?: string;
+  instagram?: string;
+  mapLink?: string;
+  workingHours?: string;
+  commercialRegistration?: string;
+  bankIban?: string;
+  bankBeneficiaryName?: string;
+  viewsCount?: number;
+  isFeatured?: boolean;
+  featuredProgramLabel?: string;
 }
 
 export interface Inspector {

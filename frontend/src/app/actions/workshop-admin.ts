@@ -101,7 +101,9 @@ export async function approveWorkshopApplicationAction(
 
   const { data: app, error: appError } = await sb
     .from("inspection_workshop_applications")
-    .select("id, workshop_name, city, phone, email, status")
+    .select(
+      "id, workshop_name, city, phone, email, status, dasm_user_id, commercial_registration"
+    )
     .eq("id", applicationId)
     .maybeSingle();
 
@@ -115,11 +117,16 @@ export async function approveWorkshopApplicationAction(
     return { ok: false, message: "الطلب معتمد مسبقاً." };
   }
 
+  const ownerUserId = String(app.dasm_user_id ?? "").trim() || null;
+
   const { error: insertError } = await sb.from("inspection_workshops").insert({
     name: app.workshop_name,
     city: app.city,
     phone: app.phone ?? null,
     email: app.email ?? null,
+    owner_user_id: ownerUserId,
+    commercial_registration:
+      String(app.commercial_registration ?? "").trim() || null,
     is_verified: true,
     slug: buildWorkshopSlug(String(app.workshop_name), applicationId),
   });

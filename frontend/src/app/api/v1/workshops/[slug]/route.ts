@@ -3,6 +3,7 @@ import {
   getInspectorsForWorkshop,
   resolveWorkshopRouteParam,
 } from "@/lib/data/inspection";
+import { getWorkshopPublicStats } from "@/lib/data/workshop-public-stats";
 import { listApprovedWorkshopReviews } from "@/lib/data/workshop-reviews-data";
 import { toWorkshopPublicProfile } from "@/lib/workshop-public-profile";
 import { averageWorkshopRating } from "@/lib/workshop-reviews";
@@ -34,12 +35,16 @@ export async function GET(
     );
   }
 
-  const [inspectors, reviews] = await Promise.all([
+  const [inspectors, reviews, stats] = await Promise.all([
     getInspectorsForWorkshop(resolved.workshop.id),
     listApprovedWorkshopReviews(resolved.workshop.id),
+    getWorkshopPublicStats(resolved.workshop.id),
   ]);
-  const profile = toWorkshopPublicProfile(resolved.workshop, inspectors);
   const ratingSummary = averageWorkshopRating(reviews.map((r) => r.rating));
+  const profile = toWorkshopPublicProfile(resolved.workshop, inspectors, {
+    ratingSummary,
+    stats,
+  });
 
   return NextResponse.json(
     {
@@ -51,6 +56,7 @@ export async function GET(
         created_at: r.createdAt,
       })),
       rating_summary: ratingSummary,
+      inspection_stats: stats,
       canonical_slug: resolved.canonicalSlug,
       profile_url: `/workshops/${resolved.canonicalSlug}`,
     },
