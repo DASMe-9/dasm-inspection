@@ -2,10 +2,14 @@ import Link from "next/link";
 import { WorkshopCard } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
 import { listWorkshopsForDirectory } from "@/lib/data/inspection";
+import { getWorkshopRatingAveragesMap } from "@/lib/data/workshop-reviews-data";
 import { TOKENS } from "@/lib/theme";
 
 export default async function WorkshopsPage() {
-  const list = await listWorkshopsForDirectory();
+  const [list, ratingMap] = await Promise.all([
+    listWorkshopsForDirectory(),
+    getWorkshopRatingAveragesMap(),
+  ]);
   const verified = list.filter((w) => w.isVerified).length;
   const cities = new Set(list.map((w) => w.city?.trim()).filter(Boolean)).size;
 
@@ -82,7 +86,11 @@ export default async function WorkshopsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {list.map((w) => (
-            <WorkshopCard key={w.id} workshop={w} />
+            <WorkshopCard
+              key={w.id}
+              workshop={w}
+              rating={ratingMap.get(w.id) ?? null}
+            />
           ))}
         </div>
       )}

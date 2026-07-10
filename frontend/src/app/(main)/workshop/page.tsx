@@ -14,6 +14,7 @@ import {
   listWorkshops,
 } from "@/lib/data/inspection";
 import { getWorkshopDashboardStats } from "@/lib/data/workshop-dashboard-data";
+import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
 import {
   Building2,
@@ -138,12 +139,33 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     listInspectionRequests({ workshopId, sort: "updated_desc" }),
   ]);
 
+  const kyc = evaluateWorkshopKyc({
+    ownerUserId: workshop.ownerUserId,
+    commercialRegistration: workshop.commercialRegistration,
+    bankIban: workshop.bankIban,
+    bankBeneficiaryName: workshop.bankBeneficiaryName,
+  });
+
   const recentSlice = recent.slice(0, 6);
   const manageQ = `?workshop_id=${workshopId}`;
 
   return (
     <div className="space-y-8" dir="rtl">
       <WorkshopManageNav />
+      {!kyc.complete && isWorkshopOperatorRole(access.persona) && (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-semibold">أكمل ملف الورشة والتحقق (KYC)</p>
+          <p className="mt-1 text-xs">
+            المتبقي: {kyc.missing.join(" · ")} —{" "}
+            <Link
+              href={`/workshop/settings${manageQ}`}
+              className="font-semibold underline"
+            >
+              انتقل إلى الإعدادات
+            </Link>
+          </p>
+        </section>
+      )}
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] p-6 shadow-md md:p-8">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#1E74E8_0%,#2FBF4E_100%)]"

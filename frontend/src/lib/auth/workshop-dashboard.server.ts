@@ -2,10 +2,12 @@ import "server-only";
 
 import type { ResolvedInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
 import { getInspectionAuthContext } from "@/lib/auth/inspection-context.server";
+import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import {
   INSPECTION_HEADER_VERIFIED,
   INSPECTION_HEADER_WORKSHOP_ID,
 } from "@/lib/auth/inspection-headers";
+import { findWorkshopIdByOwnerUserId } from "@/lib/data/workshop-owner-data";
 import { headers } from "next/headers";
 import {
   type WorkshopDashboardAccess,
@@ -42,7 +44,15 @@ export async function getWorkshopDashboardAccess(
 
   const override = options?.workshopIdOverride ?? null;
   const fromAuth = await resolveWorkshopIdFromAuth();
-  const workshopId = override ?? fromAuth;
+  let workshopId = override ?? fromAuth;
+
+  if (isWorkshopOperatorRole(persona) && !workshopId) {
+    const platformUserId =
+      personaCtx.platformUserId?.trim() || (await resolveDasmUserId());
+    if (platformUserId) {
+      workshopId = await findWorkshopIdByOwnerUserId(platformUserId);
+    }
+  }
 
   if (isWorkshopOperatorRole(persona) && !workshopId) {
     return {
@@ -50,7 +60,7 @@ export async function getWorkshopDashboardAccess(
       workshopId: null,
       persona,
       reason:
-        "لم يُربط حسابك بورشة بعد. تأكد من تسجيل الدخول عبر منصّة داسم بدور ورشة مع workshop_id في JWT.",
+        "لم يُربط حسابك بورشة بعد. تأكد من اعتماد طلب الانضمام بحساب داسم نفسه أو تواصل مع الإدارة.",
     };
   }
 

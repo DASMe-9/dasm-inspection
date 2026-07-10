@@ -5,9 +5,15 @@ import type { Workshop } from "@/types";
 import { useTheme } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
-import { BadgeCheck, Building2, ChevronLeft, MapPin } from "lucide-react";
+import { BadgeCheck, Building2, ChevronLeft, MapPin, Star } from "lucide-react";
 
-export function WorkshopCard({ workshop }: { workshop: Workshop }) {
+export function WorkshopCard({
+  workshop,
+  rating,
+}: {
+  workshop: Workshop;
+  rating?: { average: number; count: number } | null;
+}) {
   const { colors } = useTheme({ role: "workshop" });
 
   return (
@@ -42,6 +48,18 @@ export function WorkshopCard({ workshop }: { workshop: Workshop }) {
             <MapPin className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
             <span>{workshop.city}</span>
           </p>
+          {rating && (
+            <p className="flex items-center gap-1 text-xs font-semibold text-amber-700">
+              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" aria-hidden />
+              {rating.average}
+              <span className="font-normal text-gray-500">({rating.count})</span>
+            </p>
+          )}
+          {workshop.isFeatured && (
+            <span className="inline-flex rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-800 ring-1 ring-violet-100">
+              {workshop.featuredProgramLabel ?? "برنامج مميز"}
+            </span>
+          )}
           {workshop.dasm_partner_ref && (
             <p className="truncate text-xs text-gray-500">{workshop.dasm_partner_ref}</p>
           )}

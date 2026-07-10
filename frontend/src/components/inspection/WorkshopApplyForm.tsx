@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { submitWorkshopApplicationAction } from "@/app/actions/workshop-application";
 import { useTheme } from "@/hooks";
 
-export function WorkshopApplyForm() {
+export function WorkshopApplyForm({ dasmUserId }: { dasmUserId?: string | null }) {
   const { colors } = useTheme({ role: "workshop" });
   const [pending, startTransition] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
@@ -50,6 +50,9 @@ export function WorkshopApplyForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 text-sm">
+      {dasmUserId ? (
+        <input type="hidden" name="dasm_user_id" value={dasmUserId} />
+      ) : null}
       <label className="block">
         <span className="text-gray-600">اسم الورشة *</span>
         <input
