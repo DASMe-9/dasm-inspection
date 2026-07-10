@@ -327,7 +327,6 @@ export async function saveWorkshopKycAction(
       return { ok: false, message: "اسم المستفيد البنكي مطلوب." };
     }
 
-    const { normalizeSaudiIban } = await import("@/lib/workshop-kyc");
     const bankIban = normalizeSaudiIban(bankIbanRaw);
     if (!bankIban) {
       return { ok: false, message: "رقم الآيبان غير صالح (صيغة SA + 22 رقم)." };

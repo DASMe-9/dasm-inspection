@@ -7,7 +7,6 @@ import {
   ClipboardList,
   Clock,
   ExternalLink,
-  Instagram,
   LogIn,
   Mail,
   MapPin,
@@ -263,10 +262,10 @@ export function WorkshopPublicProfileView({
               {profile.instagram && (
                 <li className="flex gap-3">
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600 text-xs font-bold"
                     aria-hidden
                   >
-                    <Instagram className="h-4 w-4" />
+                    IG
                   </span>
                   <div>
                     <p className="text-xs font-medium text-gray-500">إنستغرام</p>
