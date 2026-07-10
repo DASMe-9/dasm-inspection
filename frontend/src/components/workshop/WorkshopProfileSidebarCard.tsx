@@ -5,7 +5,7 @@ import { Building2, UserRound } from "lucide-react";
 import type { WorkshopSidebarProfileLink } from "@/lib/auth/workshop-sidebar-link";
 
 /**
- * بطاقة «ملف الورشة» أسفل الشريط الجانبي — بنفس نمط Core `WorkshopProfileSidebarCard`.
+ * بطاقة «ملف الورشة» في الشريط الجانبي — الوصول إلى إعدادات الورشة فقط (لا علاقة بلوحة المعرض).
  */
 export function WorkshopProfileSidebarCard({
   link,
