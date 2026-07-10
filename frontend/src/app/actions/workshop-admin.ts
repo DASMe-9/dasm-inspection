@@ -93,6 +93,7 @@ export async function approveWorkshopApplicationAction(
   }
 
   const applicationId = String(formData.get("application_id") ?? "").trim();
+  const ownerOverride = String(formData.get("owner_user_id") ?? "").trim() || null;
   if (!applicationId) {
     return { ok: false, message: "معرّف الطلب مطلوب." };
   }
@@ -117,7 +118,18 @@ export async function approveWorkshopApplicationAction(
     return { ok: false, message: "الطلب معتمد مسبقاً." };
   }
 
-  const ownerUserId = String(app.dasm_user_id ?? "").trim() || null;
+  const ownerUserId =
+    ownerOverride ||
+    String(app.dasm_user_id ?? "").trim() ||
+    null;
+
+  if (!ownerUserId) {
+    return {
+      ok: false,
+      message:
+        "لا يوجد حساب داسم مربوط بالطلب. اطلب من مقدّم الطلب تسجيل الدخول قبل التقديم، أو أدخل معرّف المالك (owner_user_id) يدوياً.",
+    };
+  }
 
   const { error: insertError } = await sb.from("inspection_workshops").insert({
     name: app.workshop_name,

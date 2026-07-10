@@ -1,5 +1,6 @@
 import { WorkshopAdminModerationPanel } from "@/components/inspection/WorkshopAdminModerationPanel";
 import { WorkshopApplicationsPanel } from "@/components/inspection/WorkshopApplicationsPanel";
+import { WorkshopInvitesPanel } from "@/components/inspection/WorkshopInvitesPanel";
 import { WorkshopReviewModerationPanel } from "@/components/inspection/WorkshopReviewModerationPanel";
 import { SectionCard } from "@/components/shared";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
@@ -39,6 +40,7 @@ export default async function SettingsPage() {
       {canModerate && (
         <>
           <WorkshopApplicationsPanel />
+          <WorkshopInvitesPanel />
           <WorkshopReviewModerationPanel />
           <WorkshopAdminModerationPanel />
         </>
