@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
-import { WorkshopProfileSidebarCard } from "@/components/workshop/WorkshopProfileSidebarCard";
-import type { WorkshopSidebarProfileLink } from "@/lib/auth/workshop-sidebar-link";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import {
   filterSidebarNavGroups,
@@ -13,10 +11,8 @@ import {
 
 export function Sidebar({
   allowedNavKeys,
-  workshopProfileLink = null,
 }: {
   allowedNavKeys: InspectionNavKey[];
-  workshopProfileLink?: WorkshopSidebarProfileLink | null;
 }) {
   const pathname = usePathname();
   const allowed = new Set(allowedNavKeys);
@@ -24,7 +20,6 @@ export function Sidebar({
 
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:right-0 bg-[#0B1E3A] border-l border-white/10 shadow-[4px_0_32px_-16px_rgba(2,8,20,0.6)] z-40">
-      {/* Logo — هوية داسم */}
       <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10">
         <div className="w-9 h-9 rounded-xl bg-[linear-gradient(135deg,#1E74E8_0%,#2FBF4E_100%)] flex items-center justify-center shadow-md">
           <span className="text-white font-extrabold text-sm">DE</span>
@@ -35,7 +30,6 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         {groups.map((group) => (
           <div key={group.label} className="mb-5">
@@ -69,22 +63,8 @@ export function Sidebar({
         ))}
       </nav>
 
-      {workshopProfileLink ? (
-        <div className="px-3 pb-2">
-          <WorkshopProfileSidebarCard link={workshopProfileLink} />
-        </div>
-      ) : null}
-
-      {/* Footer */}
       <div className="px-4 py-3 border-t border-white/10 space-y-2">
         <ThemeToggle />
-        <a
-          href="/api/auth/logout"
-          className="flex items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-white/10"
-        >
-          <span aria-hidden>↩</span>
-          تسجيل الخروج
-        </a>
         <p className="text-[10px] text-slate-500 text-center">
           فحص داسم — منصة الفحص الفني
         </p>

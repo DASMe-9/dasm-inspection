@@ -1,24 +1,24 @@
 import Link from "next/link";
 import { Sidebar } from "@/components/shared/Sidebar";
+import { InspectionTopNavbar } from "@/components/shared/InspectionTopNavbar";
+import { WorkshopWelcomeBannerGate } from "@/components/shared/WorkshopWelcomeBannerGate";
 import { MOBILE_BOTTOM_NAV_ITEMS } from "@/components/shared/nav-config";
 import { SupabaseSetupWarning } from "@/components/shared/SupabaseSetupWarning";
-import type { WorkshopSidebarProfileLink } from "@/lib/auth/workshop-sidebar-link";
+import type { InspectionShellContext } from "@/lib/auth/inspection-shell-context";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 
 /**
- * قشرة التطبيق الموحّدة — شريط جانبي (سطح المكتب) + شريط سفلي (جوال).
- * مصدر واحد للقشرة تستخدمه مجموعة (main) دائماً، ومجموعة (public) عند دخول
- * المستخدم — فلا يُقذف المستخدم خارج القشرة عند فتح صفحة عامة (الورش/من نحن...).
+ * قشرة التطبيق الموحّدة — شريط جانبي (سطح المكتب) + شريط علوي + ترحيب الورشة.
  */
 export function AppShell({
   allowedNavKeys,
   configured = true,
-  workshopProfileLink = null,
+  shellContext = null,
   children,
 }: {
   allowedNavKeys: InspectionNavKey[];
   configured?: boolean;
-  workshopProfileLink?: WorkshopSidebarProfileLink | null;
+  shellContext?: InspectionShellContext | null;
   children: React.ReactNode;
 }) {
   return (
@@ -26,14 +26,29 @@ export function AppShell({
       className="flex min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_55%,#eef2f7_100%)] dark:bg-none dark:bg-[#0a1626]"
       dir="rtl"
     >
-      <Sidebar
-        allowedNavKeys={allowedNavKeys}
-        workshopProfileLink={workshopProfileLink}
-      />
+      <Sidebar allowedNavKeys={allowedNavKeys} />
       <main className="flex-1 min-h-screen lg:mr-64">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
           {!configured && <SupabaseSetupWarning />}
-          {children}
+          {shellContext ? (
+            <>
+              <InspectionTopNavbar
+                personDisplayName={shellContext.personDisplayName}
+                coreProfileUrl={shellContext.coreProfileUrl}
+                workshopProfileHref={shellContext.workshopProfileHref}
+              />
+              <WorkshopWelcomeBannerGate
+                workshopWelcome={shellContext.workshopWelcome}
+                email={shellContext.email}
+                userCode={shellContext.userCode}
+                areaLabel={shellContext.areaLabel}
+                city={shellContext.city}
+              />
+            </>
+          ) : null}
+          <div className={shellContext?.workshopWelcome ? "mt-6 space-y-6" : "space-y-6"}>
+            {children}
+          </div>
         </div>
         <MobileNav allowedNavKeys={allowedNavKeys} />
       </main>
@@ -62,15 +77,6 @@ function MobileNav({
           icon={item.icon}
         />
       ))}
-      <a
-        href="/api/auth/logout"
-        className="flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg py-1 px-0.5 text-[9px] font-medium text-slate-300 hover:bg-white/5 hover:text-white min-h-[52px] justify-center sm:text-[10px]"
-      >
-        <span className="text-base leading-none" aria-hidden>
-          ↩
-        </span>
-        <span className="truncate w-full text-center leading-tight">خروج</span>
-      </a>
     </nav>
   );
 }
