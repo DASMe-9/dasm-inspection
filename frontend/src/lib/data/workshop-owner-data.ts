@@ -18,7 +18,6 @@ export async function findWorkshopIdByOwnerUserId(
     .from("inspection_workshops")
     .select("id")
     .eq("owner_user_id", key)
-    .eq("is_suspended", false)
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();

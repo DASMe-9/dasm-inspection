@@ -51,6 +51,7 @@ export function defaultInspectionLandingPath(
 ): string {
   const role = resolveInspectionRoleFromPlatformUser(profile);
   if (role === "dasm_user") return "/my-inspections";
+  if (role === "workshop_owner" || role === "workshop_manager") return "/workshop";
   return "/requests";
 }
 
