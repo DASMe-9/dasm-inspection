@@ -158,10 +158,10 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           <p className="mt-1 text-xs">
             المتبقي: {kyc.missing.join(" · ")} —{" "}
             <Link
-              href={`/workshop/settings${manageQ}`}
+              href={`/workshop/profile${manageQ}`}
               className="font-semibold underline"
             >
-              انتقل إلى الإعدادات
+              انتقل إلى ملف الورشة
             </Link>
           </p>
         </section>

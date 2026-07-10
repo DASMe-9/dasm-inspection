@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { MOBILE_BOTTOM_NAV_ITEMS } from "@/components/shared/nav-config";
 import { SupabaseSetupWarning } from "@/components/shared/SupabaseSetupWarning";
+import type { WorkshopSidebarProfileLink } from "@/lib/auth/workshop-sidebar-link";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 
 /**
@@ -12,10 +13,12 @@ import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 export function AppShell({
   allowedNavKeys,
   configured = true,
+  workshopProfileLink = null,
   children,
 }: {
   allowedNavKeys: InspectionNavKey[];
   configured?: boolean;
+  workshopProfileLink?: WorkshopSidebarProfileLink | null;
   children: React.ReactNode;
 }) {
   return (
@@ -23,7 +26,10 @@ export function AppShell({
       className="flex min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_55%,#eef2f7_100%)] dark:bg-none dark:bg-[#0a1626]"
       dir="rtl"
     >
-      <Sidebar allowedNavKeys={allowedNavKeys} />
+      <Sidebar
+        allowedNavKeys={allowedNavKeys}
+        workshopProfileLink={workshopProfileLink}
+      />
       <main className="flex-1 min-h-screen lg:mr-64">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
           {!configured && <SupabaseSetupWarning />}

@@ -1,24 +1,10 @@
-import { WorkshopSectionChrome } from "@/components/workshop/WorkshopSectionChrome";
-import { WorkshopSettingsPanel } from "@/components/workshop/WorkshopSettingsPanel";
-import { requireWorkshopPage } from "@/lib/auth/resolve-workshop-page.server";
-
-type Props = { searchParams: Promise<{ workshop_id?: string }> };
-
-export default async function WorkshopSettingsPage({ searchParams }: Props) {
-  const sp = await searchParams;
-  const { workshop, workshopId } = await requireWorkshopPage(sp.workshop_id);
-
-  return (
-    <WorkshopSectionChrome
-      workshop={workshop}
-      workshopId={workshopId}
-      title="إعدادات الورشة والتحقق"
-    >
-      <WorkshopSettingsPanel
-        workshopId={workshopId}
-        workshopSlug={workshop.slug}
-        workshop={workshop}
-      />
-    </WorkshopSectionChrome>
-  );
-}
+import { redirect } from "next/navigation";
+
+type Props = { searchParams: Promise<{ workshop_id?: string }> };
+
+/** مسار قديم — يُحوّل إلى مركز ملف الورشة الجديد. */
+export default async function WorkshopSettingsRedirectPage({ searchParams }: Props) {
+  const sp = await searchParams;
+  const q = sp.workshop_id ? `?workshop_id=${sp.workshop_id}` : "";
+  redirect(`/workshop/profile${q}`);
+}

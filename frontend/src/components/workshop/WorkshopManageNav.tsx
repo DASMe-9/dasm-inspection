@@ -12,7 +12,7 @@ const TABS = [
   { href: "/workshop/field", label: "ميداني" },
   { href: "/workshop/reviews", label: "التقييمات" },
   { href: "/workshop/followers", label: "المتابعون" },
-  { href: "/workshop/settings", label: "الإعدادات والتحقق" },
+  { href: "/workshop/profile", label: "ملف الورشة" },
   { href: "/workshop/export", label: "تصدير CSV" },
 ] as const;
 
