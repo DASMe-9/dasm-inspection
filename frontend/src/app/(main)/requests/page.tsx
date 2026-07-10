@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 import { cookies, headers } from "next/headers";
+import { ClipboardList, Car, Wrench } from "lucide-react";
 import {
   RequestCard,
   NewInspectionRequestForm,
   RequestListFilters,
 } from "@/components/inspection";
-import { SectionCard, EmptyState } from "@/components/shared";
+import { SectionCard, EmptyState, PersonaPageHero } from "@/components/shared";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
@@ -17,6 +18,7 @@ import {
 } from "@/lib/data/inspection";
 import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
 import { resolveInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
+import { requestListHeroStats } from "@/lib/inspection-request-hero-stats";
 
 export default async function RequestsListPage({
   searchParams,
@@ -65,19 +67,41 @@ export default async function RequestsListPage({
     }));
 
   const scopedNote = scope.scopedNote;
+  const stats = requestListHeroStats(list);
+  const isCustomer = personaCtx.persona === "dasm_user";
+  const isInspector = ["inspector", "mechanic", "viewer"].includes(personaCtx.persona);
+  const isWorkshopOp = isWorkshopOperatorRole(personaCtx.persona);
+
+  const heroVariant = isCustomer ? "customer" : isInspector ? "inspector" : "neutral";
+  const heroTitle = isWorkshopOp
+    ? "طلبات الورشة"
+    : isInspector
+      ? "مهام الفحص"
+      : isCustomer
+        ? "طلب فحص جديد"
+        : "طلبات الفحص";
+  const heroDescription = isWorkshopOp
+    ? "تابع طلبات ورشتك من الإسناد حتى الاعتماد."
+    : isInspector
+      ? "الطلبات المُسندة إليك — ميداني أو في الورشة."
+      : "أنشئ طلباً جديداً أو تابع المسار من القائمة أدناه.";
+  const HeroIcon = isCustomer ? Car : isInspector ? ClipboardList : Wrench;
 
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
-      <div>
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
-          طلبات الفحص
-        </h2>
-        <p className="text-sm text-gray-500 mt-1">
-          أنشئ طلباً جديداً أو تابع المسار من القائمة أدناه. استخدم الفرز والفلترة
-          لتضييق القائمة.
-          {scopedNote ? ` ${scopedNote}` : ""}
-        </p>
-      </div>
+      <PersonaPageHero
+        variant={heroVariant}
+        eyebrow="مسار الفحص الفني"
+        title={heroTitle}
+        description={scopedNote ? `${heroDescription} ${scopedNote}` : heroDescription}
+        icon={HeroIcon}
+        stats={[
+          { label: "نشطة", value: String(stats.active) },
+          { label: "قيد التنفيذ", value: String(stats.inProgress) },
+          { label: "بانتظار المراجعة", value: String(stats.pendingReview) },
+          { label: "معتمدة", value: String(stats.approved) },
+        ]}
+      />
 
       {!hideNewRequestForm ? (
         <SectionCard>

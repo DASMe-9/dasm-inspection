@@ -1,6 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { StatCard, SectionCard } from "@/components/shared";
+import {
+  ClipboardList,
+  Car,
+  Wallet,
+  Wrench,
+  Settings,
+  LayoutDashboard,
+} from "lucide-react";
+import {
+  PersonaPageHero,
+  QuickActionCard,
+  SectionCard,
+  EmptyState,
+} from "@/components/shared";
 import { RequestCard } from "@/components/inspection";
 import {
   dashboardCountsFromLists,
@@ -16,6 +29,14 @@ import {
 import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
 import { resolveWorkshopIdFromAuth } from "@/lib/auth/workshop-dashboard.server";
 
+const INSPECTOR_PERSONAS = new Set([
+  "inspector",
+  "mechanic",
+  "viewer",
+  "inspection_admin",
+  "super_admin",
+]);
+
 export default async function DashboardPage() {
   const headersList = await headers();
   const cookieStore = await cookies();
@@ -29,6 +50,8 @@ export default async function DashboardPage() {
   }
 
   const scoped = shouldScopeRequestsToPlatformUser(personaCtx);
+  const isCustomer = personaCtx.persona === "dasm_user";
+  const isInspector = INSPECTOR_PERSONAS.has(personaCtx.persona);
 
   const workshops = await listWorkshops();
   const all = scoped
@@ -44,79 +67,138 @@ export default async function DashboardPage() {
     )
     .slice(0, 5);
 
-  const subtitle =
-    personaCtx.persona === "dasm_user"
-      ? "نظرة على طلباتك المرتبطة بحساب منصّة داسم."
-      : "إدارة طلبات الفحص والورش والتقارير — بيانات حية من قاعدة البيانات";
+  const heroEyebrow = isCustomer
+    ? "منصّة داسم للفحص الفني"
+    : isInspector
+      ? "غرفة عمليات الفحص"
+      : "لوحة التحكم";
+
+  const heroTitle = isCustomer
+    ? "مركباتي وطلباتي"
+    : isInspector
+      ? "مهام الفحص اليوم"
+      : "لوحة تحكم الفحص الفني";
+
+  const heroDescription = isCustomer
+    ? "تابع طلبات الفحص، رصيد المحفظة، والملف الفني لمركباتك — ضمن منظومة داسم الموحّدة."
+    : isInspector
+      ? "قائمة الطلبات المُسندة إليك والجاهزة للتنفيذ الميداني أو في الورشة."
+      : "إدارة طلبات الفحص والورش والتقارير — بيانات حية من قاعدة البيانات.";
+
+  const heroVariant = isCustomer ? "customer" : isInspector ? "inspector" : "neutral";
+
+  const heroActions = isCustomer
+    ? [
+        { href: "/requests", label: "طلب فحص جديد", primary: true },
+        { href: "/my-inspections", label: "طلباتي" },
+      ]
+    : isInspector
+      ? [
+          { href: "/requests", label: "قائمة المهام", primary: true },
+          { href: "/directory", label: "دليل الورش" },
+        ]
+      : [{ href: "/requests", label: "طلبات الفحص", primary: true }];
+
+  const heroIcon = isCustomer ? Car : isInspector ? ClipboardList : LayoutDashboard;
 
   return (
-    <div className="space-y-6" dir="rtl">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-          لوحة تحكم الفحص الفني
-        </h1>
-        <p className="text-sm text-gray-500 mt-2 max-w-2xl leading-relaxed">
-          {subtitle}
-        </p>
-      </div>
+    <div className="space-y-6 md:space-y-8" dir="rtl">
+      <PersonaPageHero
+        variant={heroVariant}
+        eyebrow={heroEyebrow}
+        title={heroTitle}
+        description={heroDescription}
+        icon={heroIcon}
+        actions={heroActions}
+        stats={[
+          { label: "طلبات نشطة", value: String(kpi.openRequests) },
+          { label: "بانتظار المراجعة", value: String(kpi.pendingReview) },
+          { label: "فحوص مكتملة", value: String(kpi.closedSuccessful) },
+          {
+            label: isCustomer ? "ورش معتمدة" : "إجمالي الطلبات",
+            value: isCustomer ? String(kpi.workshops) : String(all.length),
+          },
+        ]}
+      />
 
-      {/* KPIs */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-        <StatCard value={kpi.openRequests} label="طلبات نشطة" />
-        <StatCard value={kpi.pendingReview} label="بانتظار المراجعة" />
-        <StatCard value={kpi.workshops} label="ورش معتمدة" />
-        <StatCard value={kpi.closedSuccessful} label="فحوص مكتملة" />
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 md:gap-4">
+        {isCustomer ? (
+          <>
+            <QuickActionCard
+              href="/requests"
+              title="طلب فحص جديد"
+              description={`${all.length} طلب مرتبط بحسابك`}
+              icon={ClipboardList}
+              accent="blue"
+            />
+            <QuickActionCard
+              href="/my-inspections"
+              title="طلباتي ومركباتي"
+              description="الملف الفني والتذكيرات"
+              icon={Car}
+              accent="emerald"
+            />
+            <QuickActionCard
+              href="/wallet"
+              title="محفظتي"
+              description="رصيد مسبق الدفع للفحوصات"
+              icon={Wallet}
+              accent="violet"
+            />
+            <QuickActionCard
+              href="/directory"
+              title="الورش المعتمدة"
+              description={`${workshops.length} ورشة في الشبكة`}
+              icon={Wrench}
+              accent="slate"
+            />
+          </>
+        ) : (
+          <>
+            <QuickActionCard
+              href="/requests"
+              title="طلبات الفحص"
+              description={`${all.length} طلب في النظام`}
+              icon={ClipboardList}
+              accent="blue"
+            />
+            <QuickActionCard
+              href="/directory"
+              title="الورش المعتمدة"
+              description={`${workshops.length} ورشة مسجّلة`}
+              icon={Wrench}
+              accent="emerald"
+            />
+            <QuickActionCard
+              href="/settings"
+              title="الإعدادات"
+              description="الأدوار والتفضيلات"
+              icon={Settings}
+              accent="slate"
+            />
+          </>
+        )}
       </section>
 
-      {/* Quick Actions */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-        <Link
-          href="/requests"
-          className="group bg-white border border-gray-200/90 rounded-2xl p-5 shadow-sm ring-1 ring-black/[0.04] hover:border-indigo-300/80 hover:shadow-md hover:ring-indigo-500/10 transition-all"
-        >
-          <span className="text-2xl mb-2 block">📋</span>
-          <p className="font-semibold text-gray-900">طلبات الفحص</p>
-          <p className="text-xs text-gray-500 mt-1">
-            عرض وإدارة {all.length} طلب فحص
-          </p>
-        </Link>
-        <Link
-          href="/workshops"
-          className="group bg-white border border-gray-200/90 rounded-2xl p-5 shadow-sm ring-1 ring-black/[0.04] hover:border-indigo-300/80 hover:shadow-md hover:ring-indigo-500/10 transition-all"
-        >
-          <span className="text-2xl mb-2 block">🔧</span>
-          <p className="font-semibold text-gray-900">الورش المعتمدة</p>
-          <p className="text-xs text-gray-500 mt-1">
-            {workshops.length} ورشة مسجلة
-          </p>
-        </Link>
-        <Link
-          href="/settings"
-          className="group bg-white border border-gray-200/90 rounded-2xl p-5 shadow-sm ring-1 ring-black/[0.04] hover:border-indigo-300/80 hover:shadow-md hover:ring-indigo-500/10 transition-all"
-        >
-          <span className="text-2xl mb-2 block">⚙️</span>
-          <p className="font-semibold text-gray-900">الإعدادات</p>
-          <p className="text-xs text-gray-500 mt-1">
-            إعدادات النظام والأدوار
-          </p>
-        </Link>
-      </section>
-
-      {/* Recent Requests */}
       <SectionCard title="أحدث طلبات الفحص">
         <div className="space-y-3">
           {recent.length === 0 ? (
-            <div className="text-center py-8">
-              <span className="text-4xl block mb-3">📋</span>
-              <p className="text-gray-500">لا توجد طلبات فحص بعد</p>
-              <Link
-                href="/requests"
-                className="inline-block mt-3 text-sm text-[#1E74E8] font-medium hover:underline"
-              >
-                أنشئ أول طلب ←
-              </Link>
-            </div>
+            <EmptyState
+              title="لا توجد طلبات فحص بعد"
+              description={
+                isCustomer
+                  ? "ابدأ بطلب فحص لمركبتك من الورش المعتمدة في شبكة داسم."
+                  : "ستظهر الطلبات هنا عند إنشائها أو إسنادها."
+              }
+              action={
+                <Link
+                  href="/requests"
+                  className="inline-flex min-h-[44px] items-center rounded-xl bg-[#1E74E8] px-5 text-sm font-semibold text-white hover:bg-[#1857b8]"
+                >
+                  {isCustomer ? "إنشاء طلب فحص" : "عرض الطلبات"}
+                </Link>
+              }
+            />
           ) : (
             <>
               {recent.map((r) => (
@@ -124,7 +206,7 @@ export default async function DashboardPage() {
               ))}
               <Link
                 href="/requests"
-                className="block text-center text-sm font-medium py-2 text-[#1E74E8] hover:underline"
+                className="block py-2 text-center text-sm font-medium text-[#1E74E8] hover:underline"
               >
                 عرض كل الطلبات ({all.length}) ←
               </Link>

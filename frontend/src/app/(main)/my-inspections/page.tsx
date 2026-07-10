@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { Car } from "lucide-react";
 import {
   ExternalReportVault,
   RequestCard,
@@ -7,7 +8,7 @@ import {
   VehicleMaintenanceLog,
   VehicleObdScanLog,
 } from "@/components/inspection";
-import { EmptyState, SectionCard } from "@/components/shared";
+import { EmptyState, PersonaPageHero, SectionCard } from "@/components/shared";
 import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { InspectionNotificationsPanel } from "@/components/inspection/InspectionNotificationsPanel";
@@ -20,6 +21,7 @@ import { listExternalVehicleReportsForUser } from "@/lib/data/external-vehicle-r
 import { listVehicleMaintenanceRecordsForUser } from "@/lib/data/vehicle-maintenance-records";
 import { listVehicleObdScansForUser } from "@/lib/data/vehicle-obd-scans";
 import { listNotificationsForUser } from "@/lib/data/workshop-follows-data";
+import { requestListHeroStats } from "@/lib/inspection-request-hero-stats";
 
 export default async function MyInspectionsPage({
   searchParams,
@@ -52,17 +54,27 @@ export default async function MyInspectionsPage({
   for (const o of obdScans) noteCar(o.dasmCarId, o.vehicleLabel);
   for (const e of externalReports) noteCar(e.dasmCarId, e.vehicleLabel);
   const cars = Array.from(carFileMap.entries());
+  const stats = requestListHeroStats(list);
 
   return (
     <div className="space-y-5 md:space-y-6" dir="rtl">
-      <div>
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
-          طلباتي
-        </h2>
-        <p className="text-sm text-gray-500 mt-1">
-          الطلبات المرتبطة بحسابك عند الدخول عبر بوابة منصّة داسم.
-        </p>
-      </div>
+      <PersonaPageHero
+        variant="customer"
+        eyebrow="ملفك الفني في داسم"
+        title="طلباتي ومركباتي"
+        description="الطلبات المرتبطة بحسابك عند الدخول عبر منصّة داسم — مع الملف الفني والتذكيرات."
+        icon={Car}
+        actions={[
+          { href: "/requests", label: "طلب فحص جديد", primary: true },
+          { href: "/wallet", label: "محفظتي" },
+        ]}
+        stats={[
+          { label: "طلبات نشطة", value: String(stats.active) },
+          { label: "معتمدة", value: String(stats.approved) },
+          { label: "مركبات", value: String(cars.length) },
+          { label: "إجمالي الطلبات", value: String(stats.total) },
+        ]}
+      />
 
       {!uid ? (
         <SectionCard>
@@ -81,28 +93,6 @@ export default async function MyInspectionsPage({
         </SectionCard>
       ) : (
         <>
-          <MaintenanceReminders records={maintenanceRecords} />
-          {cars.length > 0 && (
-            <SectionCard title="مركباتي">
-              <ul className="grid gap-2 sm:grid-cols-2">
-                {cars.map(([id, lbl]) => (
-                  <li key={id}>
-                    <Link
-                      href={`/my-inspections/vehicle/${encodeURIComponent(id)}`}
-                      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm hover:border-indigo-300"
-                    >
-                      <span className="font-medium text-gray-900">{lbl}</span>
-                      <span className="text-xs text-[#1E74E8]">الملف الفني ←</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </SectionCard>
-          )}
-          <VehicleMaintenanceLog records={maintenanceRecords} />
-          <VehicleObdScanLog scans={obdScans} />
-          <ExternalReportVault reports={externalReports} />
-          <InspectionNotificationsPanel notifications={notifications} />
           <Suspense
             fallback={
               <div
@@ -137,12 +127,41 @@ export default async function MyInspectionsPage({
               />
             </SectionCard>
           ) : (
-            <div className="space-y-3">
-              {list.map((r) => (
-                <RequestCard key={r.id} request={r} />
-              ))}
-            </div>
+            <SectionCard title="طلباتي النشطة">
+              <div className="space-y-3">
+                {list.map((r) => (
+                  <RequestCard key={r.id} request={r} />
+                ))}
+              </div>
+            </SectionCard>
           )}
+
+          <InspectionNotificationsPanel notifications={notifications} />
+
+          {cars.length > 0 && (
+            <SectionCard title="مركباتي">
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {cars.map(([id, lbl]) => (
+                  <li key={id}>
+                    <Link
+                      href={`/my-inspections/vehicle/${encodeURIComponent(id)}`}
+                      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm transition hover:border-[#1E74E8]/40 dark:border-slate-700 dark:bg-slate-900"
+                    >
+                      <span className="font-medium text-gray-900 dark:text-slate-100">
+                        {lbl}
+                      </span>
+                      <span className="text-xs text-[#1E74E8]">الملف الفني ←</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
+          )}
+
+          <MaintenanceReminders records={maintenanceRecords} />
+          <VehicleMaintenanceLog records={maintenanceRecords} />
+          <VehicleObdScanLog scans={obdScans} />
+          <ExternalReportVault reports={externalReports} />
         </>
       )}
     </div>
