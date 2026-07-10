@@ -19,10 +19,17 @@ export type CreateRequestWorkshopOption = Pick<
 
 export function NewInspectionRequestForm({
   defaultDasmUserId,
+  defaultDasmCarId,
+  defaultVehicleLabel,
+  defaultTitle,
   platformPricing,
   workshops = [],
 }: {
   defaultDasmUserId?: string;
+  /** Core cars.id — when set, request links to existing car (no minimal-car). */
+  defaultDasmCarId?: string;
+  defaultVehicleLabel?: string;
+  defaultTitle?: string;
   platformPricing?: WorkshopServicePricing | null;
   workshops?: CreateRequestWorkshopOption[];
 }) {
@@ -33,6 +40,13 @@ export function NewInspectionRequestForm({
   const [preferredWorkshopId, setPreferredWorkshopId] = useState("");
   const [serviceMode, setServiceMode] =
     useState<InspectionServiceMode>("workshop");
+
+  const prefilledCarId = (defaultDasmCarId ?? "").trim();
+  const prefilledLabel = (defaultVehicleLabel ?? "").trim();
+  const prefilledTitle =
+    (defaultTitle ?? "").trim() ||
+    (prefilledLabel ? `طلب فحص — ${prefilledLabel}` : "");
+  const fromCoreCar = /^\d+$/.test(prefilledCarId) && Number(prefilledCarId) > 0;
 
   const verifiedWorkshops = useMemo(
     () => workshops.filter((w) => w.isVerified),
@@ -82,6 +96,26 @@ export function NewInspectionRequestForm({
       }}
     >
       <p className="font-medium">طلب فحص جديد</p>
+
+      {fromCoreCar ? (
+        <div
+          className="rounded-lg border border-sky-200 bg-sky-50/90 px-3 py-2.5 text-xs text-sky-950 space-y-1"
+          role="status"
+        >
+          <p className="font-semibold">بيانات السيارة من لوحة داسم</p>
+          <p>
+            رُبط الطلب بسيارة المنصّة رقم{" "}
+            <span className="font-mono font-semibold">{prefilledCarId}</span>
+            {prefilledLabel ? (
+              <>
+                {" "}
+                — <span className="font-medium">{prefilledLabel}</span>
+              </>
+            ) : null}
+            . يمكنك تعديل الوصف قبل الإرسال؛ المعرّف يبقى للربط مع الجوال والسجل.
+          </p>
+        </div>
+      ) : null}
 
       <div
         className="rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2.5 text-xs text-amber-950 space-y-1.5"
@@ -194,22 +228,28 @@ export function NewInspectionRequestForm({
       <input
         name="title"
         required
+        defaultValue={prefilledTitle}
         placeholder="عنوان الطلب"
         className="w-full border rounded-lg px-3 py-2"
       />
       <input
         name="dasm_car_id"
+        defaultValue={fromCoreCar ? prefilledCarId : ""}
+        readOnly={fromCoreCar}
         placeholder={
           defaultDasmUserId
             ? "dasm_car_id (اختياري — يُنشأ تلقائياً على المنصّة)"
             : "dasm_car_id (مطلوب بدون حساب داسم)"
         }
         required={!defaultDasmUserId}
-        className="w-full border rounded-lg px-3 py-2 font-mono text-xs"
+        className={`w-full border rounded-lg px-3 py-2 font-mono text-xs ${
+          fromCoreCar ? "bg-slate-50 text-slate-700" : ""
+        }`}
       />
       <input
         name="vehicle_label"
         required
+        defaultValue={prefilledLabel}
         placeholder="وصف المركبة (للعرض)"
         className="w-full border rounded-lg px-3 py-2"
       />

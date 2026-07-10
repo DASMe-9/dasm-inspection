@@ -17,10 +17,24 @@ export function mapPlatformSsoRedirectPath(raw: string | null): string | null {
   const path = sanitizeInspectionRedirect(raw);
   if (!path) return null;
 
-  if (path === "/request") return "/requests";
+  const url = new URL(path, "http://local");
+  const search = url.search; // includes leading "?" or ""
 
-  if (path === "/tracking") return "/my-inspections";
+  if (url.pathname === "/request") {
+    return `/requests${search}`;
+  }
 
+  if (url.pathname === "/tracking" && !url.searchParams.has("id")) {
+    return `/my-inspections${search}`;
+  }
+
+  const trackingId = url.pathname === "/tracking" ? url.searchParams.get("id")?.trim() : null;
+  if (url.pathname === "/tracking" && trackingId) {
+    return `/track/${encodeURIComponent(trackingId)}`;
+  }
+
+  // Legacy: "/tracking?id=…" when pathname parsing already handled above;
+  // keep exact string match for callers that pass query-only style.
   const trackingMatch = path.match(/^\/tracking\?(.+)$/);
   if (trackingMatch) {
     const params = new URLSearchParams(trackingMatch[1]);
