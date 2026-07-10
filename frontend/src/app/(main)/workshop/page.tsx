@@ -303,16 +303,16 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           </li>
           <li>
             <Link
-              href={`/workshop/reviews${manageQ}`}
+              href={`/workshop/reputation${manageQ}&tab=reviews`}
               className="flex items-center gap-3 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 border border-amber-100 bg-amber-50/40 px-4 py-3 text-sm font-medium text-gray-800 dark:text-slate-200 hover:bg-amber-50"
             >
               <Star className="h-4 w-4 text-amber-700" aria-hidden />
-              تقييمات العملاء
+              التقييمات والمتابعون
             </Link>
           </li>
           <li>
             <Link
-              href={`/workshop/followers${manageQ}`}
+              href={`/workshop/reputation${manageQ}&tab=followers`}
               className="flex items-center gap-3 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 border border-indigo-100 bg-indigo-50/40 px-4 py-3 text-sm font-medium text-gray-800 dark:text-slate-200 hover:bg-indigo-50"
             >
               <UserPlus className="h-4 w-4 text-[#1857b8]" aria-hidden />
