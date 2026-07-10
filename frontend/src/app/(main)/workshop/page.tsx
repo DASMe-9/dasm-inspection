@@ -12,10 +12,12 @@ import {
   getWorkshop,
   listInspectionRequests,
   listWorkshops,
+  getInspectorsForWorkshop,
 } from "@/lib/data/inspection";
 import { getWorkshopDashboardStats } from "@/lib/data/workshop-dashboard-data";
 import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
+import { WalkInInspectionCard } from "@/components/workshop/WalkInInspectionCard";
 import {
   Building2,
   ClipboardList,
@@ -134,9 +136,12 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     );
   }
 
-  const [stats, recent] = await Promise.all([
+  const [stats, recent, workshopInspectors] = await Promise.all([
     getWorkshopDashboardStats(workshopId),
     listInspectionRequests({ workshopId, sort: "updated_desc" }),
+    isWorkshopOperatorRole(access.persona)
+      ? getInspectorsForWorkshop(workshopId)
+      : Promise.resolve([]),
   ]);
 
   const kyc = evaluateWorkshopKyc({
@@ -166,6 +171,12 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           </p>
         </section>
       )}
+      {isWorkshopOperatorRole(access.persona) ? (
+        <WalkInInspectionCard
+          workshopId={workshopId}
+          inspectors={workshopInspectors}
+        />
+      ) : null}
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] p-6 shadow-md md:p-8">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#1E74E8_0%,#2FBF4E_100%)]"

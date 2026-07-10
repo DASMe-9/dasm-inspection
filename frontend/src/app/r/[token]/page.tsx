@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ReportPrintToolbar } from "@/components/inspection/ReportPrintToolbar";
 import {
   getPublicReportByToken,
   type PublicReportItem,
 } from "@/lib/data/inspection";
 import type { ReportItemStatus } from "@/types";
+import "@/styles/report-print.css";
 
 // Public report pages must never be indexed by search engines.
 export const metadata: Metadata = {
@@ -90,6 +92,7 @@ export default async function PublicReportPage({
       </header>
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-6">
+        <ReportPrintToolbar />
         {typeof report.finalScore === "number" && (
           <section className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
             <div
