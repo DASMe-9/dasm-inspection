@@ -28,6 +28,7 @@ export const INSPECTION_LOGIN_PLATFORM_TYPES = [
   "venue_owner",
   "dealer",
   "user",
+  "workshop",
 ] as const;
 
 export function resolveInspectionRoleFromPlatformUser(
@@ -49,6 +50,7 @@ export function resolveInspectionRoleFromPlatformUser(
       return "inspection_admin";
     case "venue_owner":
     case "dealer":
+    case "workshop":
       return "workshop_owner";
     case "user":
       return "dasm_user";

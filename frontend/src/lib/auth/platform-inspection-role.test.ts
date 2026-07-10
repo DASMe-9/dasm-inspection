@@ -26,9 +26,16 @@ describe("platform-inspection-role", () => {
     ).toBe("inspector");
   });
 
+  it("maps workshop to workshop_owner", () => {
+    expect(resolveInspectionRoleFromPlatformUser({ type: "workshop" })).toBe(
+      "workshop_owner"
+    );
+  });
+
   it("allows known platform types for login", () => {
     expect(platformTypeAllowedForInspectionLogin("admin")).toBe(true);
     expect(platformTypeAllowedForInspectionLogin("venue_owner")).toBe(true);
+    expect(platformTypeAllowedForInspectionLogin("workshop")).toBe(true);
     expect(platformTypeAllowedForInspectionLogin("guest")).toBe(false);
   });
 });

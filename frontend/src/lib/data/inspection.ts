@@ -97,12 +97,11 @@ export async function getWorkshopBySlug(slug: string): Promise<Workshop | null> 
     .from("inspection_workshops")
     .select("*")
     .eq("slug", normalized)
-    .eq("is_suspended", false)
     .maybeSingle();
   if (error || !data) return null;
-  return attachWorkshopPricing(
-    mapWorkshop(data as Parameters<typeof mapWorkshop>[0])
-  );
+  const workshop = mapWorkshop(data as Parameters<typeof mapWorkshop>[0]);
+  if (workshop.isSuspended) return null;
+  return attachWorkshopPricing(workshop);
 }
 
 export async function resolveWorkshopRouteParam(
