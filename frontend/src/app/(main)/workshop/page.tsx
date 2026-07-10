@@ -155,28 +155,7 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
   const manageQ = `?workshop_id=${workshopId}`;
 
   return (
-    <div className="space-y-8" dir="rtl">
-      <WorkshopManageNav />
-      {!kyc.complete && isWorkshopOperatorRole(access.persona) && (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-semibold">أكمل ملف الورشة والتحقق (KYC)</p>
-          <p className="mt-1 text-xs">
-            المتبقي: {kyc.missing.join(" · ")} —{" "}
-            <Link
-              href={`/workshop/profile${manageQ}`}
-              className="font-semibold underline"
-            >
-              انتقل إلى ملف الورشة
-            </Link>
-          </p>
-        </section>
-      )}
-      {isWorkshopOperatorRole(access.persona) ? (
-        <WalkInInspectionCard
-          workshopId={workshopId}
-          inspectors={workshopInspectors}
-        />
-      ) : null}
+    <div className="space-y-6" dir="rtl">
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] p-6 shadow-md md:p-8">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#1E74E8_0%,#2FBF4E_100%)]"
@@ -199,6 +178,12 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href={`/workshop/profile${manageQ}`}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-white/20"
+            >
+              ملف الورشة
+            </Link>
+            <Link
               href={`/workshops/${workshop.slug}`}
               className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-white/20"
             >
@@ -215,6 +200,29 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           </div>
         </div>
       </section>
+
+      <WorkshopManageNav />
+
+      {!kyc.complete && isWorkshopOperatorRole(access.persona) && (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+          <p className="font-semibold">أكمل ملف الورشة والتحقق (KYC)</p>
+          <p className="mt-1 text-xs">
+            المتبقي: {kyc.missing.join(" · ")} —{" "}
+            <Link
+              href={`/workshop/profile${manageQ}`}
+              className="font-semibold underline"
+            >
+              انتقل إلى ملف الورشة
+            </Link>
+          </p>
+        </section>
+      )}
+      {isWorkshopOperatorRole(access.persona) ? (
+        <WalkInInspectionCard
+          workshopId={workshopId}
+          inspectors={workshopInspectors}
+        />
+      ) : null}
 
       {stats && (
         <section className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
