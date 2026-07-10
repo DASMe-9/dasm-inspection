@@ -2,6 +2,7 @@ import {
   parseEducationalVideos,
   parseUrlList,
 } from "@/lib/workshop-showcase";
+import { parseHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
 import type {
   InspectionAttachment,
   InspectionReport,
@@ -46,6 +47,7 @@ type DbWorkshop = {
   gallery_urls?: unknown;
   repair_showcase_urls?: unknown;
   educational_videos?: unknown;
+  sidebar_hidden_nav_keys?: unknown;
 };
 
 type DbInspector = {
@@ -179,6 +181,7 @@ export function mapWorkshop(row: DbWorkshop): Workshop {
         sortOrder: video.sort_order,
       })
     ),
+    sidebarHiddenNavKeys: parseHiddenNavKeys(row.sidebar_hidden_nav_keys),
   };
 }
 

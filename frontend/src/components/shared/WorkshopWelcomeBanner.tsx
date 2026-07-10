@@ -30,7 +30,7 @@ export function WorkshopWelcomeBanner({
 
   return (
     <section
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] px-5 py-5 shadow-md md:px-6"
+      className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] px-5 py-5 shadow-md dark:border-white/10 md:px-6"
       dir="rtl"
       aria-labelledby="workshop-welcome-title"
     >

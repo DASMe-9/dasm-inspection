@@ -123,6 +123,8 @@ export interface Workshop {
   galleryUrls?: string[];
   repairShowcaseUrls?: string[];
   educationalVideos?: WorkshopEducationalVideo[];
+  /** عناصر الشريط الجانبي المخفية لمالك/مدير الورشة. */
+  sidebarHiddenNavKeys?: string[];
 }
 
 export interface Inspector {

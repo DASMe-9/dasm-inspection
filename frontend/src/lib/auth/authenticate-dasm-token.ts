@@ -1,4 +1,5 @@
 import { verifyDasmUserToken } from "@/lib/api/inspection-http-auth";
+import { enrichWorkshopClaims } from "./enrich-workshop-claims";
 import type { NormalizedInspectionClaims } from "./normalize-claims";
 import { resolveInspectionRoleFromPlatformUser } from "./platform-inspection-role";
 import { verifyDasmJwt } from "./verify-dasm-jwt";
@@ -32,7 +33,8 @@ export async function authenticateDasmToken(
 
   const jwt = await verifyDasmJwt(trimmed);
   if (jwt.ok) {
-    return { ok: true, normalized: jwt.normalized, source: "jwt" };
+    const normalized = await enrichWorkshopClaims(jwt.normalized);
+    return { ok: true, normalized, source: "jwt" };
   }
 
   const profile = await verifyDasmUserToken(trimmed);
@@ -61,15 +63,17 @@ export async function authenticateDasmToken(
   const dasmRoles: string[] = [];
   if (profile.type?.trim()) dasmRoles.push(profile.type.trim());
 
+  const normalized = await enrichWorkshopClaims({
+    userId: profile.id,
+    dasmRoles,
+    inspectionRole,
+    workshopId: null,
+    inspectorRecordId: null,
+  });
+
   return {
     ok: true,
     source: "platform",
-    normalized: {
-      userId: profile.id,
-      dasmRoles,
-      inspectionRole,
-      workshopId: null,
-      inspectorRecordId: null,
-    },
+    normalized,
   };
 }

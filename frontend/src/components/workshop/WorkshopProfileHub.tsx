@@ -20,6 +20,9 @@ import {
   saveWorkshopKycAction,
   saveWorkshopProfileAction,
 } from "@/app/actions/workshop-management";
+import { WorkshopNavPreferencesPanel } from "@/components/workshop/WorkshopNavPreferencesPanel";
+import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
+import { parseHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
 import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEditor";
 import {
   getDasmProfileSecurityUrl,
@@ -265,6 +268,10 @@ export function WorkshopProfileHub({
               <LayoutDashboard className="h-4 w-4" aria-hidden />
               العودة إلى طلبات الفحص والإحصائيات
             </Link>
+            <WorkshopNavPreferencesPanel
+              workshopId={workshopId}
+              hiddenNavKeys={parseHiddenNavKeys(workshop.sidebarHiddenNavKeys) as InspectionNavKey[]}
+            />
           </div>
         )}
 
