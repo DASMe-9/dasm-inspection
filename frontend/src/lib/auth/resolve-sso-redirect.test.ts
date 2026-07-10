@@ -22,6 +22,31 @@ describe("mapPlatformSsoRedirectPath", () => {
     expect(mapPlatformSsoRedirectPath("/tracking?id=42")).toBe("/track/42");
     expect(mapPlatformSsoRedirectPath("/workshops")).toBe("/workshops");
   });
+
+  it("preserves car prefill query when mapping /request → /requests", () => {
+    const mapped = mapPlatformSsoRedirectPath(
+      "/request?dasm_car_id=77&vehicle_label=Camry%202020"
+    );
+    expect(mapped).toContain("/requests?");
+    expect(mapped).toContain("dasm_car_id=77");
+    expect(mapped).toContain("vehicle_label=Camry");
+  });
+});
+
+describe("buildPostSsoDestination with car prefill", () => {
+  it("keeps dasm_car_id on gateway destination for dasm_user", () => {
+    const dest = buildPostSsoDestination(
+      "/request?dasm_car_id=55&vehicle_label=Elantra%202021",
+      { type: "user" },
+      "99",
+      "Ali"
+    );
+    expect(dest).toContain("/requests?");
+    expect(dest).toContain("dasm_car_id=55");
+    expect(dest).toContain("vehicle_label=Elantra");
+    expect(dest).toContain("gateway=dasm");
+    expect(dest).toContain("dasm_user_id=99");
+  });
 });
 
 describe("buildPostSsoDestination", () => {

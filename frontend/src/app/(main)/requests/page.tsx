@@ -24,15 +24,18 @@ export default async function RequestsListPage({
   searchParams?: Record<string, string | string[] | undefined>;
 }) {
   const cookieStore = cookies();
+  const firstParam = (key: string): string => {
+    const raw = searchParams?.[key];
+    if (typeof raw === "string") return raw.trim();
+    if (Array.isArray(raw) && typeof raw[0] === "string") return raw[0].trim();
+    return "";
+  };
+
   const presetDasmUserId =
-    (typeof searchParams?.dasm_user_id === "string"
-      ? searchParams.dasm_user_id
-      : Array.isArray(searchParams?.dasm_user_id)
-        ? searchParams?.dasm_user_id[0]
-        : ""
-    )?.trim() ||
-    (await resolveDasmUserId()) ||
-    "";
+    firstParam("dasm_user_id") || (await resolveDasmUserId()) || "";
+  const presetDasmCarId = firstParam("dasm_car_id");
+  const presetVehicleLabel = firstParam("vehicle_label");
+  const presetTitle = firstParam("title");
 
   const headersList = headers();
   const personaCtx = resolveInspectionPersona(headersList, cookieStore);
@@ -80,6 +83,9 @@ export default async function RequestsListPage({
         <SectionCard>
           <NewInspectionRequestForm
             defaultDasmUserId={presetDasmUserId}
+            defaultDasmCarId={presetDasmCarId}
+            defaultVehicleLabel={presetVehicleLabel}
+            defaultTitle={presetTitle}
             platformPricing={platformPricing}
             workshops={createFormWorkshops}
           />
