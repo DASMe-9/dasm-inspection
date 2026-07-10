@@ -4,6 +4,13 @@ import { revalidatePath } from "next/cache";
 import { assertWorkshopManageAccess } from "@/lib/auth/workshop-scope.server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import { normalizeSaudiIban } from "@/lib/workshop-kyc";
+import {
+  normalizeEducationalVideos,
+  normalizeUrlList,
+  parseEducationalVideosJson,
+  parseUrlListJson,
+  WORKSHOP_SHOWCASE_LIMITS,
+} from "@/lib/workshop-showcase";
 import type { InspectionServiceMode } from "@/types";
 
 export type WorkshopManageResult =
@@ -292,6 +299,61 @@ export async function saveWorkshopProfileAction(
         working_hours: workingHours,
         is_featured: isFeatured,
         featured_program_label: featuredProgramLabel,
+      })
+      .eq("id", workshopId);
+
+    if (error) return { ok: false, message: error.message };
+
+    revalidateWorkshopPaths(workshopId, workshopSlug || undefined);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, message: mapError(e) };
+  }
+}
+
+export async function saveWorkshopShowcaseAction(
+  formData: FormData
+): Promise<WorkshopManageResult> {
+  try {
+    const workshopId = String(formData.get("workshop_id") ?? "").trim();
+    const workshopSlug = String(formData.get("workshop_slug") ?? "").trim();
+    if (!workshopId) return { ok: false, message: "معرف الورشة مطلوب." };
+
+    await assertWorkshopManageAccess(workshopId);
+
+    const galleryUrls = normalizeUrlList(
+      parseUrlListJson(String(formData.get("gallery_urls_json") ?? "[]")),
+      WORKSHOP_SHOWCASE_LIMITS.gallery
+    );
+    const repairShowcaseUrls = normalizeUrlList(
+      parseUrlListJson(String(formData.get("repair_showcase_urls_json") ?? "[]")),
+      WORKSHOP_SHOWCASE_LIMITS.repairs
+    );
+    const educationalVideos = normalizeEducationalVideos(
+      parseEducationalVideosJson(
+        String(formData.get("educational_videos_json") ?? "[]")
+      )
+    );
+
+    const invalidVideo = educationalVideos.find((v) => !v.title.trim());
+    if (invalidVideo) {
+      return { ok: false, message: "كل فيديو يحتاج عنواناً." };
+    }
+
+    const sb = requireAdminClient();
+    const { error } = await sb
+      .from("inspection_workshops")
+      .update({
+        gallery_urls: galleryUrls,
+        repair_showcase_urls: repairShowcaseUrls,
+        educational_videos: educationalVideos.map((video, index) => ({
+          id: video.id,
+          title: video.title,
+          description: video.description ?? null,
+          video_url: video.video_url,
+          thumbnail_url: video.thumbnail_url ?? null,
+          sort_order: index,
+        })),
       })
       .eq("id", workshopId);
 

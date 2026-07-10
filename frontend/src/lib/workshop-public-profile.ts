@@ -1,4 +1,4 @@
-import type { Inspector, Workshop } from "@/types";
+import type { Inspector, Workshop, WorkshopEducationalVideo } from "@/types";
 import type { WorkshopPublicStats } from "@/lib/data/workshop-public-stats";
 
 export type WorkshopRatingSummary = {
@@ -25,6 +25,9 @@ export type WorkshopPublicProfile = {
   mapLink?: string;
   workingHours?: string;
   pricing?: Workshop["pricing"];
+  galleryUrls: string[];
+  repairShowcaseUrls: string[];
+  educationalVideos: WorkshopEducationalVideo[];
   inspectors: Array<{ id: string; fullName: string }>;
   ratingSummary: WorkshopRatingSummary;
   stats: WorkshopPublicStats;
@@ -57,6 +60,9 @@ export function toWorkshopPublicProfile(
     mapLink: showContact ? workshop.mapLink : undefined,
     workingHours: showContact ? workshop.workingHours : undefined,
     pricing: workshop.pricing,
+    galleryUrls: workshop.galleryUrls ?? [],
+    repairShowcaseUrls: workshop.repairShowcaseUrls ?? [],
+    educationalVideos: workshop.educationalVideos ?? [],
     inspectors: inspectors
       .filter((i) => i.active)
       .map((i) => ({ id: i.id, fullName: i.fullName })),

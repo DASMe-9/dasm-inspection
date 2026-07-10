@@ -66,6 +66,15 @@ export interface InspectionNotification {
   createdAt: string;
 }
 
+export interface WorkshopEducationalVideo {
+  id: string;
+  title: string;
+  description?: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
+  sortOrder?: number;
+}
+
 export interface WorkshopReview {
   id: string;
   workshopId: string;
@@ -111,6 +120,9 @@ export interface Workshop {
   viewsCount?: number;
   isFeatured?: boolean;
   featuredProgramLabel?: string;
+  galleryUrls?: string[];
+  repairShowcaseUrls?: string[];
+  educationalVideos?: WorkshopEducationalVideo[];
 }
 
 export interface Inspector {

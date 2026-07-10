@@ -5,6 +5,7 @@ import {
   saveWorkshopKycAction,
   saveWorkshopProfileAction,
 } from "@/app/actions/workshop-management";
+import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEditor";
 import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import type { Workshop } from "@/types";
 
@@ -168,6 +169,14 @@ export function WorkshopSettingsPanel({
           </div>
         </form>
       </section>
+
+      <WorkshopShowcaseEditor
+        workshopId={workshopId}
+        workshopSlug={workshopSlug}
+        galleryUrls={workshop.galleryUrls ?? []}
+        repairShowcaseUrls={workshop.repairShowcaseUrls ?? []}
+        educationalVideos={workshop.educationalVideos ?? []}
+      />
 
       <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <h2 className="mb-4 text-lg font-bold text-gray-900">التحقق والصرف (KYC)</h2>
