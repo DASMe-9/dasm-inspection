@@ -10,8 +10,7 @@ const TABS = [
   { href: "/workshop/pricing", label: "الأسعار" },
   { href: "/workshop/areas", label: "مناطق الخدمة" },
   { href: "/workshop/field", label: "ميداني" },
-  { href: "/workshop/reviews", label: "التقييمات" },
-  { href: "/workshop/followers", label: "المتابعون" },
+  { href: "/workshop/reputation", label: "التقييمات والمتابعون" },
   { href: "/workshop/profile", label: "ملف الورشة" },
   { href: "/workshop/export", label: "تصدير CSV" },
 ] as const;
@@ -32,7 +31,11 @@ function NavInner() {
         const active =
           "exact" in tab && tab.exact
             ? pathname === "/workshop"
-            : pathname.startsWith(tab.href);
+            : tab.href === "/workshop/reputation"
+              ? pathname.startsWith("/workshop/reputation") ||
+                pathname.startsWith("/workshop/reviews") ||
+                pathname.startsWith("/workshop/followers")
+              : pathname.startsWith(tab.href);
         return (
           <Link
             key={tab.href}

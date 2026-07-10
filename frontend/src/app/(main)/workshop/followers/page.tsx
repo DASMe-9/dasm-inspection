@@ -1,22 +1,12 @@
-import { WorkshopFollowersPanel } from "@/components/workshop/WorkshopFollowersPanel";
-import { WorkshopSectionChrome } from "@/components/workshop/WorkshopSectionChrome";
-import { requireWorkshopPage } from "@/lib/auth/resolve-workshop-page.server";
-import { listWorkshopFollowers } from "@/lib/data/workshop-insights-data";
+import { redirect } from "next/navigation";
 
 type Props = { searchParams: Promise<{ workshop_id?: string }> };
 
-export default async function WorkshopFollowersPage({ searchParams }: Props) {
+/** مسار قديم — يُحوّل إلى مركز السمعة مع تبويب المتابعين. */
+export default async function WorkshopFollowersRedirectPage({ searchParams }: Props) {
   const sp = await searchParams;
-  const { workshop, workshopId } = await requireWorkshopPage(sp.workshop_id);
-  const followers = await listWorkshopFollowers(workshopId);
-
-  return (
-    <WorkshopSectionChrome
-      workshop={workshop}
-      workshopId={workshopId}
-      title="متابعو الورشة"
-    >
-      <WorkshopFollowersPanel followers={followers} />
-    </WorkshopSectionChrome>
-  );
+  const params = new URLSearchParams();
+  if (sp.workshop_id) params.set("workshop_id", sp.workshop_id);
+  params.set("tab", "followers");
+  redirect(`/workshop/reputation?${params.toString()}`);
 }
