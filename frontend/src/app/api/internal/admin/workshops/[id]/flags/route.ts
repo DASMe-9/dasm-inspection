@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
  * كاتب-واحد؛ Core لا يكتب قاعدة أجنبية مباشرة). محروسة بنفس التوكن الداخلي المشترك
  * (`DASM_INSPECTION_INTERNAL_PULL_TOKEN`) — نفس حارس مسار resync.
  *
- * allowlist صارمة: is_verified / is_featured / featured_program_label فقط.
+ * allowlist صارمة: is_verified / is_featured / featured_program_label / is_suspended فقط.
  * لا تمسّ أي بيانات مالية أو تشغيلية أو حسّاسة.
  */
 export async function POST(
@@ -54,6 +54,9 @@ export async function POST(
   if (body.featured_program_label === null || typeof body.featured_program_label === "string") {
     patch.featured_program_label = body.featured_program_label;
   }
+  if (typeof body.is_suspended === "boolean") {
+    patch.is_suspended = body.is_suspended;
+  }
 
   if (Object.keys(patch).length === 0) {
     return NextResponse.json(
@@ -67,7 +70,7 @@ export async function POST(
     .from("inspection_workshops")
     .update(patch)
     .eq("id", id)
-    .select("id,is_verified,is_featured,featured_program_label")
+    .select("id,is_verified,is_featured,featured_program_label,is_suspended")
     .maybeSingle();
 
   if (error) {
