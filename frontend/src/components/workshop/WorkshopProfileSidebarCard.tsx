@@ -20,7 +20,7 @@ export function WorkshopProfileSidebarCard({
       >
         <Building2 className="h-4 w-4 shrink-0 text-violet-300" aria-hidden />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-violet-100">ملف الورشة</p>
+          <p className="text-sm font-semibold text-violet-100">إعدادات الورشة</p>
           <p className="truncate text-xs text-white/50">{link.name}</p>
         </div>
         <UserRound
@@ -32,7 +32,7 @@ export function WorkshopProfileSidebarCard({
         href={link.publicHref}
         className="block rounded-lg px-3 py-1.5 text-center text-[11px] font-medium text-slate-400 transition hover:bg-white/5 hover:text-white"
       >
-        عرض البروفايل العام للورشة
+        الصفحة العامة للورشة
       </Link>
     </div>
   );

@@ -10,8 +10,10 @@ export type InspectionShellContext = {
   city: string | null;
   /** ملف الشخص على منصة داسم الأم */
   coreProfileUrl: string;
-  /** ملف الورشة على inspect (مالك/مدير ورشة) */
+  /** إعدادات الورشة (كانت ملف الورشة) — مالك/مدير ورشة */
   workshopProfileHref: string | null;
+  /** الصفحة العامة للورشة على inspect */
+  workshopPublicHref: string | null;
   /** ترحيب الورشة — يظهر لمالك/مدير الورشة فقط */
   workshopWelcome: {
     workshopId: string;

@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { InspectionTopNavbar } from "@/components/shared/InspectionTopNavbar";
-import { WorkshopWelcomeBannerGate } from "@/components/shared/WorkshopWelcomeBannerGate";
 import { MOBILE_BOTTOM_NAV_ITEMS } from "@/components/shared/nav-config";
 import { SupabaseSetupWarning } from "@/components/shared/SupabaseSetupWarning";
 import type { InspectionShellContext } from "@/lib/auth/inspection-shell-context";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 
 /**
- * قشرة التطبيق الموحّدة — شريط جانبي (سطح المكتب) + شريط علوي + ترحيب الورشة.
+ * قشرة التطبيق الموحّدة — شريط جانبي (سطح المكتب) + شريط علوي بهوية الورشة.
+ * بطاقة الترحيب الكبيرة أُزيلت؛ الهوية تظهر مرة واحدة في النافبار.
  */
 export function AppShell({
   allowedNavKeys,
@@ -31,24 +31,19 @@ export function AppShell({
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
           {!configured && <SupabaseSetupWarning />}
           {shellContext ? (
-            <>
-              <InspectionTopNavbar
-                personDisplayName={shellContext.personDisplayName}
-                coreProfileUrl={shellContext.coreProfileUrl}
-                workshopProfileHref={shellContext.workshopProfileHref}
-              />
-              <WorkshopWelcomeBannerGate
-                workshopWelcome={shellContext.workshopWelcome}
-                email={shellContext.email}
-                userCode={shellContext.userCode}
-                areaLabel={shellContext.areaLabel}
-                city={shellContext.city}
-              />
-            </>
+            <InspectionTopNavbar
+              personDisplayName={shellContext.personDisplayName}
+              coreProfileUrl={shellContext.coreProfileUrl}
+              workshopProfileHref={shellContext.workshopProfileHref}
+              workshopPublicHref={shellContext.workshopPublicHref}
+              workshopWelcome={shellContext.workshopWelcome}
+              email={shellContext.email}
+              userCode={shellContext.userCode}
+              areaLabel={shellContext.areaLabel}
+              city={shellContext.city}
+            />
           ) : null}
-          <div className={shellContext?.workshopWelcome ? "mt-6 space-y-6" : "space-y-6"}>
-            {children}
-          </div>
+          <div className="space-y-6">{children}</div>
         </div>
         <MobileNav allowedNavKeys={allowedNavKeys} />
       </main>

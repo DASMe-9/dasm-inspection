@@ -20,7 +20,11 @@ function NavInner() {
   const workshopId = sp.get("workshop_id");
   const q = workshopId ? `?workshop_id=${workshopId}` : "";
 
-  if (pathname.startsWith("/workshop/profile") || pathname.startsWith("/workshop/settings")) {
+  if (
+    pathname.startsWith("/workshop/profile") ||
+    pathname.startsWith("/workshop/settings") ||
+    pathname.startsWith("/settings")
+  ) {
     return null;
   }
 

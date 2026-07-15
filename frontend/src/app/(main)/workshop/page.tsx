@@ -19,10 +19,7 @@ import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
 import { WalkInInspectionCard } from "@/components/workshop/WalkInInspectionCard";
 import {
-  Building2,
-  ClipboardList,
   Download,
-  ExternalLink,
   MapPin,
   CircleDollarSign,
   CalendarDays,
@@ -156,51 +153,6 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
 
   return (
     <div className="space-y-6" dir="rtl">
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] p-6 shadow-md md:p-8">
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#1E74E8_0%,#2FBF4E_100%)]"
-          aria-hidden
-        />
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="text-xs font-semibold text-sky-300">لوحة تشغيل الورشة</p>
-            <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold text-white md:text-3xl">
-              <Building2 className="h-7 w-7 text-[#2FBF4E]" aria-hidden />
-              {workshop.name}
-            </h1>
-            <p className="mt-1 text-sm text-slate-300">{workshop.city}</p>
-            {isWorkshopOperatorRole(access.persona) && (
-              <p className="mt-2 text-xs text-slate-400">
-                دورك:{" "}
-                {access.persona === "workshop_owner" ? "مالك ورشة" : "مدير ورشة"}
-              </p>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/workshop/profile${manageQ}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-white/20"
-            >
-              ملف الورشة
-            </Link>
-            <Link
-              href={`/workshops/${workshop.slug}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-white/20"
-            >
-              الصفحة العامة
-              <ExternalLink className="h-4 w-4" aria-hidden />
-            </Link>
-            <Link
-              href={`/requests?workshop=${workshopId}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#1E74E8_0%,#2FBF4E_100%)] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:opacity-90"
-            >
-              <ClipboardList className="h-4 w-4" aria-hidden />
-              كل طلبات الورشة
-            </Link>
-          </div>
-        </div>
-      </section>
-
       <WorkshopManageNav />
 
       {!kyc.complete && isWorkshopOperatorRole(access.persona) && (
@@ -209,10 +161,10 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
           <p className="mt-1 text-xs">
             المتبقي: {kyc.missing.join(" · ")} —{" "}
             <Link
-              href={`/workshop/profile${manageQ}`}
+              href={`/settings${manageQ}#verification`}
               className="font-semibold underline"
             >
-              انتقل إلى ملف الورشة
+              انتقل إلى الإعدادات → التوثيق
             </Link>
           </p>
         </section>
