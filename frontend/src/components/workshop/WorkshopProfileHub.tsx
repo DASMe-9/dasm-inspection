@@ -11,10 +11,8 @@ import {
   ExternalLink,
   Images,
   Landmark,
-  LayoutDashboard,
   MapPin,
   Palette,
-  Settings,
   Shield,
 } from "lucide-react";
 import {
@@ -34,7 +32,6 @@ import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import type { Workshop } from "@/types";
 
 type TabId =
-  | "general"
   | "branding"
   | "showcase"
   | "verification"
@@ -42,8 +39,7 @@ type TabId =
   | "notifications"
   | "appearance";
 
-const TABS: { id: TabId; label: string; icon: typeof Settings }[] = [
-  { id: "general", label: "عام", icon: Settings },
+const TABS: { id: TabId; label: string; icon: typeof Building2 }[] = [
   { id: "branding", label: "البروفايل والشعار", icon: Building2 },
   { id: "showcase", label: "معرض الأعمال", icon: Images },
   { id: "verification", label: "التوثيق", icon: Landmark },
@@ -62,12 +58,12 @@ function tabButtonClass(active: boolean) {
 }
 
 function initialTabFromHash(): TabId {
-  if (typeof window === "undefined") return "general";
+  if (typeof window === "undefined") return "branding";
   const hash = window.location.hash.replace(/^#/, "");
   if ((TABS as { id: string }[]).some((t) => t.id === hash)) {
     return hash as TabId;
   }
-  return "general";
+  return "branding";
 }
 
 export function WorkshopProfileHub({
@@ -82,7 +78,7 @@ export function WorkshopProfileHub({
   /** عند الدمج داخل /settings — بدون شريط عودة منفصل */
   embeddedInSettings?: boolean;
 }) {
-  const [tab, setTab] = useState<TabId>("general");
+  const [tab, setTab] = useState<TabId>("branding");
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
   const [kycMsg, setKycMsg] = useState<string | null>(null);
   const [profilePending, startProfile] = useTransition();
@@ -264,50 +260,6 @@ export function WorkshopProfileHub({
       </nav>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 md:p-6">
-        {tab === "general" && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">نظرة عامة</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                ملخص الورشة — التعديلات التفصيلية في التبويبات الأخرى.
-              </p>
-            </div>
-            <dl className="grid gap-4 text-sm md:grid-cols-2">
-              <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/50">
-                <dt className="text-slate-500">اسم الورشة</dt>
-                <dd className="mt-1 font-semibold text-slate-900 dark:text-white">{workshop.name}</dd>
-              </div>
-              <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/50">
-                <dt className="text-slate-500">المدينة</dt>
-                <dd className="mt-1 font-semibold text-slate-900 dark:text-white">{workshop.city}</dd>
-              </div>
-              <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/50">
-                <dt className="text-slate-500">المشاهدات</dt>
-                <dd className="mt-1 font-semibold text-slate-900 dark:text-white">
-                  {(workshop.viewsCount ?? 0).toLocaleString("ar-SA")}
-                </dd>
-              </div>
-              <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/50">
-                <dt className="text-slate-500">حالة KYC</dt>
-                <dd className="mt-1 font-semibold text-emerald-700 dark:text-emerald-300">
-                  {kyc.complete ? "مكتمل" : "غير مكتمل"}
-                </dd>
-              </div>
-            </dl>
-            <Link
-              href={dashboardHref}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#1E74E8] hover:underline"
-            >
-              <LayoutDashboard className="h-4 w-4" aria-hidden />
-              العودة إلى طلبات الفحص والإحصائيات
-            </Link>
-            <WorkshopNavPreferencesPanel
-              workshopId={workshopId}
-              hiddenNavKeys={parseHiddenNavKeys(workshop.sidebarHiddenNavKeys) as InspectionNavKey[]}
-            />
-          </div>
-        )}
-
         {tab === "branding" && (
           <div className="space-y-5">
             <div>
@@ -556,17 +508,23 @@ export function WorkshopProfileHub({
         )}
 
         {tab === "appearance" && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">المظهر</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              الوضع الداكن أو الفاتح لهذه اللوحة.
-            </p>
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">المظهر</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                الوضع الداكن أو الفاتح، وتخصيص عناصر الشريط الجانبي.
+              </p>
+            </div>
             <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50">
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 الوضع الداكن / الفاتح
               </span>
               <ThemeToggle className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-800 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700" />
             </div>
+            <WorkshopNavPreferencesPanel
+              workshopId={workshopId}
+              hiddenNavKeys={parseHiddenNavKeys(workshop.sidebarHiddenNavKeys) as InspectionNavKey[]}
+            />
           </div>
         )}
       </div>
