@@ -11,6 +11,7 @@ import {
   parseUrlListJson,
   WORKSHOP_SHOWCASE_LIMITS,
 } from "@/lib/workshop-showcase";
+import { mapsUrlFromNationalAddress } from "@/lib/workshop-location";
 import type { InspectionServiceMode } from "@/types";
 
 export type WorkshopManageResult =
@@ -281,12 +282,17 @@ export async function saveWorkshopProfileAction(
     const coverUrl = String(formData.get("cover_url") ?? "").trim() || null;
     const whatsapp = String(formData.get("whatsapp") ?? "").trim() || null;
     const instagram = String(formData.get("instagram") ?? "").trim() || null;
-    const mapLink = String(formData.get("map_link") ?? "").trim() || null;
+    const nationalAddressCode =
+      String(formData.get("national_address_code") ?? "")
+        .trim()
+        .replace(/\s+/g, "")
+        .toUpperCase() || null;
+    const mapLinkFromForm = String(formData.get("map_link") ?? "").trim() || null;
+    const mapLink =
+      mapsUrlFromNationalAddress(nationalAddressCode ?? "") || mapLinkFromForm;
     const workingHours =
       String(formData.get("working_hours") ?? "").trim() || null;
     const isFeatured = formData.get("is_featured") === "on";
-    const featuredProgramLabel =
-      String(formData.get("featured_program_label") ?? "").trim() || null;
 
     const sb = requireAdminClient();
     const { error } = await sb
@@ -297,10 +303,10 @@ export async function saveWorkshopProfileAction(
         cover_url: coverUrl,
         whatsapp,
         instagram,
+        national_address_code: nationalAddressCode,
         map_link: mapLink,
         working_hours: workingHours,
         is_featured: isFeatured,
-        featured_program_label: featuredProgramLabel,
       })
       .eq("id", workshopId);
 

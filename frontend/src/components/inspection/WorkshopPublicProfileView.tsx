@@ -492,7 +492,7 @@ export function WorkshopPublicProfileView({
                         className="inline-flex items-center gap-1 text-sm font-semibold text-[#1E74E8] hover:underline"
                       >
                         <MapPin className="h-4 w-4" aria-hidden />
-                        الموقع على الخريطة
+                        الموقع / GPS
                         <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                       </a>
                     </li>
