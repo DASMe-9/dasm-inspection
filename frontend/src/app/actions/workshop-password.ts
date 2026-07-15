@@ -12,15 +12,11 @@ export async function changeWorkshopAccountPasswordAction(
 ): Promise<ChangePasswordResult> {
   const currentPassword = String(formData.get("current_password") ?? "");
   const password = String(formData.get("password") ?? "");
-  const passwordConfirmation = String(
-    formData.get("password_confirmation") ?? ""
-  );
+  // Core يتطلّب password_confirmation — نطابقه تلقائياً دون حقل تأكيد في الواجهة.
+  const passwordConfirmation = password;
 
   if (password.length < 8) {
     return { ok: false, message: "كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل." };
-  }
-  if (password !== passwordConfirmation) {
-    return { ok: false, message: "كلمة المرور الجديدة وتأكيدها غير متطابقين." };
   }
   if (!currentPassword.trim()) {
     return { ok: false, message: "أدخل كلمة المرور الحالية." };
