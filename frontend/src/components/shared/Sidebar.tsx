@@ -39,8 +39,8 @@ export function Sidebar({
             <div className="space-y-1">
               {group.items.map((item) => {
                 const isActive =
-                  item.href === "/dashboard"
-                    ? pathname === "/dashboard"
+                  item.href === "/dashboard" || item.href === "/workshop"
+                    ? pathname === item.href
                     : pathname === item.href ||
                       pathname.startsWith(`${item.href}/`);
                 return (

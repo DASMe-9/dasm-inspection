@@ -146,8 +146,8 @@ describe("resolveInspectionPersona", () => {
     ["mechanic", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["viewer", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["unknown", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
-    ["workshop_owner", ["workshop_dashboard", "requests", "wallet", "subscription", "settings"]],
-    ["workshop_manager", ["workshop_dashboard", "requests", "wallet", "subscription", "settings"]],
+    ["workshop_owner", ["workshop_dashboard", "workshop_team", "workshop_pricing", "workshop_areas", "requests", "wallet", "subscription", "settings"]],
+    ["workshop_manager", ["workshop_dashboard", "workshop_team", "workshop_pricing", "workshop_areas", "requests", "wallet", "subscription", "settings"]],
   ] as const)("nav for %s matches its intent", (persona, expected) => {
     const keys = [...visibleNavKeys(persona)].sort();
     expect(keys).toEqual([...expected].sort());
