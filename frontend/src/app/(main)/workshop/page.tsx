@@ -132,7 +132,6 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
   }
 
   const {
-    workshop,
     stats,
     recent: recentSlice,
     requestCount,
