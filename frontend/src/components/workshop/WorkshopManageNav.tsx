@@ -6,9 +6,6 @@ import { Suspense } from "react";
 
 const TABS = [
   { href: "/workshop", label: "نظرة عامة", exact: true },
-  { href: "/workshop/team", label: "الفريق" },
-  { href: "/workshop/pricing", label: "الأسعار" },
-  { href: "/workshop/areas", label: "مناطق الخدمة" },
   { href: "/workshop/field", label: "ميداني" },
   { href: "/workshop/reputation", label: "التقييمات والمتابعون" },
   { href: "/workshop/export", label: "تصدير CSV" },
