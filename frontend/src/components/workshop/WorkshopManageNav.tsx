@@ -4,11 +4,9 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
+// الفريق / الأسعار / مناطق الخدمة في الشريط الجانبي فقط — لا تكرار هنا.
 const TABS = [
   { href: "/workshop", label: "نظرة عامة", exact: true },
-  { href: "/workshop/team", label: "الفريق" },
-  { href: "/workshop/pricing", label: "الأسعار" },
-  { href: "/workshop/areas", label: "مناطق الخدمة" },
   { href: "/workshop/field", label: "ميداني" },
   { href: "/workshop/reputation", label: "التقييمات والمتابعون" },
   { href: "/workshop/export", label: "تصدير CSV" },
