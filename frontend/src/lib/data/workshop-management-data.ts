@@ -2,11 +2,9 @@ import "server-only";
 
 import { getAdminClient } from "@/lib/supabase/admin";
 import { mapInspector } from "@/lib/data/mappers";
-import {
-  getPlatformDefaultPricing,
-  getWorkshopPricing,
-} from "@/lib/data/inspection-pricing-data";
+import { listActiveServicePricingRows } from "@/lib/data/inspection-pricing-data";
 import { getInspectorsForWorkshop } from "@/lib/data/inspection";
+import { buildWorkshopPricingMap } from "@/lib/inspection-pricing";
 import type { Inspector } from "@/types";
 import type {
   WorkshopPricingOverride,
@@ -56,13 +54,14 @@ export async function listAllWorkshopInspectors(
 export async function getWorkshopPricingForManage(
   workshopId: string
 ): Promise<WorkshopPricingOverride> {
-  const [workshop, platform] = await Promise.all([
-    getWorkshopPricing(workshopId),
-    getPlatformDefaultPricing(),
-  ]);
+  const pricingMap = buildWorkshopPricingMap(
+    await listActiveServicePricingRows()
+  );
+  const workshop = pricingMap.get(workshopId);
+  const platform = pricingMap.get(null);
   return {
-    workshopSar: workshop?.workshopSar ?? null,
-    fieldSar: workshop?.fieldSar ?? null,
+    workshopSar: workshop?.workshopSar ?? platform?.workshopSar ?? null,
+    fieldSar: workshop?.fieldSar ?? platform?.fieldSar ?? null,
     currency: workshop?.currency ?? platform?.currency ?? "SAR",
     platformWorkshopSar: platform?.workshopSar ?? null,
     platformFieldSar: platform?.fieldSar ?? null,
