@@ -12,7 +12,6 @@ import {
   listWorkshops,
 } from "@/lib/data/inspection";
 import { loadWorkshopDashboardBundle } from "@/lib/data/workshop-dashboard-data";
-import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
 import { WalkInInspectionCard } from "@/components/workshop/WalkInInspectionCard";
 import {
@@ -140,33 +139,12 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     inspectors: workshopInspectors,
   } = bundle;
 
-  const kyc = evaluateWorkshopKyc({
-    ownerUserId: workshop.ownerUserId,
-    commercialRegistration: workshop.commercialRegistration,
-    bankIban: workshop.bankIban,
-    bankBeneficiaryName: workshop.bankBeneficiaryName,
-  });
-
   const manageQ = `?workshop_id=${workshopId}`;
 
   return (
     <div className="space-y-6" dir="rtl">
       <WorkshopManageNav />
 
-      {!kyc.complete && isWorkshopOperatorRole(access.persona) && (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-          <p className="font-semibold">أكمل ملف الورشة والتحقق (KYC)</p>
-          <p className="mt-1 text-xs">
-            المتبقي: {kyc.missing.join(" · ")} —{" "}
-            <Link
-              href={`/settings${manageQ}#verification`}
-              className="font-semibold underline"
-            >
-              انتقل إلى الإعدادات → التوثيق
-            </Link>
-          </p>
-        </section>
-      )}
       {isWorkshopOperatorRole(access.persona) ? (
         <WalkInInspectionCard
           workshopId={workshopId}
