@@ -15,10 +15,10 @@ describe("workshop-nav-preferences", () => {
 
   it("hides keys from workshop owner nav", () => {
     const base = visibleNavKeys("workshop_owner");
-    const next = applyHiddenNavKeys(base, ["wallet", "subscription"]);
+    const next = applyHiddenNavKeys(base, ["wallet", "subscription", "settings"]);
     expect(next.has("workshop_dashboard")).toBe(true);
     expect(next.has("wallet")).toBe(false);
     expect(next.has("subscription")).toBe(false);
-    expect(next.has("requests")).toBe(true);
+    expect(next.has("settings")).toBe(false);
   });
 });

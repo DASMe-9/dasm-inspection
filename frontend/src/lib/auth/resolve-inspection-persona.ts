@@ -114,16 +114,9 @@ export function visibleNavKeys(
   // «المحفظة» لها دلالتان: أرباح/صرف للورشة، ورصيد مسبق الدفع للعميل (dasm_user)
   // للفحوصات المتكرّرة (شحن وخصم فقط). طاقم الميدان (فاحص/فنّي/عارض) والمجهول: لا محفظة.
   if (persona === "workshop_owner" || persona === "workshop_manager") {
-    return new Set<InspectionNavKey>([
-      "workshop_dashboard",
-      "workshop_team",
-      "workshop_pricing",
-      "workshop_areas",
-      "requests",
-      "wallet",
-      "subscription",
-      "settings",
-    ]);
+    // شريط الورشة مبسّط: لوحة الورشة + الإعدادات (+ تبديل الوضع في التذييل).
+    // الفريق/الأسعار/المناطق عبر تبويبات اللوحة؛ الطلبات من قائمة أحدث الطلبات.
+    return new Set<InspectionNavKey>(["workshop_dashboard", "settings"]);
   }
 
   if (persona === "super_admin" || persona === "inspection_admin") {
