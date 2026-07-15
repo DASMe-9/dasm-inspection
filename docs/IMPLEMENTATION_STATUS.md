@@ -1,5 +1,14 @@
 # حالة التنفيذ مقابل الخطة — dasm-inspection
 
+## تحديث 2026-07-15 — مركز قيادة الورشة والانتقال إلى لارافيل المركزي
+
+- بدأ نقل منطق الخادم إلى وحدة فحص محددة الحدود داخل `DASM-Platform` بدلاً من إنشاء خلفية لارافيل ثانية.
+- أضيف عقد `GET /api/me/inspection-workshop/operations` في لارافيل المركزي لقراءة ورشة المستخدم وطابور التشغيل وحالة المفتشين دون قبول `workshop_id` من العميل.
+- أعيد تصميم `/workshop` كمركز قيادة تشغيلي: التأخير، عدم الإسناد، انتظار الاعتماد، حالة الفريق، ومسار المركبة الحي.
+- تفضّل الواجهة عقد لارافيل، مع إبقاء قارئ Supabase الحالي احتياطياً مؤقتاً لترتيب النشر المرحلي.
+- لا توجد هجرة قاعدة بيانات ضمن هذه الدفعة؛ البيانات والحسابات الحالية تجريبية.
+- الوثيقة المرجعية: [`architecture/WORKSHOP_PROFESSIONALIZATION_AND_LARAVEL_INTEGRATION.md`](./architecture/WORKSHOP_PROFESSIONALIZATION_AND_LARAVEL_INTEGRATION.md).
+
 **تاريخ المراجعة:** 2026-05-17 — **تحديث تشغيل:** **Vercel → `dasm-inspection` → Production:** `DASM_JWT_ENFORCE=true` (يثبّت Middleware + `assertInspectionMutationAllowed`) بعد نشر تلقائي عند إضافة المتغير. **قبل الإنتاج أيضاً:** سياسات **JWT SELECT** + **backfill** الأدوار على **Supabase → DASM-services → main PRODUCTION** (SQL Editor)، انظر **`RUNBOOK.md`** §Smoke DB.
 
 **📌 مسار الإكمال المرقم (لا تضيع الأولويات):** انظر **[`COMPLETION_ROADMAP.md`](./COMPLETION_ROADMAP.md)** و **[`RUNBOOK.md`](./RUNBOOK.md)** للتشغيل بعد النشر.
