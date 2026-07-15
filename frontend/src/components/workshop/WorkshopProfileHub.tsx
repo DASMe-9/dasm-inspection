@@ -24,10 +24,7 @@ import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import { parseHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
 import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEditor";
-import {
-  getDasmProfileSecurityUrl,
-  getGrandMarketWorkshopUrl,
-} from "@/lib/platform-urls";
+import { getDasmProfileSecurityUrl } from "@/lib/platform-urls";
 import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import type { Workshop } from "@/types";
 
@@ -95,13 +92,8 @@ export function WorkshopProfileHub({
     bankBeneficiaryName: workshop.bankBeneficiaryName,
   });
 
-  const grandMarketUrl = useMemo(
-    () => getGrandMarketWorkshopUrl(workshopSlug),
-    [workshopSlug],
-  );
   const coreProfileUrl = useMemo(() => getDasmProfileSecurityUrl(), []);
   const dashboardHref = `/workshop?workshop_id=${workshopId}`;
-  const inspectPublicHref = `/workshops/${workshopSlug}`;
 
   const visibleTabs = embeddedInSettings
     ? TABS
@@ -187,32 +179,7 @@ export function WorkshopProfileHub({
                 </div>
               </div>
             </div>
-
-            <div className="flex flex-wrap gap-2">
-              <a
-                href={grandMarketUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#1E74E8_0%,#2FBF4E_100%)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
-              >
-                السوق الكبير
-                <ExternalLink className="h-4 w-4" aria-hidden />
-              </a>
-              <Link
-                href={inspectPublicHref}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
-              >
-                الصفحة العامة
-                <ExternalLink className="h-4 w-4" aria-hidden />
-              </Link>
-            </div>
           </div>
-
-          {(workshop.description ?? "").trim() ? (
-            <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-              {workshop.description}
-            </p>
-          ) : null}
         </div>
       </section>
 

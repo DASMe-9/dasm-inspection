@@ -43,17 +43,6 @@ export default async function SettingsPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6" dir="rtl">
-      <div>
-        <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100">
-          الإعدادات
-        </h2>
-        {isWorkshopOp ? (
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            ملف الورشة والتوثيق والأمان والمظهر — في مكان واحد.
-          </p>
-        ) : null}
-      </div>
-
       {workshopResolved ? (
         <WorkshopProfileHub
           workshopId={workshopResolved.workshopId}
@@ -62,14 +51,19 @@ export default async function SettingsPage({ searchParams }: Props) {
           embeddedInSettings
         />
       ) : (
-        <SectionCard title="المظهر">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-sm text-gray-700 dark:text-slate-300">
-              الوضع الداكن / الفاتح
-            </span>
-            <ThemeToggle className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-800 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700" />
-          </div>
-        </SectionCard>
+        <>
+          <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+            الإعدادات
+          </h2>
+          <SectionCard title="المظهر">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm text-gray-700 dark:text-slate-300">
+                الوضع الداكن / الفاتح
+              </span>
+              <ThemeToggle className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-800 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700" />
+            </div>
+          </SectionCard>
+        </>
       )}
 
       {canModerate && (
