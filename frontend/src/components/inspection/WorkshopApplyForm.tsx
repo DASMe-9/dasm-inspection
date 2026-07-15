@@ -2,11 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { submitWorkshopApplicationAction } from "@/app/actions/workshop-application";
-import { useTheme } from "@/hooks";
+import { PUBLIC_BRAND } from "@/components/public-site/brand-tokens";
 import type { WorkshopInvitePrefill } from "@/lib/data/workshop-invites-data";
 
+const labelClass =
+  "text-sm font-medium text-slate-800 dark:text-slate-100";
+
 const fieldClass =
-  "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1E74E8] focus:outline-none focus:ring-2 focus:ring-[#1E74E8]/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500";
+  "mt-1.5 w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-500 shadow-sm transition focus:border-[var(--inspection-accent)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--inspection-accent)]/25 dark:border-slate-500 dark:bg-slate-800/90 dark:text-slate-50 dark:placeholder:text-slate-400 dark:focus:border-[var(--inspection-accent)] dark:focus:bg-slate-800 dark:focus:ring-[var(--inspection-accent)]/30";
 
 export function WorkshopApplyForm({
   dasmUserId,
@@ -15,7 +18,6 @@ export function WorkshopApplyForm({
   dasmUserId?: string | null;
   invite?: WorkshopInvitePrefill | null;
 }) {
-  const { colors } = useTheme({ role: "workshop" });
   const [pending, startTransition] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
   const [doneId, setDoneId] = useState<string | null>(null);
@@ -40,13 +42,14 @@ export function WorkshopApplyForm({
   if (doneId) {
     return (
       <div className="space-y-3 text-sm">
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+        <p className="rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2.5 font-medium text-emerald-950 dark:border-emerald-400/35 dark:bg-emerald-950/55 dark:text-emerald-50">
           {msg}
         </p>
-        <p className="text-xs text-slate-500 dark:text-slate-400">رقم الطلب: {doneId}</p>
+        <p className="text-xs text-slate-600 dark:text-slate-300">رقم الطلب: {doneId}</p>
         <button
           type="button"
-          className="text-sm text-[#1E74E8] underline hover:no-underline"
+          className="text-sm font-semibold underline underline-offset-2 hover:no-underline"
+          style={{ color: PUBLIC_BRAND.blue }}
           onClick={() => {
             setDoneId(null);
             setMsg(null);
@@ -65,17 +68,17 @@ export function WorkshopApplyForm({
         <input type="hidden" name="dasm_user_id" value={dasmUserId} />
       ) : null}
       {invite ? (
-        <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200">
+        <p className="rounded-xl border border-sky-300 bg-sky-50 px-3.5 py-2.5 text-xs font-medium leading-relaxed text-sky-950 dark:border-sky-400/35 dark:bg-sky-950/55 dark:text-sky-50">
           دعوة انضمام مفعّلة — بيانات الورشة مُعبّأة مسبقاً.{" "}
           {!dasmUserId ? (
-            <span className="font-semibold">
+            <span className="font-bold">
               سجّل الدخول بحساب داسم لربط الورشة تلقائياً بعد الاعتماد.
             </span>
           ) : null}
         </p>
       ) : null}
       <label className="block">
-        <span className="text-slate-600 dark:text-slate-400">اسم الورشة *</span>
+        <span className={labelClass}>اسم الورشة *</span>
         <input
           name="workshop_name"
           required
@@ -84,11 +87,11 @@ export function WorkshopApplyForm({
         />
       </label>
       <label className="block">
-        <span className="text-slate-600 dark:text-slate-400">المدينة *</span>
+        <span className={labelClass}>المدينة *</span>
         <input name="city" required defaultValue={invite?.city} className={fieldClass} />
       </label>
       <label className="block">
-        <span className="text-slate-600 dark:text-slate-400">اسم المسؤول *</span>
+        <span className={labelClass}>اسم المسؤول *</span>
         <input
           name="contact_name"
           required
@@ -97,7 +100,7 @@ export function WorkshopApplyForm({
         />
       </label>
       <label className="block">
-        <span className="text-slate-600 dark:text-slate-400">الجوال *</span>
+        <span className={labelClass}>الجوال *</span>
         <input
           name="phone"
           type="tel"
@@ -109,7 +112,7 @@ export function WorkshopApplyForm({
         />
       </label>
       <label className="block">
-        <span className="text-slate-600 dark:text-slate-400">البريد الإلكتروني</span>
+        <span className={labelClass}>البريد الإلكتروني</span>
         <input
           name="email"
           type="email"
@@ -119,27 +122,27 @@ export function WorkshopApplyForm({
         />
       </label>
       <label className="block">
-        <span className="text-slate-600 dark:text-slate-400">السجل التجاري (اختياري)</span>
+        <span className={labelClass}>السجل التجاري (اختياري)</span>
         <input name="commercial_registration" className={fieldClass} />
       </label>
       <label className="block">
-        <span className="text-slate-600 dark:text-slate-400">ملاحظات</span>
+        <span className={labelClass}>ملاحظات</span>
         <textarea
           name="notes"
-          className={`${fieldClass} min-h-[88px]`}
+          className={`${fieldClass} min-h-[96px]`}
           placeholder="معدات، عدد المفتشين، مناطق الخدمة…"
         />
       </label>
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg py-2.5 font-medium text-white shadow-sm transition disabled:opacity-50"
-        style={{ backgroundColor: colors.primary }}
+        className="w-full rounded-xl py-3 text-sm font-bold text-white shadow-md transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+        style={{ backgroundColor: PUBLIC_BRAND.green }}
       >
         {pending ? "جاري الإرسال…" : "إرسال طلب الانضمام"}
       </button>
       {msg && !doneId ? (
-        <p className="text-xs text-red-700 dark:text-red-400" role="alert">
+        <p className="text-xs font-medium text-red-700 dark:text-red-300" role="alert">
           {msg}
         </p>
       ) : null}

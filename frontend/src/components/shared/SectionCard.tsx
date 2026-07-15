@@ -17,7 +17,7 @@ export function SectionCard({ title, children, className }: SectionCardProps) {
       dir="rtl"
     >
       {title && (
-        <div className="border-b border-slate-200 dark:border-slate-700 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-slate-100 bg-gradient-to-l from-gray-50/90 to-white dark:from-slate-800 dark:to-slate-900">
+        <div className="border-b border-slate-200 bg-gradient-to-l from-slate-50 to-white px-4 py-3 text-sm font-semibold text-slate-900 dark:border-slate-600 dark:from-slate-800 dark:to-slate-900 dark:text-white">
           {title}
         </div>
       )}

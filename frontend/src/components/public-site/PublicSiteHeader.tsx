@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { InspectionLogo } from "./InspectionLogo";
 import { PUBLIC_BRAND, PUBLIC_NAV_LINKS } from "./brand-tokens";
 
@@ -58,6 +59,7 @@ export function PublicSiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2 md:gap-3">
+          <ThemeToggle compact />
           <Link
             href="/auth/login"
             className="hidden rounded-lg border border-white/25 px-3 py-2 text-xs font-semibold text-white/90 transition hover:bg-white/10 sm:inline-block md:text-sm"
