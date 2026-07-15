@@ -15,6 +15,7 @@ export default async function WorkshopTeamPage({ searchParams }: Props) {
       workshop={workshop}
       workshopId={workshopId}
       title="إدارة الفريق"
+      showHeader={false}
     >
       <WorkshopTeamPanel
         workshopId={workshopId}

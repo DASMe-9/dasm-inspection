@@ -15,6 +15,7 @@ export default async function WorkshopAreasPage({ searchParams }: Props) {
       workshop={workshop}
       workshopId={workshopId}
       title="مناطق الخدمة"
+      showHeader={false}
     >
       <WorkshopAreasPanel
         workshopId={workshopId}
