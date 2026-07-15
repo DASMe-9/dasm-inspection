@@ -70,14 +70,18 @@ describe("resolveInspectionPersona", () => {
     }
   });
 
-  it("shows workshop dashboard + subscription nav for workshop_owner", () => {
+  it("shows full workshop management nav for workshop_owner", () => {
     const keys = visibleNavKeys("workshop_owner");
     expect(keys.has("workshop_dashboard")).toBe(true);
-    expect(keys.has("subscription")).toBe(true); // workshops need their tiers page
+    expect(keys.has("workshop_team")).toBe(true);
+    expect(keys.has("workshop_pricing")).toBe(true);
+    expect(keys.has("workshop_areas")).toBe(true);
+    expect(keys.has("subscription")).toBe(true);
     expect(keys.has("wallet")).toBe(true);
+    expect(keys.has("requests")).toBe(true);
+    expect(keys.has("settings")).toBe(true);
     expect(keys.has("dashboard")).toBe(false);
     expect(keys.has("my_inspections")).toBe(false);
-    expect(keys.has("requests")).toBe(true);
   });
 
   it("customer (dasm_user) nav keeps wallet (prepaid) but excludes subscription (B2B)", () => {
@@ -146,8 +150,32 @@ describe("resolveInspectionPersona", () => {
     ["mechanic", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["viewer", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["unknown", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
-    ["workshop_owner", ["workshop_dashboard", "settings"]],
-    ["workshop_manager", ["workshop_dashboard", "settings"]],
+    [
+      "workshop_owner",
+      [
+        "workshop_dashboard",
+        "workshop_team",
+        "workshop_pricing",
+        "workshop_areas",
+        "requests",
+        "wallet",
+        "subscription",
+        "settings",
+      ],
+    ],
+    [
+      "workshop_manager",
+      [
+        "workshop_dashboard",
+        "workshop_team",
+        "workshop_pricing",
+        "workshop_areas",
+        "requests",
+        "wallet",
+        "subscription",
+        "settings",
+      ],
+    ],
   ] as const)("nav for %s matches its intent", (persona, expected) => {
     const keys = [...visibleNavKeys(persona)].sort();
     expect(keys).toEqual([...expected].sort());
