@@ -6,6 +6,7 @@ import {
   changeWorkshopAccountPasswordAction,
   requestWorkshopPasswordResetAction,
 } from "@/app/actions/workshop-password";
+import { PasswordField } from "@/components/shared/PasswordField";
 
 export function WorkshopPasswordChangeForm() {
   const [msg, setMsg] = useState<string | null>(null);
@@ -22,6 +23,7 @@ export function WorkshopPasswordChangeForm() {
         <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           غيّر كلمة مرور حسابك من هنا مباشرة. الحساب موحّد مع منظومة داسم، والتحديث
           يمر عبر خدمة الهوية المركزية دون الحاجة لدخول لوحة المسؤول في المنصة الأم.
+          استخدم العين بجانب الحقل للتأكد من الكتابة (عربي/إنجليزي).
         </p>
       </div>
 
@@ -40,44 +42,19 @@ export function WorkshopPasswordChangeForm() {
           });
         }}
       >
-        <label className="block">
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            كلمة المرور الحالية
-          </span>
-          <input
-            type="password"
-            name="current_password"
-            required
-            autoComplete="current-password"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            كلمة المرور الجديدة
-          </span>
-          <input
-            type="password"
-            name="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            تأكيد كلمة المرور الجديدة
-          </span>
-          <input
-            type="password"
-            name="password_confirmation"
-            required
-            minLength={8}
-            autoComplete="new-password"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
-          />
-        </label>
+        <PasswordField
+          label="كلمة المرور الحالية"
+          name="current_password"
+          required
+          autoComplete="current-password"
+        />
+        <PasswordField
+          label="كلمة المرور الجديدة"
+          name="password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
 
         <button
           type="submit"
