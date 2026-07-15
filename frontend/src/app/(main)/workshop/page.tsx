@@ -14,7 +14,6 @@ import {
 import { loadWorkshopDashboardBundle } from "@/lib/data/workshop-dashboard-data";
 import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
 import { WalkInInspectionCard } from "@/components/workshop/WalkInInspectionCard";
-import { CalendarDays } from "lucide-react";
 
 type PageProps = {
   searchParams: Promise<{ workshop_id?: string }>;
@@ -130,8 +129,6 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     inspectors: workshopInspectors,
   } = bundle;
 
-  const manageQ = `?workshop_id=${workshopId}`;
-
   return (
     <div className="space-y-6" dir="rtl">
       <WorkshopManageNav />
@@ -199,28 +196,6 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
             </Link>
           </div>
         )}
-      </SectionCard>
-
-      <SectionCard title="إدارة الورشة">
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <li>
-            <Link
-              href={`/workshop/field${manageQ}`}
-              className="flex items-center gap-3 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 border border-orange-100 bg-orange-50/40 px-4 py-3 text-sm font-medium text-gray-800 dark:text-slate-200 hover:bg-orange-50"
-            >
-              <CalendarDays className="h-4 w-4 text-orange-700" aria-hidden />
-              تقويم وخريطة ميداني
-            </Link>
-          </li>
-          <li>
-            <Link
-              href={`/requests?workshop=${workshopId}&status=pending_review`}
-              className="flex items-center gap-3 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 border border-amber-100 bg-amber-50/40 px-4 py-3 text-sm font-medium text-gray-800 dark:text-slate-200 hover:bg-amber-50"
-            >
-              مراجعة التقارير المعلّقة
-            </Link>
-          </li>
-        </ul>
       </SectionCard>
     </div>
   );
