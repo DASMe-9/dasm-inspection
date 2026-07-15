@@ -12,20 +12,15 @@ import {
   Images,
   Landmark,
   MapPin,
-  Palette,
   Shield,
 } from "lucide-react";
 import {
   saveWorkshopKycAction,
   saveWorkshopProfileAction,
 } from "@/app/actions/workshop-management";
-import { WorkshopNavPreferencesPanel } from "@/components/workshop/WorkshopNavPreferencesPanel";
 import { WorkshopLocationFields } from "@/components/workshop/WorkshopLocationFields";
 import { WorkshopMediaUploadField } from "@/components/workshop/WorkshopMediaUploadField";
 import { WorkshopPasswordChangeForm } from "@/components/workshop/WorkshopPasswordChangeForm";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
-import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
-import { parseHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
 import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEditor";
 import { getDasmProfileSecurityUrl } from "@/lib/platform-urls";
 import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
@@ -37,8 +32,7 @@ type TabId =
   | "showcase"
   | "verification"
   | "security"
-  | "notifications"
-  | "appearance";
+  | "notifications";
 
 const TABS: { id: TabId; label: string; icon: typeof Building2 }[] = [
   { id: "branding", label: "البروفايل والشعار", icon: Building2 },
@@ -46,7 +40,6 @@ const TABS: { id: TabId; label: string; icon: typeof Building2 }[] = [
   { id: "verification", label: "التوثيق", icon: Landmark },
   { id: "security", label: "الأمان", icon: Shield },
   { id: "notifications", label: "الإشعارات", icon: Bell },
-  { id: "appearance", label: "المظهر", icon: Palette },
 ];
 
 function tabButtonClass(active: boolean) {
@@ -106,10 +99,6 @@ export function WorkshopProfileHub({
 
   const coreProfileUrl = useMemo(() => getDasmProfileSecurityUrl(), []);
   const dashboardHref = `/workshop?workshop_id=${workshopId}`;
-
-  const visibleTabs = embeddedInSettings
-    ? TABS
-    : TABS.filter((t) => t.id !== "appearance");
 
   function selectTab(next: TabId) {
     setTab(next);
@@ -221,7 +210,7 @@ export function WorkshopProfileHub({
         aria-label="أقسام إعدادات الورشة"
       >
         <div className="flex min-w-max gap-1">
-          {visibleTabs.map((item) => {
+          {TABS.map((item) => {
             const Icon = item.icon;
             return (
               <button
@@ -447,27 +436,6 @@ export function WorkshopProfileHub({
               إعدادات الإشعارات على داسم
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
-          </div>
-        )}
-
-        {tab === "appearance" && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">المظهر</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                الوضع الداكن أو الفاتح، وتخصيص عناصر الشريط الجانبي.
-              </p>
-            </div>
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                الوضع الداكن / الفاتح
-              </span>
-              <ThemeToggle className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-800 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700" />
-            </div>
-            <WorkshopNavPreferencesPanel
-              workshopId={workshopId}
-              hiddenNavKeys={parseHiddenNavKeys(workshop.sidebarHiddenNavKeys) as InspectionNavKey[]}
-            />
           </div>
         )}
       </div>

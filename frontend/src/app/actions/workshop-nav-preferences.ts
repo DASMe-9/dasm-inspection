@@ -1,37 +1,37 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getWorkshopDashboardAccess } from "@/lib/auth/workshop-dashboard.server";
-import { resolveInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
+import { assertInspectionRoles } from "@/lib/auth/access-layer.server";
 import {
   parseHiddenNavKeys,
   WORKSHOP_CUSTOMIZABLE_NAV_KEYS,
   type WorkshopCustomizableNavKey,
 } from "@/lib/auth/workshop-nav-preferences";
 import { saveWorkshopHiddenNavKeys } from "@/lib/data/workshop-nav-preferences-data";
-import { cookies, headers } from "next/headers";
 
 export type WorkshopNavPrefsResult =
   | { ok: true }
   | { ok: false; message: string };
 
+/**
+ * تخصيص شريط الورشة — صلاحية إشرافية فقط (إدارة الفحص / مشرف عام).
+ * لا يُسمح لمالك الورشة بتعديل هذه التفضيلات.
+ */
 export async function saveWorkshopNavPreferencesAction(
   formData: FormData
 ): Promise<WorkshopNavPrefsResult> {
+  try {
+    await assertInspectionRoles(["super_admin", "inspection_admin"]);
+  } catch {
+    return {
+      ok: false,
+      message: "تخصيص الشريط الجانبي متاح لإدارة الفحص فقط.",
+    };
+  }
+
   const workshopId = String(formData.get("workshop_id") ?? "").trim();
   if (!workshopId) {
     return { ok: false, message: "معرّف الورشة مطلوب." };
-  }
-
-  const headersList = await headers();
-  const cookieStore = await cookies();
-  const personaCtx = resolveInspectionPersona(headersList, cookieStore);
-  const access = await getWorkshopDashboardAccess(personaCtx, {
-    workshopIdOverride: workshopId,
-  });
-
-  if (!access.allowed || access.workshopId !== workshopId) {
-    return { ok: false, message: "صلاحية تعديل تفضيلات الشريط غير متوفرة." };
   }
 
   const raw = formData.getAll("hidden_nav_keys");
@@ -43,8 +43,8 @@ export async function saveWorkshopNavPreferencesAction(
   if (!result.ok) return result;
 
   revalidatePath("/workshop");
-  revalidatePath("/workshop/profile");
   revalidatePath("/settings");
+  revalidatePath(`/workshop?workshop_id=${workshopId}`);
 
   return { ok: true };
 }
