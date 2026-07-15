@@ -26,6 +26,29 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     ],
   },
   {
+    label: "إدارة الورشة",
+    items: [
+      {
+        key: "workshop_team",
+        href: "/workshop/team",
+        label: "إدارة الفريق",
+        icon: "👥",
+      },
+      {
+        key: "workshop_pricing",
+        href: "/workshop/pricing",
+        label: "أسعار الخدمة",
+        icon: "💵",
+      },
+      {
+        key: "workshop_areas",
+        href: "/workshop/areas",
+        label: "مناطق الخدمة",
+        icon: "📍",
+      },
+    ],
+  },
+  {
     label: "إدارة الفحص",
     items: [
       { key: "requests", href: "/requests", label: "طلبات الفحص", icon: "📋" },
