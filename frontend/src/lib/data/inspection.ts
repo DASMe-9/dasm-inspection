@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { getAdminClient, getFreshAdminClient } from "@/lib/supabase/admin";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
 import {
@@ -73,19 +74,27 @@ async function attachWorkshopPricing(w: Workshop): Promise<Workshop> {
   return { ...w, pricing: pricingMap.get(w.id) };
 }
 
-export async function getWorkshop(id: string): Promise<Workshop | null> {
-  const sb = getAdminClient();
-  if (!sb) return null;
-  const { data, error } = await sb
-    .from("inspection_workshops")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-  if (error || !data) return null;
-  return attachWorkshopPricing(
-    mapWorkshop(data as Parameters<typeof mapWorkshop>[0])
-  );
-}
+/** صف الورشة فقط — بدون جدول التسعير (أخف للوحة التشغيل). */
+export const getWorkshopBare = cache(
+  async (id: string): Promise<Workshop | null> => {
+    const sb = getAdminClient();
+    if (!sb) return null;
+    const { data, error } = await sb
+      .from("inspection_workshops")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) return null;
+    return mapWorkshop(data as Parameters<typeof mapWorkshop>[0]);
+  }
+);
+
+/** يُخزَّن داخل نفس طلب RSC لتفادي تكرار القراءة بين layout/stats/page. */
+export const getWorkshop = cache(async (id: string): Promise<Workshop | null> => {
+  const workshop = await getWorkshopBare(id);
+  if (!workshop) return null;
+  return attachWorkshopPricing(workshop);
+});
 
 /** ملف ورشة عام بالـ slug (خطوة 26 — بدون تسجيل دخول). */
 export async function getWorkshopBySlug(slug: string): Promise<Workshop | null> {
@@ -163,8 +172,18 @@ export async function findInspectorByDasmUserId(
 export async function getInspectorsForWorkshop(
   workshopId: string
 ): Promise<Inspector[]> {
-  const all = await listInspectors();
-  return all.filter((i) => i.workshopId === workshopId);
+  const key = workshopId?.trim();
+  if (!key) return [];
+  const sb = getAdminClient();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("inspection_inspectors")
+    .select("*")
+    .eq("workshop_id", key)
+    .eq("active", true)
+    .order("full_name");
+  if (error || !data) return [];
+  return data.map((r) => mapInspector(r as Parameters<typeof mapInspector>[0]));
 }
 
 export async function listInspectionRequests(
@@ -187,7 +206,11 @@ export async function listInspectionRequests(
   if (options?.inspectorId) {
     q = q.eq("inspector_id", options.inspectorId);
   }
-  const { data, error } = await q.order(orderCol, { ascending: false });
+  q = q.order(orderCol, { ascending: false });
+  if (options?.limit != null && options.limit > 0) {
+    q = q.limit(options.limit);
+  }
+  const { data, error } = await q;
   if (error || !data) return [];
   return data.map((r) => mapRequest(r as Parameters<typeof mapRequest>[0]));
 }

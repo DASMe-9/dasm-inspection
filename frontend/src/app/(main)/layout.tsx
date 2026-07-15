@@ -4,6 +4,7 @@ import { AppShell } from "@/components/shared";
 import {
   resolveInspectionPersona,
   visibleNavKeys,
+  type InspectionNavKey,
 } from "@/lib/auth/resolve-inspection-persona";
 import { applyHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
 import { resolveInspectionShellContext } from "@/lib/auth/resolve-inspection-shell-context.server";
@@ -41,10 +42,25 @@ export default async function MainShellLayout({
     if (!workshopId && personaCtx.platformUserId) {
       workshopId = await findWorkshopIdByOwnerUserId(personaCtx.platformUserId);
     }
+    const [hidden, shellContext] = await Promise.all([
+      workshopId
+        ? getWorkshopHiddenNavKeys(workshopId)
+        : Promise.resolve([] as InspectionNavKey[]),
+      resolveInspectionShellContext(),
+    ]);
     if (workshopId) {
-      const hidden = await getWorkshopHiddenNavKeys(workshopId);
       allowedNavKeys = applyHiddenNavKeys(allowedNavKeys, hidden);
     }
+
+    return (
+      <AppShell
+        allowedNavKeys={Array.from(allowedNavKeys)}
+        configured={configured}
+        shellContext={shellContext}
+      >
+        {children}
+      </AppShell>
+    );
   }
 
   const shellContext = await resolveInspectionShellContext();

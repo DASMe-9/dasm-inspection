@@ -85,7 +85,10 @@ export async function fetchDasmUserProfile(
 ): Promise<DasmProfileUser | null> {
   try {
     const res = await fetch(`${DASM_API_URL}/api/user/profile`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
       cache: "no-store",
     });
     if (!res.ok) return null;
