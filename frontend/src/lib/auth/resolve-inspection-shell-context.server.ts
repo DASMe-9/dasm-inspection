@@ -66,6 +66,7 @@ export async function resolveInspectionShellContext(): Promise<InspectionShellCo
     city: profile ? pickCity(profile, workshopLink?.city) : workshopLink?.city ?? null,
     coreProfileUrl: getDasmProfileSecurityUrl(),
     workshopProfileHref: workshopLink?.profileHref ?? null,
+    workshopPublicHref: workshopLink?.publicHref ?? null,
     workshopWelcome:
       isWorkshopOp && workshopLink
         ? {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -13,6 +13,7 @@ import {
   Landmark,
   LayoutDashboard,
   MapPin,
+  Palette,
   Settings,
   Shield,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import {
   saveWorkshopProfileAction,
 } from "@/app/actions/workshop-management";
 import { WorkshopNavPreferencesPanel } from "@/components/workshop/WorkshopNavPreferencesPanel";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import { parseHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
 import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEditor";
@@ -37,15 +39,17 @@ type TabId =
   | "showcase"
   | "verification"
   | "security"
-  | "notifications";
+  | "notifications"
+  | "appearance";
 
 const TABS: { id: TabId; label: string; icon: typeof Settings }[] = [
   { id: "general", label: "عام", icon: Settings },
-  { id: "branding", label: "الورشة", icon: Building2 },
+  { id: "branding", label: "البروفايل والشعار", icon: Building2 },
   { id: "showcase", label: "معرض الأعمال", icon: Images },
-  { id: "verification", label: "التوثيق والبنك", icon: Landmark },
+  { id: "verification", label: "التوثيق", icon: Landmark },
   { id: "security", label: "الأمان", icon: Shield },
   { id: "notifications", label: "الإشعارات", icon: Bell },
+  { id: "appearance", label: "المظهر", icon: Palette },
 ];
 
 function tabButtonClass(active: boolean) {
@@ -57,20 +61,36 @@ function tabButtonClass(active: boolean) {
   ].join(" ");
 }
 
+function initialTabFromHash(): TabId {
+  if (typeof window === "undefined") return "general";
+  const hash = window.location.hash.replace(/^#/, "");
+  if ((TABS as { id: string }[]).some((t) => t.id === hash)) {
+    return hash as TabId;
+  }
+  return "general";
+}
+
 export function WorkshopProfileHub({
   workshopId,
   workshopSlug,
   workshop,
+  embeddedInSettings = false,
 }: {
   workshopId: string;
   workshopSlug: string;
   workshop: Workshop;
+  /** عند الدمج داخل /settings — بدون شريط عودة منفصل */
+  embeddedInSettings?: boolean;
 }) {
   const [tab, setTab] = useState<TabId>("general");
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
   const [kycMsg, setKycMsg] = useState<string | null>(null);
   const [profilePending, startProfile] = useTransition();
   const [kycPending, startKyc] = useTransition();
+
+  useEffect(() => {
+    setTab(initialTabFromHash());
+  }, []);
 
   const kyc = evaluateWorkshopKyc({
     ownerUserId: workshop.ownerUserId,
@@ -87,20 +107,33 @@ export function WorkshopProfileHub({
   const dashboardHref = `/workshop?workshop_id=${workshopId}`;
   const inspectPublicHref = `/workshops/${workshopSlug}`;
 
+  const visibleTabs = embeddedInSettings
+    ? TABS
+    : TABS.filter((t) => t.id !== "appearance");
+
+  function selectTab(next: TabId) {
+    setTab(next);
+    if (typeof window !== "undefined" && embeddedInSettings) {
+      window.history.replaceState(null, "", `#${next}`);
+    }
+  }
+
   return (
     <div className="space-y-6" dir="rtl">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href={dashboardHref}
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
-          لوحة تشغيل الورشة
-        </Link>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          إدارة ملف الورشة — منفصل عن لوحة المعرض على منصة داسم الأم
-        </p>
-      </div>
+      {!embeddedInSettings ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href={dashboardHref}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            لوحة تشغيل الورشة
+          </Link>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            إدارة ملف الورشة — منفصل عن لوحة المعرض على منصة داسم الأم
+          </p>
+        </div>
+      ) : null}
 
       {/* ── غلاف + شعار (نمط المعرض) ── */}
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
@@ -115,7 +148,7 @@ export function WorkshopProfileHub({
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-slate-300">
               <Camera className="mb-2 h-8 w-8 opacity-70" aria-hidden />
-              <p className="text-xs">أضف صورة الغلاف من تبويب «الورشة»</p>
+              <p className="text-xs">أضف صورة الغلاف من تبويب «البروفايل والشعار»</p>
             </div>
           )}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
@@ -194,10 +227,10 @@ export function WorkshopProfileHub({
             المتبقي: {kyc.missing.join(" · ")} —{" "}
             <button
               type="button"
-              onClick={() => setTab("verification")}
+              onClick={() => selectTab("verification")}
               className="font-semibold underline"
             >
-              انتقل إلى التوثيق والبنك
+              انتقل إلى التوثيق
             </button>
           </p>
           {!workshop.ownerUserId && (
@@ -210,16 +243,16 @@ export function WorkshopProfileHub({
 
       <nav
         className="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
-        aria-label="أقسام ملف الورشة"
+        aria-label="أقسام إعدادات الورشة"
       >
         <div className="flex min-w-max gap-1">
-          {TABS.map((item) => {
+          {visibleTabs.map((item) => {
             const Icon = item.icon;
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setTab(item.id)}
+                onClick={() => selectTab(item.id)}
                 className={tabButtonClass(tab === item.id)}
               >
                 <Icon className="h-4 w-4 shrink-0" aria-hidden />
@@ -279,7 +312,7 @@ export function WorkshopProfileHub({
           <div className="space-y-5">
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                البانر والشعار والملف العام
+                البروفايل والشعار والصفحة العامة
               </h2>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 يظهر على السوق الكبير وصفحة الورشة العامة — نفس فكرة غلاف وشعار المعرض.
@@ -418,7 +451,7 @@ export function WorkshopProfileHub({
           <div className="space-y-5">
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                التحقق والصرف (KYC + حساب بنكي)
+                التوثيق والتحقق (KYC + حساب بنكي)
               </h2>
             </div>
             <form
@@ -519,6 +552,21 @@ export function WorkshopProfileHub({
               إعدادات الإشعارات على داسم
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
+          </div>
+        )}
+
+        {tab === "appearance" && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">المظهر</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              الوضع الداكن أو الفاتح لهذه اللوحة.
+            </p>
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                الوضع الداكن / الفاتح
+              </span>
+              <ThemeToggle className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-800 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700" />
+            </div>
           </div>
         )}
       </div>

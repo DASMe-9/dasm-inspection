@@ -4,6 +4,6 @@ export type WorkshopSidebarProfileLink = {
   name: string;
   workshopId: string;
   city: string;
-  /** مركز إعدادات ملف الورشة */
+  /** صفحة الإعدادات الموحّدة (ملف الورشة سابقاً) */
   profileHref: string;
 };

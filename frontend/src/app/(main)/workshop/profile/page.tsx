@@ -1,17 +1,10 @@
-import { WorkshopProfileHub } from "@/components/workshop/WorkshopProfileHub";
-import { requireWorkshopPage } from "@/lib/auth/resolve-workshop-page.server";
+import { redirect } from "next/navigation";
 
 type Props = { searchParams: Promise<{ workshop_id?: string }> };
 
-export default async function WorkshopProfilePage({ searchParams }: Props) {
+/** مسار قديم — يُحوّل إلى صفحة الإعدادات الموحّدة. */
+export default async function WorkshopProfileRedirectPage({ searchParams }: Props) {
   const sp = await searchParams;
-  const { workshop, workshopId } = await requireWorkshopPage(sp.workshop_id);
-
-  return (
-    <WorkshopProfileHub
-      workshopId={workshopId}
-      workshopSlug={workshop.slug}
-      workshop={workshop}
-    />
-  );
+  const q = sp.workshop_id ? `?workshop_id=${sp.workshop_id}` : "";
+  redirect(`/settings${q}`);
 }
