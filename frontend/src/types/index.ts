@@ -113,6 +113,8 @@ export interface Workshop {
   whatsapp?: string;
   instagram?: string;
   mapLink?: string;
+  /** رمز العنوان الوطني (واصل) — يولّد رابط الموقع/الخرائط. */
+  nationalAddressCode?: string;
   workingHours?: string;
   commercialRegistration?: string;
   bankIban?: string;

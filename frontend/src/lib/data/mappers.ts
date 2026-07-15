@@ -37,6 +37,7 @@ type DbWorkshop = {
   whatsapp?: string | null;
   instagram?: string | null;
   map_link?: string | null;
+  national_address_code?: string | null;
   working_hours?: string | null;
   commercial_registration?: string | null;
   bank_iban?: string | null;
@@ -162,6 +163,7 @@ export function mapWorkshop(row: DbWorkshop): Workshop {
     whatsapp: row.whatsapp ?? undefined,
     instagram: row.instagram ?? undefined,
     mapLink: row.map_link ?? undefined,
+    nationalAddressCode: row.national_address_code ?? undefined,
     workingHours: row.working_hours ?? undefined,
     commercialRegistration: row.commercial_registration ?? undefined,
     bankIban: row.bank_iban ?? undefined,

@@ -20,6 +20,8 @@ import {
   saveWorkshopProfileAction,
 } from "@/app/actions/workshop-management";
 import { WorkshopNavPreferencesPanel } from "@/components/workshop/WorkshopNavPreferencesPanel";
+import { WorkshopLocationFields } from "@/components/workshop/WorkshopLocationFields";
+import { WorkshopMediaUploadField } from "@/components/workshop/WorkshopMediaUploadField";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import { parseHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
@@ -27,6 +29,7 @@ import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEd
 import { getDasmProfileSecurityUrl } from "@/lib/platform-urls";
 import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import type { Workshop } from "@/types";
+import { useRouter } from "next/navigation";
 
 type TabId =
   | "branding"
@@ -80,10 +83,18 @@ export function WorkshopProfileHub({
   const [kycMsg, setKycMsg] = useState<string | null>(null);
   const [profilePending, startProfile] = useTransition();
   const [kycPending, startKyc] = useTransition();
+  const [logoUrl, setLogoUrl] = useState(workshop.logoUrl ?? "");
+  const [coverUrl, setCoverUrl] = useState(workshop.coverUrl ?? "");
+  const router = useRouter();
 
   useEffect(() => {
     setTab(initialTabFromHash());
   }, []);
+
+  useEffect(() => {
+    setLogoUrl(workshop.logoUrl ?? "");
+    setCoverUrl(workshop.coverUrl ?? "");
+  }, [workshop.logoUrl, workshop.coverUrl]);
 
   const kyc = evaluateWorkshopKyc({
     ownerUserId: workshop.ownerUserId,
@@ -126,10 +137,10 @@ export function WorkshopProfileHub({
       {/* ── غلاف + شعار (نمط المعرض) ── */}
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <div className="relative h-40 bg-gradient-to-br from-[#0B1E3A] to-[#1E3A5F] md:h-48">
-          {workshop.coverUrl ? (
+          {coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={workshop.coverUrl}
+              src={coverUrl}
               alt=""
               className="h-full w-full object-cover"
             />
@@ -146,10 +157,10 @@ export function WorkshopProfileHub({
           <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-4">
               <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-white bg-slate-100 shadow-md dark:border-slate-900 dark:bg-slate-800">
-                {workshop.logoUrl ? (
+                {logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={workshop.logoUrl}
+                    src={logoUrl}
                     alt=""
                     className="h-full w-full object-cover"
                   />
@@ -251,24 +262,28 @@ export function WorkshopProfileHub({
                   placeholder="خبرة الورشة، التخصص، عدد المسارات…"
                 />
               </label>
-              <label className="block">
-                <span className="text-sm text-slate-600 dark:text-slate-400">رابط الشعار (URL)</span>
-                <input
-                  name="logo_url"
-                  defaultValue={workshop.logoUrl ?? ""}
-                  dir="ltr"
-                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-left dark:border-slate-600 dark:bg-slate-800"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm text-slate-600 dark:text-slate-400">رابط الغلاف (URL)</span>
-                <input
-                  name="cover_url"
-                  defaultValue={workshop.coverUrl ?? ""}
-                  dir="ltr"
-                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-left dark:border-slate-600 dark:bg-slate-800"
-                />
-              </label>
+              <WorkshopMediaUploadField
+                workshopId={workshopId}
+                workshopSlug={workshopSlug}
+                kind="logo"
+                label="الشعار"
+                value={logoUrl}
+                onUploaded={(url) => {
+                  setLogoUrl(url);
+                  router.refresh();
+                }}
+              />
+              <WorkshopMediaUploadField
+                workshopId={workshopId}
+                workshopSlug={workshopSlug}
+                kind="cover"
+                label="صورة الغلاف"
+                value={coverUrl}
+                onUploaded={(url) => {
+                  setCoverUrl(url);
+                  router.refresh();
+                }}
+              />
               <label className="block">
                 <span className="text-sm text-slate-600 dark:text-slate-400">واتساب</span>
                 <input
@@ -289,15 +304,12 @@ export function WorkshopProfileHub({
                   placeholder="@workshop"
                 />
               </label>
-              <label className="block md:col-span-2">
-                <span className="text-sm text-slate-600 dark:text-slate-400">رابط الخريطة</span>
-                <input
-                  name="map_link"
-                  defaultValue={workshop.mapLink ?? ""}
-                  dir="ltr"
-                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-left dark:border-slate-600 dark:bg-slate-800"
+              <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
+                <WorkshopLocationFields
+                  initialNationalAddress={workshop.nationalAddressCode}
+                  initialMapLink={workshop.mapLink}
                 />
-              </label>
+              </div>
               <label className="block md:col-span-2">
                 <span className="text-sm text-slate-600 dark:text-slate-400">ساعات العمل</span>
                 <input
@@ -317,17 +329,6 @@ export function WorkshopProfileHub({
                 <span className="text-sm text-slate-700 dark:text-slate-300">
                   إبراز الورشة في الدليل (برنامج/مسابقة)
                 </span>
-              </label>
-              <label className="block md:col-span-2">
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  تسمية البرنامج المميز (اختياري)
-                </span>
-                <input
-                  name="featured_program_label"
-                  defaultValue={workshop.featuredProgramLabel ?? ""}
-                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
-                  placeholder="مثال: مسابقة فحص الشتاء · برنامج الشركاء الذهبي"
-                />
               </label>
 
               <div className="md:col-span-2">
