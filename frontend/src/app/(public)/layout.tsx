@@ -1,6 +1,5 @@
 import { cookies, headers } from "next/headers";
 import { PublicSiteHeader, PublicSiteFooter } from "@/components/public-site";
-import { PUBLIC_BRAND } from "@/components/public-site/brand-tokens";
 import { AppShell } from "@/components/shared";
 import {
   resolveInspectionPersona,
@@ -38,11 +37,10 @@ export default async function PublicSiteLayout({
     );
   }
 
-  // زائر غير مسجّل: الموقع العام (هيدر + فوتر تسويقي).
+  // زائر غير مسجّل: الموقع العام يتبع ثيم html.dark (لا نفرض خلفية بيضاء).
   return (
     <div
-      className="min-h-screen flex flex-col"
-      style={{ background: PUBLIC_BRAND.white }}
+      className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-[var(--background)] dark:text-[var(--foreground)]"
       dir="rtl"
     >
       <PublicSiteHeader />
