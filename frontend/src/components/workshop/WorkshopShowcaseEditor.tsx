@@ -48,10 +48,10 @@ function UrlListEditor({
   };
 
   return (
-    <div className="space-y-3 rounded-xl border border-gray-100 bg-gray-50/50 p-4">
+    <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50">
       <div>
-        <h3 className="text-sm font-bold text-gray-900">{title}</h3>
-        <p className="mt-1 text-xs text-gray-500">{hint}</p>
+        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{title}</h3>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -74,12 +74,12 @@ function UrlListEditor({
         </button>
       </div>
 
-      <p className="text-[11px] text-gray-400">
+      <p className="text-[11px] text-slate-400 dark:text-slate-500">
         {items.length} / {max} — الصور عبر رابط (Cloudinary أو أي استضافة صور)
       </p>
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-gray-200 bg-white px-3 py-6 text-center text-xs text-gray-400">
+        <p className="rounded-lg border border-dashed border-slate-300 bg-white px-3 py-6 text-center text-xs text-slate-400 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-500">
           لا توجد صور بعد
         </p>
       ) : (
@@ -87,7 +87,7 @@ function UrlListEditor({
           {items.map((url, index) => (
             <li
               key={`${url}-${index}`}
-              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-2"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900"
             >
               <img
                 src={url}
@@ -99,7 +99,7 @@ function UrlListEditor({
                 target="_blank"
                 rel="noopener noreferrer"
                 dir="ltr"
-                className="min-w-0 flex-1 truncate text-xs text-violet-700 hover:underline"
+                className="min-w-0 flex-1 truncate text-xs text-violet-700 hover:underline dark:text-violet-300"
               >
                 {url}
               </a>
@@ -108,7 +108,7 @@ function UrlListEditor({
                   type="button"
                   onClick={() => onChange(moveItem(items, index, -1))}
                   disabled={index === 0}
-                  className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                  className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 disabled:opacity-30"
                   aria-label="تحريك لأعلى"
                 >
                   <ArrowUp className="h-4 w-4" />
@@ -117,7 +117,7 @@ function UrlListEditor({
                   type="button"
                   onClick={() => onChange(moveItem(items, index, 1))}
                   disabled={index === items.length - 1}
-                  className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                  className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 disabled:opacity-30"
                   aria-label="تحريك لأسفل"
                 >
                   <ArrowDown className="h-4 w-4" />
@@ -125,7 +125,7 @@ function UrlListEditor({
                 <button
                   type="button"
                   onClick={() => onChange(items.filter((_, i) => i !== index))}
-                  className="rounded p-1 text-red-600 hover:bg-red-50"
+                  className="rounded p-1 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
                   aria-label="حذف"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -162,11 +162,11 @@ function VideoListEditor({
   };
 
   return (
-    <div className="space-y-3 rounded-xl border border-gray-100 bg-gray-50/50 p-4">
+    <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h3 className="text-sm font-bold text-gray-900">تثقيفي — إصلاحات مميزة بالفيديو</h3>
-          <p className="mt-1 text-xs text-gray-500">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">تثقيفي — إصلاحات مميزة بالفيديو</h3>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             فيديوهات قصيرة تشرح إصلاحات مميزة (يوتيوب أو رابط مباشر) — تظهر في السوق الكبير وملف الورشة.
           </p>
         </div>
@@ -174,7 +174,7 @@ function VideoListEditor({
           type="button"
           onClick={add}
           disabled={items.length >= WORKSHOP_SHOWCASE_LIMITS.videos}
-          className="inline-flex items-center gap-1 rounded-lg border border-violet-200 bg-white px-3 py-2 text-xs font-bold text-violet-800 disabled:opacity-50"
+          className="inline-flex items-center gap-1 rounded-lg border border-violet-200 bg-white px-3 py-2 text-xs font-bold text-violet-800 disabled:opacity-50 dark:border-violet-800 dark:bg-slate-900 dark:text-violet-200"
         >
           <Plus className="h-4 w-4" />
           إضافة فيديو
@@ -182,7 +182,7 @@ function VideoListEditor({
       </div>
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-gray-200 bg-white px-3 py-6 text-center text-xs text-gray-400">
+        <p className="rounded-lg border border-dashed border-slate-300 bg-white px-3 py-6 text-center text-xs text-slate-400 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-500">
           أضف فيديو تثقيفي لتمييز ورشتك
         </p>
       ) : (
@@ -190,16 +190,16 @@ function VideoListEditor({
           {items.map((video, index) => (
             <li
               key={video.id}
-              className="space-y-3 rounded-xl border border-gray-200 bg-white p-4"
+              className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-bold text-gray-500">فيديو {index + 1}</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">فيديو {index + 1}</span>
                 <div className="flex gap-1">
                   <button
                     type="button"
                     onClick={() => onChange(moveItem(items, index, -1))}
                     disabled={index === 0}
-                    className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                    className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 disabled:opacity-30"
                   >
                     <ArrowUp className="h-4 w-4" />
                   </button>
@@ -207,21 +207,21 @@ function VideoListEditor({
                     type="button"
                     onClick={() => onChange(moveItem(items, index, 1))}
                     disabled={index === items.length - 1}
-                    className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                    className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 disabled:opacity-30"
                   >
                     <ArrowDown className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => onChange(items.filter((v) => v.id !== video.id))}
-                    className="rounded p-1 text-red-600 hover:bg-red-50"
+                    className="rounded p-1 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
               <label className="block">
-                <span className="text-xs text-gray-600">عنوان الفيديو *</span>
+                <span className="text-xs text-slate-600 dark:text-slate-400">عنوان الفيديو *</span>
                 <input
                   value={video.title}
                   onChange={(e) =>
@@ -231,12 +231,12 @@ function VideoListEditor({
                       )
                     )
                   }
-                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                   placeholder="مثال: إصلاح علبة الفيوس الكامل"
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-gray-600">وصف قصير</span>
+                <span className="text-xs text-slate-600 dark:text-slate-400">وصف قصير</span>
                 <textarea
                   value={video.description ?? ""}
                   onChange={(e) =>
@@ -248,11 +248,11 @@ function VideoListEditor({
                       )
                     )
                   }
-                  className="mt-1 min-h-[64px] w-full rounded-lg border px-3 py-2 text-sm"
+                  className="mt-1 min-h-[64px] w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-gray-600">رابط الفيديو *</span>
+                <span className="text-xs text-slate-600 dark:text-slate-400">رابط الفيديو *</span>
                 <input
                   value={video.videoUrl}
                   onChange={(e) =>
@@ -263,12 +263,12 @@ function VideoListEditor({
                     )
                   }
                   dir="ltr"
-                  className="mt-1 w-full rounded-lg border px-3 py-2 text-left text-sm"
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                   placeholder="https://youtube.com/watch?v=..."
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-gray-600">صورة مصغّرة (اختياري)</span>
+                <span className="text-xs text-slate-600 dark:text-slate-400">صورة مصغّرة (اختياري)</span>
                 <input
                   value={video.thumbnailUrl ?? ""}
                   onChange={(e) =>
@@ -281,7 +281,7 @@ function VideoListEditor({
                     )
                   }
                   dir="ltr"
-                  className="mt-1 w-full rounded-lg border px-3 py-2 text-left text-sm"
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                   placeholder="https://..."
                 />
               </label>
@@ -325,9 +325,9 @@ export function WorkshopShowcaseEditor({
   );
 
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-1 text-lg font-bold text-gray-900">معرض الورشة والمحتوى التثقيفي</h2>
-      <p className="mb-5 text-sm text-gray-500">
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <h2 className="mb-1 text-lg font-bold text-slate-900 dark:text-slate-100">معرض الورشة والمحتوى التثقيفي</h2>
+      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
         يظهر في <strong>السوق الكبير</strong> على dasm.com.sa وفي ملف الورشة العام — مثل معرض
         سيارات المعرض لكن بصور الورشة وإصلاحاتها وفيديوهاتها.
       </p>
@@ -388,7 +388,7 @@ export function WorkshopShowcaseEditor({
             {pending ? "جاري الحفظ…" : "حفظ المعرض والفيديوهات"}
           </button>
           {message && (
-            <p className="mt-2 text-xs text-gray-600" role="status">
+            <p className="mt-2 text-xs text-slate-600 dark:text-slate-400" role="status">
               {message}
             </p>
           )}

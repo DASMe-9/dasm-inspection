@@ -29,7 +29,7 @@ export function WorkshopExportPanel({ workshopId }: { workshopId: string }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         تنزيل ملف CSV بترميز UTF-8 (متوافق مع Excel). يتطلّب تسجيل دخول بنفس
         صلاحية لوحة الورشة.
       </p>
@@ -43,8 +43,10 @@ export function WorkshopExportPanel({ workshopId }: { workshopId: string }) {
               <SectionCard>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-gray-900">{item.title}</p>
-                    <p className="mt-1 text-xs text-gray-600">
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">
+                      {item.title}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
                       {item.description}
                     </p>
                   </div>

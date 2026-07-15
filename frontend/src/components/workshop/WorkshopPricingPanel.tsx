@@ -6,6 +6,7 @@ import {
   formatInspectionPriceSar,
   pricingLabelAr,
 } from "@/lib/inspection-pricing";
+import { workshopUi } from "@/lib/workshop-ui";
 import type { WorkshopPricingOverride } from "@/types/workshop-management";
 
 export function WorkshopPricingPanel({
@@ -22,7 +23,7 @@ export function WorkshopPricingPanel({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4 text-sm text-amber-900">
+      <section className={workshopUi.callout}>
         <p className="font-semibold">أسعار المنصّة (مرجع)</p>
         <ul className="mt-2 space-y-1">
           <li>
@@ -38,13 +39,13 @@ export function WorkshopPricingPanel({
               : "—"}
           </li>
         </ul>
-        <p className="mt-2 text-xs text-amber-800/80">
+        <p className={workshopUi.calloutHint}>
           اترك الحقل فارغًا لاستخدام سعر المنصّة الافتراضي لتلك الخدمة.
         </p>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-lg font-bold text-gray-900">أسعار الورشة</h2>
+      <section className={workshopUi.card}>
+        <h2 className={workshopUi.cardTitle}>أسعار الورشة</h2>
         <form
           className="grid max-w-md gap-4"
           action={async (fd) => {
@@ -60,7 +61,7 @@ export function WorkshopPricingPanel({
           <input type="hidden" name="currency" value={pricing.currency} />
 
           <label className="block">
-            <span className="text-xs font-medium text-gray-600">
+            <span className={workshopUi.label}>
               {pricingLabelAr("workshop")} (ريال)
             </span>
             <input
@@ -69,7 +70,7 @@ export function WorkshopPricingPanel({
               min={0}
               step="0.01"
               defaultValue={pricing.workshopSar ?? ""}
-              className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+              className={workshopUi.input}
               placeholder={
                 pricing.platformWorkshopSar != null
                   ? String(pricing.platformWorkshopSar)
@@ -79,7 +80,7 @@ export function WorkshopPricingPanel({
           </label>
 
           <label className="block">
-            <span className="text-xs font-medium text-gray-600">
+            <span className={workshopUi.label}>
               {pricingLabelAr("field")} (ريال)
             </span>
             <input
@@ -88,7 +89,7 @@ export function WorkshopPricingPanel({
               min={0}
               step="0.01"
               defaultValue={pricing.fieldSar ?? ""}
-              className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+              className={workshopUi.input}
               placeholder={
                 pricing.platformFieldSar != null
                   ? String(pricing.platformFieldSar)
@@ -100,13 +101,13 @@ export function WorkshopPricingPanel({
           <button
             type="submit"
             disabled={pending}
-            className="rounded-xl bg-[#1E74E8] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1857b8] disabled:opacity-60"
+            className={workshopUi.primaryBtn}
           >
             {pending ? "جارٍ الحفظ…" : "حفظ الأسعار"}
           </button>
         </form>
         {message && (
-          <p className="mt-3 text-sm text-gray-600" role="status">
+          <p className={`mt-3 ${workshopUi.muted}`} role="status">
             {message}
           </p>
         )}
