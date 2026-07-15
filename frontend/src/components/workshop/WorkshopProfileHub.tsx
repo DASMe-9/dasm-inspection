@@ -229,14 +229,6 @@ export function WorkshopProfileHub({
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 md:p-6">
         {tab === "branding" && (
           <div className="space-y-5">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                البروفايل والشعار والصفحة العامة
-              </h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                يظهر على السوق الكبير وصفحة الورشة العامة — نفس فكرة غلاف وشعار المعرض.
-              </p>
-            </div>
             <form
               className="grid gap-4 md:grid-cols-2"
               action={(fd) => {
