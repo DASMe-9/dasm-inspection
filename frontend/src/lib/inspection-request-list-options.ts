@@ -40,6 +40,8 @@ export type ListInspectionRequestsQueryOptions = {
   serviceMode?: InspectionServiceMode;
   /** فلترة طلبات مُسنَدة لمفتش (من سياق JWT — لا يُقرأ من URL). */
   inspectorId?: string;
+  /** حد أقصى لعدد الصفوف (لوحة الورشة / القوائم المختصرة). */
+  limit?: number;
 };
 
 export const INSPECTION_SERVICE_MODE_LABELS: Record<

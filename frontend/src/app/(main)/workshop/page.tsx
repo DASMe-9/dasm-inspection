@@ -9,12 +9,9 @@ import {
 import { getWorkshopDashboardAccess } from "@/lib/auth/workshop-dashboard.server";
 import { resolveInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
 import {
-  getWorkshop,
-  listInspectionRequests,
   listWorkshops,
-  getInspectorsForWorkshop,
 } from "@/lib/data/inspection";
-import { getWorkshopDashboardStats } from "@/lib/data/workshop-dashboard-data";
+import { loadWorkshopDashboardBundle } from "@/lib/data/workshop-dashboard-data";
 import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import { WorkshopManageNav } from "@/components/workshop/WorkshopManageNav";
 import { WalkInInspectionCard } from "@/components/workshop/WalkInInspectionCard";
@@ -121,8 +118,10 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     );
   }
 
-  const workshop = await getWorkshop(workshopId);
-  if (!workshop) {
+  const bundle = await loadWorkshopDashboardBundle(workshopId, {
+    includeInspectors: isWorkshopOperatorRole(access.persona),
+  });
+  if (!bundle) {
     return (
       <SectionCard>
         <EmptyState
@@ -133,13 +132,8 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     );
   }
 
-  const [stats, recent, workshopInspectors] = await Promise.all([
-    getWorkshopDashboardStats(workshopId),
-    listInspectionRequests({ workshopId, sort: "updated_desc" }),
-    isWorkshopOperatorRole(access.persona)
-      ? getInspectorsForWorkshop(workshopId)
-      : Promise.resolve([]),
-  ]);
+  const { workshop, stats, recent: recentSlice, inspectors: workshopInspectors } =
+    bundle;
 
   const kyc = evaluateWorkshopKyc({
     ownerUserId: workshop.ownerUserId,
@@ -148,7 +142,6 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     bankBeneficiaryName: workshop.bankBeneficiaryName,
   });
 
-  const recentSlice = recent.slice(0, 6);
   const manageQ = `?workshop_id=${workshopId}`;
 
   return (
