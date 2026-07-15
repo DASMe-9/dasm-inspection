@@ -23,7 +23,6 @@ import { WorkshopMediaUploadField } from "@/components/workshop/WorkshopMediaUpl
 import { WorkshopPasswordChangeForm } from "@/components/workshop/WorkshopPasswordChangeForm";
 import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEditor";
 import { getDasmProfileSecurityUrl } from "@/lib/platform-urls";
-import { evaluateWorkshopKyc } from "@/lib/workshop-kyc";
 import type { Workshop } from "@/types";
 import { useRouter } from "next/navigation";
 
@@ -89,13 +88,6 @@ export function WorkshopProfileHub({
     setLogoUrl(workshop.logoUrl ?? "");
     setCoverUrl(workshop.coverUrl ?? "");
   }, [workshop.logoUrl, workshop.coverUrl]);
-
-  const kyc = evaluateWorkshopKyc({
-    ownerUserId: workshop.ownerUserId,
-    commercialRegistration: workshop.commercialRegistration,
-    bankIban: workshop.bankIban,
-    bankBeneficiaryName: workshop.bankBeneficiaryName,
-  });
 
   const coreProfileUrl = useMemo(() => getDasmProfileSecurityUrl(), []);
   const dashboardHref = `/workshop?workshop_id=${workshopId}`;
@@ -183,27 +175,6 @@ export function WorkshopProfileHub({
           </div>
         </div>
       </section>
-
-      {!kyc.complete && (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-          <p className="font-semibold">أكمل ملف الورشة والتحقق (KYC)</p>
-          <p className="mt-1 text-xs">
-            المتبقي: {kyc.missing.join(" · ")} —{" "}
-            <button
-              type="button"
-              onClick={() => selectTab("verification")}
-              className="font-semibold underline"
-            >
-              انتقل إلى التوثيق
-            </button>
-          </p>
-          {!workshop.ownerUserId && (
-            <p className="mt-2 text-xs">
-              لم يُربط حساب المالك بعد — تأكد أن طلب الانضمام أُرسل بحساب داسم نفسه.
-            </p>
-          )}
-        </section>
-      )}
 
       <nav
         className="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
