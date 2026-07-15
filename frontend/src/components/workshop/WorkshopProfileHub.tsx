@@ -22,6 +22,7 @@ import {
 import { WorkshopNavPreferencesPanel } from "@/components/workshop/WorkshopNavPreferencesPanel";
 import { WorkshopLocationFields } from "@/components/workshop/WorkshopLocationFields";
 import { WorkshopMediaUploadField } from "@/components/workshop/WorkshopMediaUploadField";
+import { WorkshopPasswordChangeForm } from "@/components/workshop/WorkshopPasswordChangeForm";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import { parseHiddenNavKeys } from "@/lib/auth/workshop-nav-preferences";
@@ -427,25 +428,7 @@ export function WorkshopProfileHub({
           </div>
         )}
 
-        {tab === "security" && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">الأمان وكلمة المرور</h2>
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-              حسابك موحّد عبر منصة داسم الأم. تغيير كلمة المرور، المصادقة الثنائية، وجلسات
-              الدخول تُدار من ملفك الشخصي على المنصة الأم — لا نكرّر نظام أمان منفصل هنا.
-            </p>
-            <a
-              href={coreProfileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#1e3a5f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#16304f]"
-            >
-              <Shield className="h-4 w-4" aria-hidden />
-              فتح الأمان على منصة داسم
-              <ExternalLink className="h-4 w-4" aria-hidden />
-            </a>
-          </div>
-        )}
+        {tab === "security" && <WorkshopPasswordChangeForm />}
 
         {tab === "notifications" && (
           <div className="space-y-4">
