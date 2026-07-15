@@ -24,7 +24,7 @@ export function WorkshopFieldMapPanel({
   return (
     <div className="space-y-4">
       <SectionCard title="خريطة التشغيل الميداني">
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
           المواقع ذات الإحداثيات تظهر على الخريطة. باقي الطلبات تفتح عبر بحث
           OpenStreetMap حسب العنوان ({workshopCity}).
         </p>
@@ -32,7 +32,7 @@ export function WorkshopFieldMapPanel({
         {primary &&
           primary.fieldServiceLat != null &&
           primary.fieldServiceLng != null && (
-            <div className="mb-4 overflow-hidden rounded-xl border border-gray-200">
+            <div className="mb-4 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
               <iframe
                 title={`خريطة — ${primary.vehicleLabel}`}
                 src={openStreetMapEmbedUrl(
@@ -42,7 +42,7 @@ export function WorkshopFieldMapPanel({
                 className="h-64 w-full border-0 md:h-80"
                 loading="lazy"
               />
-              <p className="bg-gray-50 px-3 py-2 text-xs text-gray-600">
+              <p className="bg-slate-50 px-3 py-2 text-xs text-slate-600 dark:bg-slate-800/70 dark:text-slate-400">
                 معاينة: {primary.vehicleLabel} —{" "}
                 <a
                   href={openStreetMapPinUrl(
@@ -60,7 +60,7 @@ export function WorkshopFieldMapPanel({
           )}
 
         {requests.length === 0 ? (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             لا توجد طلبات ميدانية بعنوان خدمة بعد.
           </p>
         ) : (
@@ -68,11 +68,11 @@ export function WorkshopFieldMapPanel({
             {withCoords.map((r) => (
               <li
                 key={r.id}
-                className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-emerald-100 bg-emerald-50/30 px-4 py-3"
+                className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-emerald-200/80 bg-emerald-50/40 px-4 py-3 dark:border-emerald-800/50 dark:bg-emerald-950/30"
               >
                 <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-900">
-                    <MapPin className="h-4 w-4 shrink-0 text-emerald-700" aria-hidden />
+                  <p className="flex items-center gap-1.5 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    <MapPin className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden />
                     <Link
                       href={`/requests/${r.id}`}
                       className="hover:text-[#1857b8] hover:underline"
@@ -80,10 +80,10 @@ export function WorkshopFieldMapPanel({
                       {r.vehicleLabel}
                     </Link>
                   </p>
-                  <p className="mt-0.5 text-xs text-gray-600 truncate">
+                  <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 truncate">
                     {r.fieldServiceAddress}
                   </p>
-                  <p className="mt-1 font-mono text-[11px] text-gray-500">
+                  <p className="mt-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">
                     {r.fieldServiceLat}, {r.fieldServiceLng}
                   </p>
                 </div>
@@ -96,7 +96,7 @@ export function WorkshopFieldMapPanel({
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:underline"
                   >
                     <Navigation className="h-3.5 w-3.5" aria-hidden />
                     الخريطة
@@ -107,10 +107,10 @@ export function WorkshopFieldMapPanel({
             {addressOnly.map((r) => (
               <li
                 key={r.id}
-                className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-gray-100 bg-white px-4 py-3"
+                className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                     <Link
                       href={`/requests/${r.id}`}
                       className="hover:text-[#1857b8] hover:underline"
@@ -118,10 +118,10 @@ export function WorkshopFieldMapPanel({
                       {r.vehicleLabel}
                     </Link>
                   </p>
-                  <p className="mt-0.5 text-xs text-gray-600">
+                  <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
                     {r.fieldServiceAddress}
                   </p>
-                  <p className="mt-1 text-[11px] text-amber-800">
+                  <p className="mt-1 text-[11px] text-amber-800 dark:text-amber-300">
                     أضف إحداثيات من التقويم لإظهار الدبوس على الخريطة.
                   </p>
                 </div>

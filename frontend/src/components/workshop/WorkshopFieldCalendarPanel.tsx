@@ -59,7 +59,7 @@ export function WorkshopFieldCalendarPanel({
   return (
     <SectionCard title="تقويم الزيارات الميدانية">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-gray-600 flex items-center gap-2">
+        <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
           <Calendar className="h-4 w-4 text-violet-600" aria-hidden />
           عرض أسبوع — يمكن ضبط موعد الزيارة وإحداثيات اختيارية لكل طلب.
         </p>
@@ -67,7 +67,7 @@ export function WorkshopFieldCalendarPanel({
           <button
             type="button"
             onClick={() => shiftWeek(-1)}
-            className="rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+            className="rounded-lg border border-slate-200 p-2 hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800"
             aria-label="الأسبوع السابق"
           >
             <ChevronRight className="h-4 w-4" aria-hidden />
@@ -75,7 +75,7 @@ export function WorkshopFieldCalendarPanel({
           <button
             type="button"
             onClick={() => shiftWeek(1)}
-            className="rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+            className="rounded-lg border border-slate-200 p-2 hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800"
             aria-label="الأسبوع التالي"
           >
             <ChevronLeft className="h-4 w-4" aria-hidden />
@@ -89,19 +89,19 @@ export function WorkshopFieldCalendarPanel({
           return (
             <div
               key={dayKey}
-              className="rounded-xl border border-gray-100 bg-gray-50/50 px-4 py-3"
+              className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
             >
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {formatDayLabel(dayKey)}
               </p>
               {jobs.length === 0 ? (
-                <p className="mt-2 text-xs text-gray-500">لا زيارات ميدانية.</p>
+                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">لا زيارات ميدانية.</p>
               ) : (
                 <ul className="mt-3 space-y-4">
                   {jobs.map((r) => (
                     <li
                       key={r.id}
-                      className="rounded-lg border border-white bg-white p-3 shadow-sm"
+                      className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
@@ -111,7 +111,7 @@ export function WorkshopFieldCalendarPanel({
                           >
                             {r.vehicleLabel}
                           </Link>
-                          <p className="mt-0.5 text-xs text-gray-500">
+                          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                             {r.fieldServiceAddress}
                           </p>
                         </div>
@@ -127,7 +127,7 @@ export function WorkshopFieldCalendarPanel({
                           value={workshopId}
                         />
                         <input type="hidden" name="request_id" value={r.id} />
-                        <label className="block text-xs text-gray-600 sm:col-span-2">
+                        <label className="block text-xs text-slate-600 dark:text-slate-400 sm:col-span-2">
                           موعد الزيارة
                           <input
                             type="datetime-local"
@@ -139,10 +139,10 @@ export function WorkshopFieldCalendarPanel({
                                   ? r.createdAt
                                   : undefined)
                             )}
-                            className="mt-1 w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
+                            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                           />
                         </label>
-                        <label className="block text-xs text-gray-600">
+                        <label className="block text-xs text-slate-600 dark:text-slate-400">
                           خط العرض
                           <input
                             type="text"
@@ -154,10 +154,10 @@ export function WorkshopFieldCalendarPanel({
                                 ? String(r.fieldServiceLat)
                                 : ""
                             }
-                            className="mt-1 w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
+                            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                           />
                         </label>
-                        <label className="block text-xs text-gray-600">
+                        <label className="block text-xs text-slate-600 dark:text-slate-400">
                           خط الطول
                           <input
                             type="text"
@@ -169,7 +169,7 @@ export function WorkshopFieldCalendarPanel({
                                 ? String(r.fieldServiceLng)
                                 : ""
                             }
-                            className="mt-1 w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
+                            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                           />
                         </label>
                         <div className="flex items-end sm:col-span-2 lg:col-span-4">

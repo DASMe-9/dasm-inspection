@@ -19,7 +19,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 max-w-md mx-auto flex items-center justify-around py-2 px-1 border-t bg-white z-10 text-[11px]"
+      className="fixed bottom-0 left-0 right-0 max-w-md mx-auto flex items-center justify-around py-2 px-1 border-t bg-white z-10 text-[11px] dark:border-slate-700 dark:bg-slate-900"
       style={{ borderTopColor: colors.secondary }}
       dir="rtl"
     >
@@ -33,8 +33,10 @@ export function BottomNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center gap-0.5 py-1.5 px-1.5 rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-              isActive ? "text-white" : "text-gray-600 hover:bg-gray-100"
+              "flex flex-col items-center gap-0.5 py-1.5 px-1.5 rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900",
+              isActive
+                ? "text-white"
+                : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
             )}
             style={isActive ? { backgroundColor: colors.primary } : undefined}
             aria-label={item.label}

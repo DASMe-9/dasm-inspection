@@ -137,7 +137,7 @@ export function WalkInInspectionCard({
                 ))}
               </select>
               {activeInspectors.length === 0 ? (
-                <p className="mt-1 text-xs text-amber-700">
+                <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
                   أضف مفتشاً من «إدارة الفريق» أولاً.
                 </p>
               ) : null}
