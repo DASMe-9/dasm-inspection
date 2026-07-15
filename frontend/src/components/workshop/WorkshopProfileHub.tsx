@@ -116,39 +116,73 @@ export function WorkshopProfileHub({
         </div>
       ) : null}
 
-      {/* ── غلاف + شعار (نمط المعرض) ── */}
+      {/* ── غلاف + شعار (معاينة حية + أزرار الرفع بجانبها) ── */}
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-        <div className="relative h-40 bg-gradient-to-br from-[#0B1E3A] to-[#1E3A5F] md:h-48">
+        <div className="relative h-44 bg-gradient-to-br from-[#0B1E3A] to-[#1E3A5F] md:h-52">
           {coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={coverUrl}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-slate-300">
               <Camera className="mb-2 h-8 w-8 opacity-70" aria-hidden />
-              <p className="text-xs">أضف صورة الغلاف من تبويب «البروفايل والشعار»</p>
+              <p className="text-xs">لا غلاف بعد — اختر صورة من الزر أدناه</p>
             </div>
           )}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
+          {tab === "branding" ? (
+            <div className="absolute bottom-3 left-3 z-10">
+              <WorkshopMediaUploadField
+                workshopId={workshopId}
+                workshopSlug={workshopSlug}
+                kind="cover"
+                label="صورة الغلاف"
+                value={coverUrl}
+                buttonOnly
+                includeHidden={false}
+                onUploaded={(url) => {
+                  setCoverUrl(url);
+                  router.refresh();
+                }}
+              />
+            </div>
+          ) : null}
         </div>
 
         <div className="relative px-5 pb-5 pt-0 md:px-6">
           <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-4">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-white bg-slate-100 shadow-md dark:border-slate-900 dark:bg-slate-800">
-                {logoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={logoUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-white bg-white p-2 shadow-md dark:border-slate-900 dark:bg-slate-800">
+                  {logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={logoUrl}
+                      alt=""
+                      className="h-full w-full object-contain object-center"
+                    />
+                  ) : (
+                    <Building2 className="h-9 w-9 text-[#1E74E8]" aria-hidden />
+                  )}
+                </div>
+                {tab === "branding" ? (
+                  <WorkshopMediaUploadField
+                    workshopId={workshopId}
+                    workshopSlug={workshopSlug}
+                    kind="logo"
+                    label="الشعار"
+                    value={logoUrl}
+                    buttonOnly
+                    includeHidden={false}
+                    onUploaded={(url) => {
+                      setLogoUrl(url);
+                      router.refresh();
+                    }}
                   />
-                ) : (
-                  <Building2 className="h-9 w-9 text-[#1E74E8]" aria-hidden />
-                )}
+                ) : null}
               </div>
               <div className="min-w-0 pb-1">
                 <h1 className="truncate text-xl font-bold text-slate-900 dark:text-white md:text-2xl">
@@ -213,38 +247,14 @@ export function WorkshopProfileHub({
             >
               <input type="hidden" name="workshop_id" value={workshopId} />
               <input type="hidden" name="workshop_slug" value={workshopSlug} />
+              <input type="hidden" name="logo_url" value={logoUrl} />
+              <input type="hidden" name="cover_url" value={coverUrl} />
+              <input
+                type="hidden"
+                name="description"
+                value={workshop.description ?? ""}
+              />
 
-              <label className="block md:col-span-2">
-                <span className="text-sm text-slate-600 dark:text-slate-400">نبذة الورشة</span>
-                <textarea
-                  name="description"
-                  defaultValue={workshop.description ?? ""}
-                  className="mt-1 min-h-[96px] w-full rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
-                  placeholder="خبرة الورشة، التخصص، عدد المسارات…"
-                />
-              </label>
-              <WorkshopMediaUploadField
-                workshopId={workshopId}
-                workshopSlug={workshopSlug}
-                kind="logo"
-                label="الشعار"
-                value={logoUrl}
-                onUploaded={(url) => {
-                  setLogoUrl(url);
-                  router.refresh();
-                }}
-              />
-              <WorkshopMediaUploadField
-                workshopId={workshopId}
-                workshopSlug={workshopSlug}
-                kind="cover"
-                label="صورة الغلاف"
-                value={coverUrl}
-                onUploaded={(url) => {
-                  setCoverUrl(url);
-                  router.refresh();
-                }}
-              />
               <label className="block">
                 <span className="text-sm text-slate-600 dark:text-slate-400">واتساب</span>
                 <input
