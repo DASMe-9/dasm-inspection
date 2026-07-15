@@ -28,6 +28,8 @@ export type WorkshopDashboardBundle = {
   workshop: Workshop;
   stats: WorkshopDashboardStats;
   recent: InspectionRequest[];
+  /** إجمالي طلبات الورشة (قبل اقتطاع الأحدث). */
+  requestCount: number;
   inspectors: Inspector[];
 };
 
@@ -143,6 +145,7 @@ export async function loadWorkshopDashboardBundle(
     workshop,
     stats,
     recent: requests.slice(0, 6),
+    requestCount: requests.length,
     inspectors,
   };
 }

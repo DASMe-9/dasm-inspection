@@ -1,5 +1,4 @@
 import type { NextRequest } from "next/server";
-import { cache } from "react";
 
 export const DASM_API_URL =
   process.env.DASM_API_URL || "https://api.dasm.com.sa";
@@ -81,25 +80,25 @@ function mapProfilePayload(u: Record<string, unknown>): DasmProfileUser | null {
   };
 }
 
-export const fetchDasmUserProfile = cache(
-  async (token: string): Promise<DasmProfileUser | null> => {
-    try {
-      const res = await fetch(`${DASM_API_URL}/api/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-        cache: "no-store",
-      });
-      if (!res.ok) return null;
-      const data = await res.json();
-      const u = (data?.data ?? data) as Record<string, unknown>;
-      return mapProfilePayload(u);
-    } catch {
-      return null;
-    }
+export async function fetchDasmUserProfile(
+  token: string
+): Promise<DasmProfileUser | null> {
+  try {
+    const res = await fetch(`${DASM_API_URL}/api/user/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const u = (data?.data ?? data) as Record<string, unknown>;
+    return mapProfilePayload(u);
+  } catch {
+    return null;
   }
-);
+}
 
 export async function verifyDasmUserToken(
   token: string

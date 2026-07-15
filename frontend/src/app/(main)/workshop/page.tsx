@@ -132,8 +132,13 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
     );
   }
 
-  const { workshop, stats, recent: recentSlice, inspectors: workshopInspectors } =
-    bundle;
+  const {
+    workshop,
+    stats,
+    recent: recentSlice,
+    requestCount,
+    inspectors: workshopInspectors,
+  } = bundle;
 
   const kyc = evaluateWorkshopKyc({
     ownerUserId: workshop.ownerUserId,
@@ -221,7 +226,7 @@ export default async function WorkshopDashboardPage({ searchParams }: PageProps)
               href={`/requests?workshop=${workshopId}`}
               className="block text-center text-sm font-semibold text-[#1E74E8] hover:underline"
             >
-              عرض كل الطلبات ({recent.length}) ←
+              عرض كل الطلبات ({requestCount}) ←
             </Link>
           </div>
         )}
