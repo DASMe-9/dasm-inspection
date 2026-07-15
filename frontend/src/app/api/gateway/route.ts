@@ -83,20 +83,16 @@ export async function GET(request: NextRequest) {
     // fall through to direct identity verification below
   }
 
-  // Fallback: the token is not a single-use SSO token (e.g. a raw Sanctum
-  // token) — verify identity directly and use the given token as the session.
+  // SSO-only. The old fallback accepted a raw Sanctum token from the URL and
+  // used it verbatim as a 30-day session — a full-access credential leaking
+  // through the query string. Every real caller (platform useSsoRedirect, the
+  // Flutter app) already sends a single-use SSO token, so the fallback had no
+  // legitimate sender; it was pure attack surface. Removed.
   if (!sessionToken) {
-    const user = await verifyDasmUserToken(token);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "توكن غير صالح" },
-        { status: 401 }
-      );
-    }
-    sessionToken = token;
-    userId = String(user.id);
-    userName = user.name || "";
-    inspectionRole = user.inspectionRole ?? null;
+    return NextResponse.json(
+      { success: false, message: "توكن SSO غير صالح أو منتهٍ" },
+      { status: 401 }
+    );
   }
 
   const redirectUrl = new URL("/requests", request.url);
