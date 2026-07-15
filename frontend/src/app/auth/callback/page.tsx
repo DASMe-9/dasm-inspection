@@ -5,16 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { setInspectionBrowserSession } from "@/lib/auth/inspection-browser-session";
 import { buildPostSsoDestination } from "@/lib/auth/resolve-sso-redirect";
+import { resolveSsoRecoveryUrl } from "@/lib/auth/resolve-sso-recovery-url";
 import { platformTypeAllowedForInspectionLogin } from "@/lib/auth/platform-inspection-role";
 
 type Status = "loading" | "denied" | "error";
-
-function sanitizeReturnTo(raw: string | null): string {
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//") || raw.includes("://")) {
-    return "/auth/login";
-  }
-  return raw;
-}
 
 function AccessDenied({ type }: { type: string }) {
   return (
@@ -72,18 +66,15 @@ function CallbackInner() {
   const [status, setStatus] = useState<Status>("loading");
   const [deniedType, setDeniedType] = useState("unknown");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const recoveryUrl = resolveSsoRecoveryUrl(searchParams.get("return_url"));
 
   useEffect(() => {
     const ssoToken = searchParams.get("sso_token")?.trim();
     const redirectParam = searchParams.get("redirect");
-    const returnTo = sanitizeReturnTo(
-      searchParams.get("returnTo") ?? searchParams.get("return_url")
-    );
 
     if (!ssoToken) {
-      router.replace(
-        `/auth/login?authError=1&returnTo=${encodeURIComponent(returnTo)}`
-      );
+      setStatus("error");
+      setErrorMsg("رابط الدخول من داسم غير مكتمل أو انتهت صلاحيته.");
       return;
     }
 
@@ -109,11 +100,6 @@ function CallbackInner() {
         if (!res.ok || !body?.success) {
           setStatus("error");
           setErrorMsg(body?.message ?? "تعذّر إكمال تسجيل الدخول");
-          setTimeout(() => {
-            router.replace(
-              `/auth/login?authError=1&returnTo=${encodeURIComponent(returnTo)}`
-            );
-          }, 1800);
           return;
         }
 
@@ -132,16 +118,24 @@ function CallbackInner() {
           return;
         }
 
-        setInspectionBrowserSession(token, {
-          id: user.id as number | string,
-          email: user.email as string | null | undefined,
-          first_name: user.first_name as string | null | undefined,
-          last_name: user.last_name as string | null | undefined,
-          phone: user.phone as string | null | undefined,
-          type: userType,
-          avatar_url: user.avatar_url as string | null | undefined,
-          organization_id: user.organization_id as number | string | null | undefined,
-        });
+        setInspectionBrowserSession(
+          token,
+          {
+            id: user.id as number | string,
+            email: user.email as string | null | undefined,
+            first_name: user.first_name as string | null | undefined,
+            last_name: user.last_name as string | null | undefined,
+            phone: user.phone as string | null | undefined,
+            type: userType,
+            avatar_url: user.avatar_url as string | null | undefined,
+            organization_id: user.organization_id as
+              | number
+              | string
+              | null
+              | undefined,
+          },
+          { writeTokenCookies: false }
+        );
 
         const firstName = String(user.first_name ?? "").trim();
         const lastName = String(user.last_name ?? "").trim();
@@ -159,11 +153,6 @@ function CallbackInner() {
         if (cancelled) return;
         setStatus("error");
         setErrorMsg("خطأ في الاتصال بالخادم");
-        setTimeout(() => {
-          router.replace(
-            `/auth/login?authError=1&returnTo=${encodeURIComponent(returnTo)}`
-          );
-        }, 1800);
       }
     })();
 
@@ -201,6 +190,42 @@ function CallbackInner() {
       <p style={{ margin: 0, fontSize: "0.9375rem" }}>
         {status === "error" ? errorMsg : "جارٍ إكمال الدخول من منصة داسم…"}
       </p>
+      {status === "error" ? (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "0.75rem",
+          }}
+        >
+          <a
+            href={recoveryUrl}
+            style={{
+              padding: "0.75rem 1.25rem",
+              borderRadius: 12,
+              background: "#4f46e5",
+              color: "white",
+              textDecoration: "none",
+              fontWeight: 700,
+            }}
+          >
+            إعادة الدخول عبر داسم
+          </a>
+          <a
+            href="https://www.dasm.com.sa/dashboard"
+            style={{
+              padding: "0.75rem 1.25rem",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.15)",
+              color: "rgba(255,255,255,0.75)",
+              textDecoration: "none",
+            }}
+          >
+            العودة إلى داسم
+          </a>
+        </div>
+      ) : null}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );

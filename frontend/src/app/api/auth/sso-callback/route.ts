@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { DASM_API_URL } from "@/lib/api/inspection-http-auth";
-import { setInspectionGatewayCookies } from "@/lib/cookies/set-inspection-gateway-cookies";
+import {
+  setInspectionGatewayCookies,
+  setInspectionSessionCookies,
+} from "@/lib/cookies/set-inspection-gateway-cookies";
 import {
   platformTypeAllowedForInspectionLogin,
   resolveInspectionRoleFromPlatformUser,
@@ -106,6 +109,10 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  // Set the protected-layout token cookies in the same server response that
+  // completes the one-time exchange. This removes the client-cookie race that
+  // could briefly bounce a valid SSO login to /auth/login.
+  setInspectionSessionCookies(res, accessToken);
   setInspectionGatewayCookies(res, String(user.id), inspectionRole);
 
   return res;
