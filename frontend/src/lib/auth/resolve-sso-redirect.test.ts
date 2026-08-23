@@ -5,14 +5,53 @@ import {
   sanitizeInspectionRedirect,
 } from "./resolve-sso-redirect";
 
+/**
+ * جدول الحمولات مطابق لجدوليه في
+ * `DASM-Platform/backend/tests/Unit/Support/ServiceLaunchTest.php` و
+ * `dasm-shipping/src/lib/service-launch.test.ts`. الثلاثة يطبّقون نفس القاعدة،
+ * وأي تخفيف في واحد دون الآخرين يفتح ثغرة من جانب واحد.
+ */
+const OPEN_REDIRECT_PAYLOADS: Array<[name: string, payload: string]> = [
+  ["absolute", "https://evil.test/x"],
+  ["protocol-relative", "//evil.test"],
+  ["backslash after the first slash", "/\\evil.test"],
+  ["encoded double slash", "/%2F%2Fevil.test"],
+  ["encoded backslash", "/%5Cevil.test"],
+  ["encoded tab", "/%09/evil.test"],
+  ["encoded CRLF", "/%0d%0aSet-Cookie:%20a=b"],
+  ["encoded NUL", "/%00/evil.test"],
+  ["double encoded", "/%252F%252Fevil.test"],
+  ["traversal", "/../../etc/passwd"],
+  ["encoded traversal", "/..%2f..%2fetc"],
+  ["javascript", "javascript:alert(1)"],
+  ["data", "data:text/html,<script>"],
+  ["no leading slash", "requests"],
+  ["empty", ""],
+  ["raw space", "/requests a"],
+  ["raw newline", "/requests\n/evil"],
+];
+
 describe("sanitizeInspectionRedirect", () => {
-  it("rejects absolute and protocol-relative paths", () => {
-    expect(sanitizeInspectionRedirect("https://evil.test/x")).toBeNull();
-    expect(sanitizeInspectionRedirect("//evil.test")).toBeNull();
+  it.each(OPEN_REDIRECT_PAYLOADS)("rejects %s", (_name, payload) => {
+    expect(sanitizeInspectionRedirect(payload)).toBeNull();
   });
 
   it("accepts in-app paths", () => {
     expect(sanitizeInspectionRedirect("/requests")).toBe("/requests");
+    expect(sanitizeInspectionRedirect("/track/42?x=1#top")).toBe("/track/42?x=1#top");
+  });
+
+  it("keeps encoded spaces but drops encoded control characters", () => {
+    // The DASM dashboard sends labels such as "Camry 2020" percent-encoded.
+    expect(sanitizeInspectionRedirect("/request?vehicle_label=Camry%202020")).not.toBeNull();
+
+    for (const control of ["%00", "%09", "%0a", "%0d", "%1f", "%7f"]) {
+      expect(sanitizeInspectionRedirect(`/request?q=a${control}b`)).toBeNull();
+    }
+  });
+
+  it("does not throw on malformed percent encoding", () => {
+    expect(() => sanitizeInspectionRedirect("/request/%zz")).not.toThrow();
   });
 });
 
