@@ -21,6 +21,7 @@ import {
   listInspectors,
   listWorkshops,
 } from "@/lib/data/inspection";
+import { getShipmentLaunchUrl } from "@/lib/platform-urls";
 import { TOKENS } from "@/lib/theme";
 
 function AttachmentsSectionSkeleton() {
@@ -128,6 +129,24 @@ export default async function RequestDetailPage({
             {req.fieldServiceAddress}
           </p>
         )}
+        {/* نقل المركبة إلى الورشة أو منها. يفتح جسر داسم الأم بطلب سطحة معبّأ
+            بوصف المركبة، ويصل الكابتن ومعه رابط رجوع إلى طلب الفحص. */}
+        <a
+          href={getShipmentLaunchUrl({
+            ref: String(req.id),
+            kind: "transport",
+            prefill: {
+              title: req.vehicleLabel ?? "",
+              city: req.fieldServiceAddress ?? "",
+            },
+          })}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-2 rounded-lg border border-emerald-600/40 bg-emerald-600/5 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-600/10 dark:text-emerald-400"
+        >
+          اطلب سطحة لنقل المركبة
+        </a>
+
         {req.quotedFeeSar != null && (
           <p className="text-sm mt-1">
             <span className="text-gray-500 dark:text-slate-400">رسوم خدمة الفحص:</span>{" "}
