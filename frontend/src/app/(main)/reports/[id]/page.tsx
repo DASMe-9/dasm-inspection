@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ReportChecklistRow, RequestStatusBadge } from "@/components/inspection";
 import { ReportPrintToolbar } from "@/components/inspection/ReportPrintToolbar";
 import { SectionCard } from "@/components/shared";
+import { canAccessInspectionResource } from "@/lib/auth/resource-ownership.server";
 import {
   getInspector,
   getReport,
@@ -33,6 +34,14 @@ export default async function ReportDetailPage({
   if (!report) notFound();
 
   const req = await getInspectionRequest(report.requestId);
+
+  const allowed = await canAccessInspectionResource({
+    workshopId: report.workshopId,
+    inspectorId: report.inspectorId,
+    dasmUserId: req?.dasm_user_id ?? null,
+  });
+  if (!allowed) notFound();
+
   const workshop = await getWorkshop(report.workshopId);
   const inspector = await getInspector(report.inspectorId);
 

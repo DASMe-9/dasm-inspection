@@ -11,6 +11,7 @@ import {
 import { RepairRecommendationsSection } from "@/components/inspection/RepairRecommendationsSection";
 import { RequestMessagesSection } from "@/components/inspection/RequestMessagesSection";
 import { SectionCard } from "@/components/shared";
+import { canAccessInspectionResource } from "@/lib/auth/resource-ownership.server";
 import {
   getHistoryForRequest,
   getInspector,
@@ -46,6 +47,13 @@ export default async function RequestDetailPage({
 }) {
   const req = await getInspectionRequest(params.id);
   if (!req) notFound();
+
+  const allowed = await canAccessInspectionResource({
+    workshopId: req.workshopId ?? null,
+    inspectorId: req.inspectorId ?? null,
+    dasmUserId: req.dasm_user_id ?? null,
+  });
+  if (!allowed) notFound();
 
   const [workshops, inspectors] = await Promise.all([
     listWorkshops(),
