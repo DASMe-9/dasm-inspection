@@ -92,7 +92,7 @@ export default async function PublicReportPage({
       </header>
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-6">
-        <ReportPrintToolbar />
+        <ReportPrintToolbar pdfHref={`/api/r/${params.token}/pdf`} />
         {typeof report.finalScore === "number" && (
           <section className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
             <div
