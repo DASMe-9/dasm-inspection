@@ -1,6 +1,6 @@
 export const MEASUREMENT_ID = "G-0W5317TLNM";
 export const SERVICE = "inspection";
-const HOSTS = new Set(["inspect.dasm.com.sa"]);
+const HOSTS = new Set(["inspect.dasm.com.sa", "inspection.dasm.com.sa"]);
 const ROUTES = new Set(["/", "/about", "/privacy", "/terms", "/workshops"]);
 
 /** Only fixed route labels leave the browser; never query strings or identifiers. */
@@ -44,6 +44,8 @@ export function updateServiceAnalytics(pathname: string | null) {
   target["ga-disable-G-0W5317TLNM"] = false;
   if (!initialized) {
     target.dataLayer = target.dataLayer || [];
+    // Preserve the Arguments queue shape used by the canonical Google tag snippet.
+    // eslint-disable-next-line prefer-rest-params
     target.gtag = function () { target.dataLayer!.push(arguments); };
     target.gtag("consent", "default", { ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
     target.gtag("set", context);
