@@ -32,7 +32,8 @@ export function disableServiceAnalytics() {
 
 export function updateServiceAnalytics(pathname: string | null) {
   const target = window as AnalyticsWindow;
-  const page = safeAnalyticsPage(window.location.hostname, pathname);
+  const optedOut = (window.navigator as Navigator & { globalPrivacyControl?: boolean })?.globalPrivacyControl === true;
+  const page = optedOut ? null : safeAnalyticsPage(window.location.hostname, pathname);
   if (!page) {
     disableServiceAnalytics();
     lastPath = null;
@@ -53,6 +54,7 @@ export function updateServiceAnalytics(pathname: string | null) {
     target.gtag("config", MEASUREMENT_ID, { ...context, send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false });
     const script = document.createElement("script");
     script.async = true;
+    script.referrerPolicy = "no-referrer";
     script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
     document.head.appendChild(script);
     initialized = true;
