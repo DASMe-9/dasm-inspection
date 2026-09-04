@@ -1,3 +1,4 @@
+import ServiceAnalytics from "@/components/ServiceAnalytics";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
@@ -52,6 +53,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        {process.env.VERCEL_ENV === "production" && <ServiceAnalytics />}
       </body>
     </html>
   );
