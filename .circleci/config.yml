@@ -1,0 +1,39 @@
+version: 2.1
+
+parameters:
+  run_quality_gate:
+    type: boolean
+    default: false
+  reason:
+    type: string
+    default: ""
+
+jobs:
+  web-quality:
+    docker:
+      - image: cimg/node:22.15
+    resource_class: medium
+    working_directory: ~/project/frontend
+    environment:
+      CI: "true"
+      RUN_REASON: << pipeline.parameters.reason >>
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - checkout: { path: ~/project }
+      - run:
+          name: Record revision and requested coverage
+          command: |
+            test -n "$RUN_REASON"
+            printf 'commit=%s\nreason=%s\n' "$CIRCLE_SHA1" "$RUN_REASON"
+      - run:
+          name: Install locked dependencies
+          command: npm ci --no-audit --no-fund
+      - run: { name: Type check, command: npx tsc --noEmit }
+      - run: { name: Unit tests, command: npx vitest run }
+      - run: { name: Production build, command: npm run build }
+
+workflows:
+  selected-quality:
+    when: << pipeline.parameters.run_quality_gate >>
+    jobs: [web-quality]
+

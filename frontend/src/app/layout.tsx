@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "DASM — الفحص الفني",
   description: "نظام فحص السيارات والورش — تكامل مع منصة DASM",
   applicationName: "داسم الفحص",
+  robots: { index: false, follow: false },
   appleWebApp: {
     capable: true,
     title: "ورشتي",
