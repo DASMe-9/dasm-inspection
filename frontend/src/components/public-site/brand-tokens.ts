@@ -23,8 +23,7 @@ export type PublicNavLink = {
 export const PUBLIC_NAV_LINKS: PublicNavLink[] = [
   { href: "/", label: "الصفحة الرئيسية", exact: true },
   { href: "/#services", label: "تفاصيل الخدمة" },
-  { href: "/workshops", label: "مواقع الخدمة" },
+  { href: "/workshops", label: "اختر ورشتك" },
   { href: "/#faq", label: "أسئلة متكررة" },
   { href: "/#support", label: "خدمة العملاء" },
-  { href: "/workshops", label: "احجز موعدك" },
 ];

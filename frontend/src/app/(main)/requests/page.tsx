@@ -38,6 +38,7 @@ export default async function RequestsListPage({
   const presetDasmCarId = firstParam("dasm_car_id");
   const presetVehicleLabel = firstParam("vehicle_label");
   const presetTitle = firstParam("title");
+  const presetPreferredWorkshopId = firstParam("preferred_workshop_id");
 
   const headersList = headers();
   const personaCtx = resolveInspectionPersona(headersList, cookieStore);
@@ -110,6 +111,7 @@ export default async function RequestsListPage({
             defaultDasmCarId={presetDasmCarId}
             defaultVehicleLabel={presetVehicleLabel}
             defaultTitle={presetTitle}
+            defaultPreferredWorkshopId={presetPreferredWorkshopId}
             platformPricing={platformPricing}
             workshops={createFormWorkshops}
           />
