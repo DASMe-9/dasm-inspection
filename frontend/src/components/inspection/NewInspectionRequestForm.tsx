@@ -38,6 +38,7 @@ export function NewInspectionRequestForm({
   const { colors } = useTheme({ role: "workshop" });
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [feedback, setFeedback] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [preferredWorkshopId, setPreferredWorkshopId] = useState(() => {
     const requested = (defaultPreferredWorkshopId ?? "").trim();
@@ -82,6 +83,7 @@ export function NewInspectionRequestForm({
       dir="rtl"
       onSubmit={(e) => {
         e.preventDefault();
+        setFeedback(null);
         const form = formRef.current;
         if (!form) return;
         const fd = new FormData(form);
@@ -97,12 +99,17 @@ export function NewInspectionRequestForm({
             }
             router.refresh();
           } else {
-            alert(r.message);
+            setFeedback(r.message);
           }
         });
       }}
     >
-      <p className="font-medium">طلب فحص جديد</p>
+      <div className="space-y-1">
+        <p className="text-base font-bold text-slate-950">بيانات طلب الفحص</p>
+        <p className="text-xs leading-5 text-slate-600">
+          اكتب وصف السيارة واختر طريقة الفحص؛ سننشئ عنوان الطلب تلقائياً.
+        </p>
+      </div>
 
       {fromCoreCar ? (
         <div
@@ -123,6 +130,59 @@ export function NewInspectionRequestForm({
           </p>
         </div>
       ) : null}
+
+      <input type="hidden" name="title" value={prefilledTitle} />
+      {defaultDasmUserId ? (
+        <>
+          <input
+            type="hidden"
+            name="dasm_car_id"
+            value={fromCoreCar ? prefilledCarId : ""}
+          />
+          <input type="hidden" name="dasm_user_id" value={defaultDasmUserId} />
+        </>
+      ) : (
+        <input
+          name="dasm_car_id"
+          placeholder="معرّف السيارة في داسم"
+          aria-label="معرّف السيارة في داسم"
+          required
+          inputMode="numeric"
+          className="min-h-12 w-full rounded-xl border border-slate-300 px-3.5 py-3 text-base"
+        />
+      )}
+
+      <div className="space-y-1.5">
+        <label
+          className="block text-xs font-medium text-gray-700"
+          htmlFor="vehicle_label"
+        >
+          السيارة المراد فحصها
+        </label>
+        <input
+          id="vehicle_label"
+          name="vehicle_label"
+          required
+          defaultValue={prefilledLabel}
+          autoComplete="off"
+          placeholder="مثال: تويوتا كامري 2022 — أبيض"
+          className="min-h-12 w-full rounded-xl border border-slate-300 px-3.5 py-3 text-base"
+        />
+      </div>
+
+      {defaultDasmUserId ? (
+        <p className="rounded-lg border border-emerald-100 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
+          سيُحفظ الطلب تلقائياً في حسابك لدى داسم.
+        </p>
+      ) : (
+        <input
+          name="dasm_user_id"
+          placeholder="رقم حساب داسم (اختياري)"
+          aria-label="رقم حساب داسم"
+          inputMode="numeric"
+          className="min-h-12 w-full rounded-xl border border-slate-300 px-3.5 py-3 text-base"
+        />
+      )}
 
       <div
         className="rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2.5 text-xs text-amber-950 space-y-1.5"
@@ -193,6 +253,28 @@ export function NewInspectionRequestForm({
         </div>
       </fieldset>
 
+      {serviceMode === "field" ? (
+        <div className="space-y-1.5">
+          <label
+            className="block text-xs font-medium text-gray-700"
+            htmlFor="field_service_address"
+          >
+            موقع الفحص الميداني
+          </label>
+          <input
+            id="field_service_address"
+            name="field_service_address"
+            required
+            autoComplete="street-address"
+            placeholder="المدينة، الحي، الشارع أو رابط الموقع"
+            className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base"
+          />
+          <p className="text-[11px] text-gray-500">
+            تستخدمه الورشة لتأكيد إمكانية الوصول والموعد.
+          </p>
+        </div>
+      ) : null}
+
       <div className="space-y-1.5">
         <label className="block text-xs font-medium text-gray-700" htmlFor="preferred_slot_at">
           الموعد المفضّل (اختياري)
@@ -233,56 +315,22 @@ export function NewInspectionRequestForm({
         )}
 
       <input
-        name="title"
-        required
-        defaultValue={prefilledTitle}
-        placeholder="عنوان الطلب"
-        className="w-full border rounded-lg px-3 py-2"
-      />
-      <input
-        name="dasm_car_id"
-        defaultValue={fromCoreCar ? prefilledCarId : ""}
-        readOnly={fromCoreCar}
-        placeholder={
-          defaultDasmUserId
-            ? "dasm_car_id (اختياري — يُنشأ تلقائياً على المنصّة)"
-            : "dasm_car_id (مطلوب بدون حساب داسم)"
-        }
-        required={!defaultDasmUserId}
-        className={`w-full border rounded-lg px-3 py-2 font-mono text-xs ${
-          fromCoreCar ? "bg-slate-50 text-slate-700" : ""
-        }`}
-      />
-      <input
-        name="vehicle_label"
-        required
-        defaultValue={prefilledLabel}
-        placeholder="وصف المركبة (للعرض)"
-        className="w-full border rounded-lg px-3 py-2"
-      />
-      {defaultDasmUserId ? (
-        <>
-          <input type="hidden" name="dasm_user_id" value={defaultDasmUserId} />
-          <p className="rounded-lg border border-emerald-100 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
-            تم ربط الطلب بحسابك من منصّة داسم.
-          </p>
-        </>
-      ) : (
-        <input
-          name="dasm_user_id"
-          placeholder="dasm_user_id (اختياري)"
-          className="w-full border rounded-lg px-3 py-2 font-mono text-xs"
-        />
-      )}
-      <input
         name="auction_reference"
         placeholder="مرجع مزاد (اختياري)"
         className="w-full border rounded-lg px-3 py-2"
       />
+      {feedback ? (
+        <p
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-800"
+        >
+          {feedback}
+        </p>
+      ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="w-full py-2 rounded-lg text-white font-medium disabled:opacity-60"
+        className="min-h-12 w-full rounded-xl px-4 py-3 text-base font-bold text-white shadow-sm disabled:opacity-60"
         style={{ backgroundColor: colors.primary }}
       >
         {pending ? "جاري الإرسال…" : "إرسال طلب الفحص"}

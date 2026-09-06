@@ -5,6 +5,7 @@ import { assertInspectionMutationAllowed } from "@/lib/auth/access-layer.server"
 import { assertWorkshopManageAccess } from "@/lib/auth/workshop-scope.server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import type {
+  AppRole,
   InspectionRequestStatus,
   InspectionServiceMode,
   ReportItemStatus,
@@ -31,6 +32,11 @@ import {
   parseRepairQuoteSar,
 } from "@/lib/repair-quote";
 import { formatInspectionPriceSar } from "@/lib/inspection-pricing";
+import { getInspectionAuthContext } from "@/lib/auth/inspection-context.server";
+import {
+  normalizeCreateRequestInput,
+  resolveCreateRequestIdentity,
+} from "@/lib/inspection-request-create";
 
 const ACTOR = "inspection_admin" as const;
 
@@ -102,13 +108,14 @@ function mapAccessError(e: unknown): string {
 async function insertHistory(
   requestId: string,
   status: InspectionRequestStatus,
-  note?: string
+  note?: string,
+  actorRole: AppRole = ACTOR
 ) {
   const sb = requireAdminClient();
   await sb.from("inspection_status_history").insert({
     request_id: requestId,
     status,
-    actor_role: ACTOR,
+    actor_role: actorRole,
     note: note ?? null,
   });
 }
@@ -119,33 +126,41 @@ export type ActionResult =
 
 export async function createInspectionRequestAction(formData: FormData): Promise<ActionResult> {
   try {
-    await assertInspectionMutationAllowed();
-    const title = String(formData.get("title") ?? "").trim();
+    const context = await getInspectionAuthContext();
+    const identity = resolveCreateRequestIdentity({
+      jwtEnforced: process.env.DASM_JWT_ENFORCE === "true",
+      context,
+      requestedDasmUserId: String(formData.get("dasm_user_id") ?? ""),
+    });
+    if (identity.requiresOperationalAuthorization) {
+      await assertInspectionMutationAllowed();
+    }
+
     const dasm_car_id = String(formData.get("dasm_car_id") ?? "").trim();
-    const vehicle_label = String(formData.get("vehicle_label") ?? "").trim();
-    const dasm_user_id = String(formData.get("dasm_user_id") ?? "").trim() || null;
+    const dasm_user_id = identity.dasmUserId;
     const auction_reference =
       String(formData.get("auction_reference") ?? "").trim() || null;
     const preferredWorkshopId =
       String(formData.get("preferred_workshop_id") ?? "").trim() || null;
-    const preferredServiceModeRaw = String(
-      formData.get("preferred_service_mode") ?? "workshop"
-    ).trim();
-    const preferredServiceMode =
-      preferredServiceModeRaw === "field" ? "field" : "workshop";
-    const preferredSlotRaw = String(formData.get("preferred_slot_at") ?? "").trim();
-    let preferredSlotAt: string | null = null;
-    if (preferredSlotRaw) {
-      const parsed = new Date(preferredSlotRaw);
-      if (Number.isNaN(parsed.getTime())) {
-        return { ok: false, message: "موعد التفضيل غير صالح." };
-      }
-      preferredSlotAt = parsed.toISOString();
-    }
-
-    if (!title || !vehicle_label) {
-      return { ok: false, message: "عنوان الطلب ووصف المركبة مطلوبان." };
-    }
+    const normalized = normalizeCreateRequestInput({
+      title: String(formData.get("title") ?? ""),
+      vehicleLabel: String(formData.get("vehicle_label") ?? ""),
+      preferredServiceMode: String(
+        formData.get("preferred_service_mode") ?? "workshop"
+      ),
+      fieldServiceAddress: String(
+        formData.get("field_service_address") ?? ""
+      ),
+      preferredSlotAt: String(formData.get("preferred_slot_at") ?? ""),
+    });
+    if (!normalized.ok) return normalized;
+    const {
+      title,
+      vehicleLabel: vehicle_label,
+      serviceMode: preferredServiceMode,
+      fieldServiceAddress,
+      preferredSlotAt,
+    } = normalized.value;
 
     if (!dasm_car_id && !dasm_user_id) {
       return {
@@ -185,6 +200,7 @@ export async function createInspectionRequestAction(formData: FormData): Promise
         auction_reference,
         status: "submitted",
         service_mode: preferredServiceMode,
+        field_service_address: fieldServiceAddress,
         preferred_workshop_id: preferredWorkshopId,
         preferred_slot_at: preferredSlotAt,
       })
@@ -220,7 +236,12 @@ export async function createInspectionRequestAction(formData: FormData): Promise
       preferenceParts.push(`ورشة مفضّلة (تفضيل عميل): ${preferredWorkshopId}`);
     }
 
-    await insertHistory(data.id, "submitted", preferenceParts.join(" — "));
+    await insertHistory(
+      data.id,
+      "submitted",
+      preferenceParts.join(" — "),
+      identity.actorRole
+    );
     revalidatePath("/");
     revalidatePath("/requests");
     revalidatePath("/my-inspections");
