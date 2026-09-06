@@ -3,7 +3,14 @@ import type { Workshop } from "@/types";
 import { cn } from "@/lib/utils";
 import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { PUBLIC_BRAND } from "@/components/public-site/brand-tokens";
-import { BadgeCheck, Building2, ChevronLeft, MapPin, Star } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Building2,
+  ChevronLeft,
+  MapPin,
+  Star,
+} from "lucide-react";
 
 export function WorkshopCard({
   workshop,
@@ -13,13 +20,12 @@ export function WorkshopCard({
   rating?: { average: number; count: number } | null;
 }) {
   const colors = { primary: PUBLIC_BRAND.navy, accent: PUBLIC_BRAND.green };
+  const requestHref = `/requests?preferred_workshop_id=${encodeURIComponent(workshop.id)}`;
 
   return (
-    <Link
-      href={`/workshops/${workshop.slug}`}
-      prefetch={false}
+    <article
       className={cn(
-        "group relative block overflow-hidden rounded-2xl border bg-white p-5 shadow-sm ring-1 ring-black/[0.04]",
+        "group relative overflow-hidden rounded-2xl border bg-white p-5 shadow-sm ring-1 ring-black/[0.04]",
         "transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-emerald-200/80"
       )}
       style={{ borderColor: `${colors.primary}22` }}
@@ -35,11 +41,15 @@ export function WorkshopCard({
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex items-center gap-2 text-[#1E74E8]/90">
             <Building2 className="h-5 w-5 shrink-0 opacity-90" aria-hidden />
-            <h3
-              className="truncate text-base font-bold md:text-lg"
-              style={{ color: colors.primary }}
-            >
-              {workshop.name}
+            <h3 className="min-w-0 truncate text-base font-bold md:text-lg">
+              <Link
+                href={`/workshops/${workshop.slug}`}
+                prefetch={false}
+                className="rounded-md outline-none transition hover:underline focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                style={{ color: colors.primary }}
+              >
+                {workshop.name}
+              </Link>
             </h3>
           </div>
           <p className="flex items-center gap-1.5 text-sm text-gray-600">
@@ -76,15 +86,37 @@ export function WorkshopCard({
               قيد المراجعة
             </span>
           )}
-          <span
-            className="inline-flex items-center gap-1 text-xs font-semibold text-[#1E74E8] opacity-90 transition group-hover:opacity-100"
-            style={{ color: colors.primary }}
-          >
-            التفاصيل
-            <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" aria-hidden />
-          </span>
         </div>
       </div>
-    </Link>
+      <div className="mt-5 grid gap-2 border-t border-slate-100 pt-4 sm:grid-cols-[1fr_auto]">
+        {workshop.isVerified ? (
+          <Link
+            href={requestHref}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#0A2342] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#103254] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+          >
+            ابدأ طلب الفحص هنا
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+          </Link>
+        ) : (
+          <span className="inline-flex min-h-12 items-center justify-center rounded-xl bg-amber-50 px-4 text-sm font-semibold text-amber-900">
+            الحجز متاح بعد الاعتماد
+          </span>
+        )}
+        <Link
+          href={`/workshops/${workshop.slug}`}
+          prefetch={false}
+          className="inline-flex min-h-12 items-center justify-center gap-1 rounded-xl border border-slate-200 px-4 text-sm font-semibold transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+          style={{ color: colors.primary }}
+        >
+          عرض التفاصيل
+          <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" aria-hidden />
+        </Link>
+      </div>
+      {workshop.isVerified && (
+        <p className="mt-2 text-xs text-slate-500">
+          ستحدد المركبة والموعد المفضّل في الخطوة التالية.
+        </p>
+      )}
+    </article>
   );
 }

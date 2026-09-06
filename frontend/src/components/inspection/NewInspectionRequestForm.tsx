@@ -22,6 +22,7 @@ export function NewInspectionRequestForm({
   defaultDasmCarId,
   defaultVehicleLabel,
   defaultTitle,
+  defaultPreferredWorkshopId,
   platformPricing,
   workshops = [],
 }: {
@@ -30,6 +31,7 @@ export function NewInspectionRequestForm({
   defaultDasmCarId?: string;
   defaultVehicleLabel?: string;
   defaultTitle?: string;
+  defaultPreferredWorkshopId?: string;
   platformPricing?: WorkshopServicePricing | null;
   workshops?: CreateRequestWorkshopOption[];
 }) {
@@ -37,7 +39,12 @@ export function NewInspectionRequestForm({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
-  const [preferredWorkshopId, setPreferredWorkshopId] = useState("");
+  const [preferredWorkshopId, setPreferredWorkshopId] = useState(() => {
+    const requested = (defaultPreferredWorkshopId ?? "").trim();
+    return workshops.some((w) => w.isVerified && w.id === requested)
+      ? requested
+      : "";
+  });
   const [serviceMode, setServiceMode] =
     useState<InspectionServiceMode>("workshop");
 

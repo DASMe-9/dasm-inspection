@@ -32,37 +32,31 @@ export default async function WorkshopsPage() {
         />
         <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl space-y-3">
-            <p className="text-xs font-extrabold text-[#178847]">شبكة داسم للفحص الفني</p>
+            <p className="text-xs font-extrabold text-[#178847]">الخطوة الأولى من طلب الفحص</p>
             <h1
               id="workshops-hub-title"
               className="text-2xl font-bold leading-tight text-gray-900 md:text-3xl"
             >
-              الورش المعتمدة
+              اختر ورشتك وابدأ طلب الفحص
             </h1>
             <p className="text-sm leading-relaxed text-gray-600 md:text-base">
-              اكتشف شركاء الفحص المعتمدين من داسم، تابع حالة الاعتماد، واربط طلباتك بورشة موثوقة ضمن منظومة
-              واحدة للمنصّة والمشتركين.
+              قارن الموقع والسعر، ثم اختر الورشة المناسبة. سنفتح نموذج الطلب والورشة محددة مسبقاً لتضيف
+              بيانات المركبة وموعدك المفضّل.
             </p>
           </div>
           <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap md:justify-end">
             <Link
-              href="/requests"
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0A2342] px-4 text-sm font-bold text-white shadow-md transition hover:brightness-110"
+              href="#available-workshops"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0A2342] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
             >
-              طلب فحص جديد
+              اختر ورشة الآن
             </Link>
             <Link
-              href="/workshops/apply"
+              href="/requests"
               className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 bg-white px-4 text-sm font-bold shadow-sm transition hover:bg-emerald-50"
               style={{ borderColor: primary, color: primary }}
             >
-              انضم كورشة شريكة
-            </Link>
-            <Link
-              href="/subscription"
-              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
-            >
-              اشتراك الورش
+              طلب دون تفضيل ورشة
             </Link>
           </div>
         </div>
@@ -85,15 +79,46 @@ export default async function WorkshopsPage() {
           />
         </SectionCard>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {list.map((w) => (
-            <WorkshopCard
-              key={w.id}
-              workshop={w}
-              rating={ratingMap.get(w.id) ?? null}
-            />
-          ))}
-        </div>
+        <section
+          id="available-workshops"
+          className="scroll-mt-28 space-y-4"
+          aria-labelledby="available-workshops-title"
+        >
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold text-emerald-400">اختر ثم أكمل الطلب</p>
+              <h2 id="available-workshops-title" className="mt-1 text-xl font-bold text-white">
+                الورش المتاحة للحجز
+              </h2>
+            </div>
+            <p className="text-sm text-slate-300">اختيارك يظل قابلاً للتعديل داخل نموذج الطلب.</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {list.map((w) => (
+              <WorkshopCard
+                key={w.id}
+                workshop={w}
+                rating={ratingMap.get(w.id) ?? null}
+              />
+            ))}
+          </div>
+          <p className="pt-2 text-center text-sm text-slate-300">
+            هل تمثل ورشة؟{" "}
+            <Link
+              href="/workshops/apply"
+              className="inline-flex min-h-11 items-center font-bold text-emerald-400 hover:text-emerald-300"
+            >
+              انضم إلى شبكة داسم
+            </Link>
+            <span className="mx-2 text-slate-600">•</span>
+            <Link
+              href="/subscription"
+              className="inline-flex min-h-11 items-center font-bold text-emerald-400 hover:text-emerald-300"
+            >
+              اشتراكات الورش
+            </Link>
+          </p>
+        </section>
       )}
     </div>
   );
