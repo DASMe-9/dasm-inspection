@@ -2,6 +2,17 @@
 const nextConfig = {
   // يفعّل src/instrumentation.ts (فحص متغيّرات البيئة عند الإقلاع) على Next 14.
   experimental: { instrumentationHook: true },
+  images: {
+    // Workshop uploads use Cloudinary; other legacy URLs remain explicitly
+    // unoptimized in the component so arbitrary hosts do not reach the image proxy.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+    ],
+  },
   async headers() {
     return [
       {

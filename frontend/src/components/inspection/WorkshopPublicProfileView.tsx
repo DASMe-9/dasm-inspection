@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import {
   ArrowLeft,
@@ -26,6 +27,7 @@ import { SectionCard } from "@/components/shared";
 import type { WorkshopPublicProfile } from "@/lib/workshop-public-profile";
 import type { WorkshopEducationalVideo } from "@/types";
 import { TOKENS } from "@/lib/theme";
+import { isOptimizableWorkshopImageUrl } from "@/lib/workshop-showcase";
 
 const HARAJ_LABELS: Record<string, string> = {
   haraj_live: "حراج مباشر",
@@ -83,10 +85,13 @@ function MediaGrid({ urls, emptyLabel }: { urls: string[]; emptyLabel: string })
           rel="noopener noreferrer"
           className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-gray-100 bg-gray-100"
         >
-          <img
+          <Image
             src={url}
             alt=""
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            unoptimized={!isOptimizableWorkshopImageUrl(url)}
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </a>
       ))}
@@ -139,11 +144,21 @@ function VideoGrid({
                   />
                 )
               ) : video.thumbnailUrl ? (
-                <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
-                  <img
+                <a
+                  href={video.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block h-full"
+                >
+                  <Image
                     src={video.thumbnailUrl}
                     alt=""
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    unoptimized={
+                      !isOptimizableWorkshopImageUrl(video.thumbnailUrl)
+                    }
+                    className="object-cover"
                   />
                 </a>
               ) : (
@@ -199,12 +214,17 @@ export function WorkshopPublicProfileView({
         aria-labelledby="workshop-public-title"
       >
         {profile.coverUrl && (
-          <div
-            className="h-36 w-full bg-cover bg-center md:h-44"
-            style={{ backgroundImage: `url(${profile.coverUrl})` }}
-            role="img"
-            aria-label={`غلاف ${profile.name}`}
-          />
+          <div className="relative h-36 w-full md:h-44">
+            <Image
+              src={profile.coverUrl}
+              alt={`غلاف ${profile.name}`}
+              fill
+              priority
+              sizes="100vw"
+              unoptimized={!isOptimizableWorkshopImageUrl(profile.coverUrl)}
+              className="object-cover"
+            />
+          </div>
         )}
         <div className="relative p-6 md:p-8">
           <div
@@ -214,9 +234,13 @@ export function WorkshopPublicProfileView({
           <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="flex min-w-0 flex-1 gap-4">
               {profile.logoUrl ? (
-                <img
+                <Image
                   src={profile.logoUrl}
                   alt=""
+                  width={64}
+                  height={64}
+                  sizes="64px"
+                  unoptimized={!isOptimizableWorkshopImageUrl(profile.logoUrl)}
                   className="h-16 w-16 shrink-0 rounded-2xl border border-white object-cover shadow-md"
                 />
               ) : (

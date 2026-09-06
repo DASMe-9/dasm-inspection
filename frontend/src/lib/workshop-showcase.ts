@@ -13,6 +13,16 @@ export const WORKSHOP_SHOWCASE_LIMITS = {
   videos: 12,
 } as const;
 
+/** Only trusted Cloudinary uploads go through the Next.js image optimizer. */
+export function isOptimizableWorkshopImageUrl(value: string): boolean {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" && url.hostname === "res.cloudinary.com";
+  } catch {
+    return false;
+  }
+}
+
 export function isValidHttpUrl(value: string): boolean {
   try {
     const url = new URL(value.trim());
