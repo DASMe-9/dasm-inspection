@@ -41,15 +41,11 @@ export function WorkshopCard({
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex items-center gap-2 text-[#1E74E8]/90">
             <Building2 className="h-5 w-5 shrink-0 opacity-90" aria-hidden />
-            <h3 className="min-w-0 truncate text-base font-bold md:text-lg">
-              <Link
-                href={`/workshops/${workshop.slug}`}
-                prefetch={false}
-                className="rounded-md outline-none transition hover:underline focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-                style={{ color: colors.primary }}
-              >
-                {workshop.name}
-              </Link>
+            <h3
+              className="min-w-0 truncate text-base font-bold md:text-lg"
+              style={{ color: colors.primary }}
+            >
+              {workshop.name}
             </h3>
           </div>
           <p className="flex items-center gap-1.5 text-sm text-gray-600">
