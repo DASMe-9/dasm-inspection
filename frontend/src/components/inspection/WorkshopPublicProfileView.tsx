@@ -187,7 +187,7 @@ export function WorkshopPublicProfileView({
   return (
     <div className="space-y-8" dir="rtl">
       <nav className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-        <Link href="/workshops" className="font-medium transition hover:text-[#1E74E8]">
+        <Link href="/workshops" className="inline-flex min-h-11 items-center font-medium transition hover:text-[#1E74E8]">
           الورش
         </Link>
         <span className="text-gray-300">/</span>
@@ -313,7 +313,7 @@ export function WorkshopPublicProfileView({
               key={id}
               type="button"
               onClick={() => setTab(id)}
-              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-semibold transition ${
                 tab === id
                   ? "bg-violet-700 text-white shadow-sm"
                   : "text-gray-600 hover:bg-gray-50"
@@ -410,7 +410,7 @@ export function WorkshopPublicProfileView({
                         <p className="text-xs font-medium text-gray-500">هاتف</p>
                         <a
                           href={`tel:${profile.phone.replace(/\s+/g, "")}`}
-                          className="font-semibold text-gray-900 hover:text-[#1E74E8]"
+                          className="inline-flex min-h-11 items-center font-semibold text-gray-900 hover:text-[#1E74E8]"
                         >
                           {profile.phone}
                         </a>
@@ -428,7 +428,7 @@ export function WorkshopPublicProfileView({
                           href={`https://wa.me/${profile.whatsapp.replace(/\D/g, "")}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 font-semibold text-gray-900 hover:text-emerald-700"
+                          className="inline-flex min-h-11 items-center gap-1 font-semibold text-gray-900 hover:text-emerald-700"
                         >
                           {profile.whatsapp}
                           <ExternalLink className="h-3.5 w-3.5" aria-hidden />
@@ -448,7 +448,7 @@ export function WorkshopPublicProfileView({
                         <p className="text-xs font-medium text-gray-500">بريد</p>
                         <a
                           href={`mailto:${profile.email}`}
-                          className="break-all font-semibold text-gray-900 hover:text-[#1E74E8]"
+                          className="inline-flex min-h-11 items-center break-all font-semibold text-gray-900 hover:text-[#1E74E8]"
                         >
                           {profile.email}
                         </a>
@@ -489,7 +489,7 @@ export function WorkshopPublicProfileView({
                         href={profile.mapLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-[#1E74E8] hover:underline"
+                        className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#1E74E8] hover:underline"
                       >
                         <MapPin className="h-4 w-4" aria-hidden />
                         الموقع / GPS
@@ -532,7 +532,7 @@ export function WorkshopPublicProfileView({
         <span>لطلب فحص أو متابعة طلباتك سجّل الدخول بحساب داسم.</span>
         <Link
           href="/auth/login"
-          className="inline-flex items-center gap-1 font-semibold transition hover:opacity-90"
+          className="inline-flex min-h-11 items-center gap-1 font-semibold transition hover:opacity-90"
           style={{ color: primary }}
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />

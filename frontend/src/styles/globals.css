@@ -12,7 +12,9 @@
   --admin-primary: #dc2626;
   /* الواجهة العامة — مُوائمة مع هوية شعار داسم (كحلي + أخضر) */
   --inspection-navy: #0B1E3A;
-  --inspection-accent: #2FBF4E;
+  --inspection-accent: #2CCB66;
+  --inspection-green-dark: #178847;
+  --inspection-ice: #F3F8FB;
 }
 
 /* لا نقلب تلقائياً مع prefers-color-scheme؛ الوضع يُتحكَّم به عبر صنف .dark
@@ -35,6 +37,7 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
+  overflow-x: clip;
 }
 
 /* Focus rings for a11y */
@@ -60,5 +63,31 @@ textarea:focus-visible {
   /* سطح التطبيق الرئيسي — يكمّل تدرّج الـ layout */
   .inspection-app-surface {
     @apply antialiased;
+  }
+
+  .inspection-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(to bottom, black, transparent 88%);
+  }
+
+  .inspection-scan-line {
+    animation: inspection-scan 4.8s ease-in-out infinite;
+  }
+}
+
+@keyframes inspection-scan {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50% { opacity: 0.9; transform: translateY(18rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

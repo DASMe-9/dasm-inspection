@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { hasSupabaseSessionCookie } from "@/lib/auth/has-supabase-session-cookie";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey =
@@ -15,6 +16,16 @@ export async function updateSession(request: NextRequest) {
   });
 
   if (!supabaseUrl || !supabaseKey) {
+    return supabaseResponse;
+  }
+
+  // لا نستدعي Supabase لزائر عام بلا جلسة؛ هذا يزيل طلب شبكة من المسار الحرج
+  // للصفحة الرئيسية ودليل الورش، مع إبقاء تجديد الجلسة للمستخدم المسجّل.
+  const hasSupabaseSession = hasSupabaseSessionCookie(
+    request.cookies.getAll().map(({ name }) => name)
+  );
+
+  if (!hasSupabaseSession) {
     return supabaseResponse;
   }
 

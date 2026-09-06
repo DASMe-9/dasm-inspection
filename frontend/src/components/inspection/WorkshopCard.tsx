@@ -1,10 +1,8 @@
-"use client";
-
 import Link from "next/link";
 import type { Workshop } from "@/types";
-import { useTheme } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
+import { PUBLIC_BRAND } from "@/components/public-site/brand-tokens";
 import { BadgeCheck, Building2, ChevronLeft, MapPin, Star } from "lucide-react";
 
 export function WorkshopCard({
@@ -14,15 +12,15 @@ export function WorkshopCard({
   workshop: Workshop;
   rating?: { average: number; count: number } | null;
 }) {
-  const { colors } = useTheme({ role: "workshop" });
+  const colors = { primary: PUBLIC_BRAND.navy, accent: PUBLIC_BRAND.green };
 
   return (
     <Link
       href={`/workshops/${workshop.slug}`}
-      prefetch
+      prefetch={false}
       className={cn(
         "group relative block overflow-hidden rounded-2xl border bg-white p-5 shadow-sm ring-1 ring-black/[0.04]",
-        "transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-violet-200/80"
+        "transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-emerald-200/80"
       )}
       style={{ borderColor: `${colors.primary}22` }}
       dir="rtl"
@@ -56,7 +54,7 @@ export function WorkshopCard({
             </p>
           )}
           {workshop.isFeatured && (
-            <span className="inline-flex rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-800 ring-1 ring-violet-100">
+            <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 ring-1 ring-emerald-100">
               {workshop.featuredProgramLabel ?? "برنامج مميز"}
             </span>
           )}

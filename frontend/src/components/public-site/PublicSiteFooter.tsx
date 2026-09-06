@@ -1,57 +1,40 @@
 import Link from "next/link";
-import { PUBLIC_BRAND } from "./brand-tokens";
+import { Mail } from "lucide-react";
+import { InspectionLogo } from "./InspectionLogo";
 
 const LINKS: { href: string; label: string }[] = [
   { href: "/about", label: "من نحن" },
   { href: "/privacy", label: "سياسة الخصوصية" },
   { href: "/terms", label: "الشروط والأحكام" },
   { href: "/workshops", label: "مواقع الخدمة" },
-  { href: "/#contact", label: "تواصل معنا" },
+  { href: "/#support", label: "تواصل معنا" },
 ];
 
 export function PublicSiteFooter() {
-  const year = 1447; // سنة هجرية ثابتة (بدون Date وقت التصيير الثابت)
   return (
     <footer
-      className="mt-16 border-t border-white/10 text-white"
-      style={{ background: PUBLIC_BRAND.navy }}
+      className="border-t border-white/10 bg-[#051529] text-white"
       dir="rtl"
     >
-      <div className="mx-auto max-w-7xl px-4 py-10 md:px-6">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-sm">
-            <div className="flex items-center gap-2">
-              <span
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-sm font-extrabold text-white"
-                style={{
-                  background:
-                    "linear-gradient(135deg,#1E74E8 0%,#2FBF4E 100%)",
-                }}
-              >
-                DE
-              </span>
-              <div>
-                <p className="text-sm font-bold">فحص داسم</p>
-                <p className="text-[11px] text-white/70">
-                  منصّة الفحص الفني للمركبات
-                </p>
-              </div>
-            </div>
-            <p className="mt-3 text-xs leading-relaxed text-white/70">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
+        <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-start md:gap-14">
+          <div className="max-w-md">
+            <InspectionLogo compact />
+            <p className="mt-4 text-sm leading-7 text-white/60">
               شبكة معتمدة للفحص الفني للمركبات — طلبات، تقارير، وسجل فني موثّق ضمن
               منظومة داسم.
             </p>
           </div>
 
           <nav
-            className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm"
+            className="grid grid-cols-2 gap-x-5 text-sm sm:gap-x-10"
             aria-label="روابط الفوتر"
           >
             {LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-white/80 transition-colors hover:text-white"
+                className="flex min-h-11 items-center text-white/70 transition-colors hover:text-white"
               >
                 {l.label}
               </Link>
@@ -59,12 +42,13 @@ export function PublicSiteFooter() {
           </nav>
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-5 text-[11px] text-white/60 md:flex-row md:items-center md:justify-between">
-          <p>© {year}هـ فحص داسم الفني. جميع الحقوق محفوظة.</p>
-          <p>
+        <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
+          <p>فحص داسم الفني — جميع الحقوق محفوظة.</p>
+          <p className="flex items-center gap-2" dir="ltr">
+            <Mail className="h-4 w-4" aria-hidden />
             <a
               href="mailto:support@dasm.com.sa"
-              className="hover:text-white"
+              className="inline-flex min-h-11 items-center hover:text-white"
             >
               support@dasm.com.sa
             </a>
