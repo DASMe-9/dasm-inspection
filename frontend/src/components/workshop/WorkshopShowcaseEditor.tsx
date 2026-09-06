@@ -1,10 +1,14 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import Image from "next/image";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { saveWorkshopShowcaseAction } from "@/app/actions/workshop-management";
 import type { WorkshopEducationalVideo } from "@/types";
-import { WORKSHOP_SHOWCASE_LIMITS } from "@/lib/workshop-showcase";
+import {
+  isOptimizableWorkshopImageUrl,
+  WORKSHOP_SHOWCASE_LIMITS,
+} from "@/lib/workshop-showcase";
 
 type Props = {
   workshopId: string;
@@ -89,9 +93,13 @@ function UrlListEditor({
               key={`${url}-${index}`}
               className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900"
             >
-              <img
+              <Image
                 src={url}
                 alt=""
+                width={48}
+                height={48}
+                sizes="48px"
+                unoptimized={!isOptimizableWorkshopImageUrl(url)}
                 className="h-12 w-12 shrink-0 rounded-lg object-cover"
               />
               <a
