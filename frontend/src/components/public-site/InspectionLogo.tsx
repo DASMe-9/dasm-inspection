@@ -5,9 +5,9 @@ type Props = { compact?: boolean };
 /** شعار مبسّط بأسلوب سداسي (مرجع MVPI) */
 export function InspectionLogo({ compact }: Props) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
       <div
-        className="relative flex shrink-0 items-center justify-center rounded-xl shadow-md"
+        className="relative flex shrink-0 items-center justify-center rounded-xl shadow-md ring-1 ring-white/15"
         style={{
           width: compact ? 40 : 52,
           height: compact ? 40 : 52,
@@ -35,14 +35,14 @@ export function InspectionLogo({ compact }: Props) {
           />
         </svg>
       </div>
-      <div className="leading-tight">
+      <div className="min-w-0 leading-tight">
         <p
-          className={`font-extrabold text-white ${compact ? "text-sm" : "text-base md:text-lg"}`}
+          className={`whitespace-nowrap font-extrabold text-white ${compact ? "text-sm sm:text-base" : "text-base md:text-lg"}`}
         >
           فحص داسم
         </p>
         <p
-          className={`font-medium text-white/70 ${compact ? "text-[10px]" : "text-xs"}`}
+          className={`whitespace-nowrap font-medium text-white/70 ${compact ? "hidden text-[10px] sm:block" : "text-xs"}`}
         >
           DASM Vehicle Inspection
         </p>

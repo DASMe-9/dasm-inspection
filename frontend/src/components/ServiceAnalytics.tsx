@@ -7,8 +7,12 @@ import { disableServiceAnalytics, updateServiceAnalytics } from "@/lib/service-a
 export default function ServiceAnalytics() {
   const pathname = usePathname();
   useEffect(() => {
-    updateServiceAnalytics(pathname);
-    return disableServiceAnalytics;
+    const handle = window.setTimeout(() => updateServiceAnalytics(pathname), 1200);
+
+    return () => {
+      window.clearTimeout(handle);
+      disableServiceAnalytics();
+    };
   }, [pathname]);
   return null;
 }
