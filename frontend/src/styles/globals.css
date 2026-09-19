@@ -34,7 +34,7 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-tajawal), system-ui, -apple-system, sans-serif;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   overflow-x: clip;
