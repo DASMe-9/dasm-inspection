@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   authenticateMobileRequest,
   listMobileRequestsForAuth,
+  mobileBearerFromRequest,
 } from "@/lib/api/mobile-inspection-http";
 import { createMobileInspectionRequest } from "@/lib/api/mobile-create-request";
 import type { InspectionServiceMode } from "@/types";
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
   }
 
   const role = auth.normalized.inspectionRole;
-  if (role !== "dasm_user") {
+  if (role !== "dasm_user" || !auth.normalized.dasmRoles.includes("user")) {
     return NextResponse.json(
       {
         error: "forbidden",
@@ -84,6 +85,9 @@ export async function POST(request: NextRequest) {
         : null,
     auctionReference:
       body.auction_reference != null ? String(body.auction_reference) : null,
+    dasmCarId:
+      body.dasm_car_id != null ? Number(body.dasm_car_id) : null,
+    platformToken: mobileBearerFromRequest(request),
   });
 
   if (!result.ok) {
