@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Building2, CarFront, Send, Wrench } from "lucide-react";
 import { createInspectionRequestAction } from "@/app/actions/inspection-workflow";
 import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { useTheme } from "@/hooks";
@@ -16,6 +17,13 @@ export type CreateRequestWorkshopOption = Pick<
   Workshop,
   "id" | "name" | "city" | "isVerified" | "pricing"
 >;
+
+const REQUEST_STEPS = [
+  { Icon: CarFront, label: "المركبة" },
+  { Icon: Wrench, label: "الخدمة" },
+  { Icon: Building2, label: "الورشة" },
+  { Icon: Send, label: "الإرسال" },
+] as const;
 
 export function NewInspectionRequestForm({
   defaultDasmUserId,
@@ -109,6 +117,25 @@ export function NewInspectionRequestForm({
         <p className="text-xs leading-5 text-slate-600">
           اكتب وصف السيارة واختر طريقة الفحص؛ سننشئ عنوان الطلب تلقائياً.
         </p>
+      </div>
+
+      <div aria-label="مسار طلب الفحص" className="grid grid-cols-4 gap-2 py-2">
+        {REQUEST_STEPS.map(({ Icon, label }, index) => (
+          <div key={label} className="min-w-0 text-center">
+            <span
+              className={
+                index === 0
+                  ? "mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-[#12BF63] text-white"
+                  : "mx-auto flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-500"
+              }
+            >
+              <Icon className="h-4 w-4" aria-hidden />
+            </span>
+            <span className="mt-1 block truncate text-[11px] font-medium text-slate-600">
+              {label}
+            </span>
+          </div>
+        ))}
       </div>
 
       {fromCoreCar ? (
