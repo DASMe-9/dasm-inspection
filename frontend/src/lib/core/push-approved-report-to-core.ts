@@ -16,7 +16,7 @@ export type CoreReportSyncPayload = {
   final_score?: number | null;
   grade_letter?: "A" | "B" | "C" | "D" | "F" | null;
   haraj_track?: "haraj_live" | "instant" | "delayed" | "fixed" | "rejected" | null;
-  section_grades?: Record<string, number | null> | null;
+  section_scores?: Record<string, number | null> | null;
 };
 
 const CORE_API_URL =

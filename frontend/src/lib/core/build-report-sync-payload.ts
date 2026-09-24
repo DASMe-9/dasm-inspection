@@ -60,7 +60,7 @@ export function buildReportSyncPayload(input: {
     final_score: input.weighted ? input.weighted.finalScore : null,
     grade_letter: input.weighted ? input.weighted.letterGrade : null,
     haraj_track: input.weighted ? input.weighted.auctionTrack : null,
-    section_grades: input.weighted ? input.weighted.sectionScores : null,
+    section_scores: input.weighted ? input.weighted.sectionScores : null,
   };
 }
 
