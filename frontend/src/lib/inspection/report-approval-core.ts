@@ -2,7 +2,7 @@ import "server-only";
 
 import { randomUUID } from "crypto";
 import { inspectionOpsLog } from "@/lib/inspection-ops-log";
-import { CHECKLIST_TEMPLATE } from "@/lib/checklist/checklist-template";
+import { reportRowsFromChecklistTemplate } from "@/lib/checklist/checklist-template";
 import {
   buildReportSyncPayload,
   parseDasmCarId,
@@ -284,18 +284,5 @@ export const SUBMIT_FOR_REVIEW_SUMMARY =
   "تقرير فحص فني مبدئي: مراجعة البنود أدناه قبل الاعتماد النهائي.";
 
 export function defaultReportItemRows(reportId: string) {
-  // Seed from the signed-off template (137 items) so every report carries the
-  // per-item metadata the app renders/groups/tier-filters by.
-  return CHECKLIST_TEMPLATE.map((it) => ({
-    report_id: reportId,
-    section: it.section,
-    label: it.label,
-    status: "pass" as const,
-    notes: it.notes ?? null,
-    sort_order: it.sortOrder,
-    weighted_section: it.weightedSection,
-    input_type: it.inputType,
-    tier: it.tier,
-    photo_required: it.photoRequiredOnFail,
-  }));
+  return reportRowsFromChecklistTemplate(reportId);
 }

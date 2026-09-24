@@ -13,6 +13,7 @@
 import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
 import { classifyItemToSection } from "@/lib/inspection/section-grade-from-items";
 import type { SectionKey } from "@/lib/inspection/scoring";
+import { COMPREHENSIVE_EXTENSION_ITEMS } from "@/lib/checklist/comprehensive-extension";
 
 export type ChecklistInputType = "pass_warn_fail" | "numeric" | "binary";
 export type ChecklistTier = "comprehensive" | "essential";
@@ -118,7 +119,27 @@ export const CHECKLIST_TEMPLATE: readonly ChecklistTemplateItem[] = [
     ...g,
     sortOrder: DEFAULT_REPORT_ITEMS.length + i,
   })),
+  ...COMPREHENSIVE_EXTENSION_ITEMS.map((item, i): ChecklistTemplateItem => ({
+    ...item,
+    sortOrder: DEFAULT_REPORT_ITEMS.length + GAP_ITEMS.length + i,
+  })),
 ];
+
+/** Database rows shared by web submissions and mobile-created draft reports. */
+export function reportRowsFromChecklistTemplate(reportId: string) {
+  return CHECKLIST_TEMPLATE.map((it) => ({
+    report_id: reportId,
+    section: it.section,
+    label: it.label,
+    status: "pass" as const,
+    notes: it.notes ?? null,
+    sort_order: it.sortOrder,
+    weighted_section: it.weightedSection,
+    input_type: it.inputType,
+    tier: it.tier,
+    photo_required: it.photoRequiredOnFail,
+  }));
+}
 
 /** Items belonging to a given package tier (essential ⊂ comprehensive). */
 export function templateForTier(tier: ChecklistTier): ChecklistTemplateItem[] {

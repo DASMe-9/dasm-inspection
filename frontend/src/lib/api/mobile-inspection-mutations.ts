@@ -1,6 +1,6 @@
 import "server-only";
 
-import { DEFAULT_REPORT_ITEMS } from "@/lib/checklist/default-report-items";
+import { reportRowsFromChecklistTemplate } from "@/lib/checklist/checklist-template";
 import {
   getInspectionRequest,
   getReport,
@@ -189,14 +189,7 @@ export async function ensureDraftChecklistReport(
     return { ok: false, message: repErr?.message ?? "فشل إنشاء مسودة التقرير" };
   }
 
-  const rows = DEFAULT_REPORT_ITEMS.map((it) => ({
-    report_id: rep.id,
-    section: it.section,
-    label: it.label,
-    status: it.status,
-    notes: it.notes ?? null,
-    sort_order: it.sort_order,
-  }));
+  const rows = reportRowsFromChecklistTemplate(rep.id);
 
   const { error: itemsErr } = await sb.from("inspection_report_items").insert(rows);
   if (itemsErr) {
