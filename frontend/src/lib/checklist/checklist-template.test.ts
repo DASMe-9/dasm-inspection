@@ -2,13 +2,26 @@ import { describe, it, expect } from "vitest";
 import { SECTION_WEIGHTS, type SectionKey } from "@/lib/inspection/scoring";
 import {
   CHECKLIST_TEMPLATE,
+  reportRowsFromChecklistTemplate,
   templateForTier,
   templateByWeightedSection,
 } from "@/lib/checklist/checklist-template";
 
 describe("signed-off checklist template", () => {
+  it("provides the Saudi comprehensive 270-point package", () => {
+    expect(CHECKLIST_TEMPLATE).toHaveLength(270);
+    expect(templateForTier("comprehensive")).toHaveLength(270);
+  });
   it("has contiguous sort order and no gaps", () => {
     CHECKLIST_TEMPLATE.forEach((item, i) => expect(item.sortOrder).toBe(i));
+  });
+
+  it("builds the same 270 persistent rows for web and mobile reports", () => {
+    const rows = reportRowsFromChecklistTemplate("report-1");
+    expect(rows).toHaveLength(270);
+    expect(rows[0]).toMatchObject({ report_id: "report-1", sort_order: 0 });
+    expect(rows.at(-1)).toMatchObject({ report_id: "report-1", sort_order: 269 });
+    expect(rows.every((row) => row.tier && row.input_type)).toBe(true);
   });
 
   it("covers all 8 weighted sections with scoreable items", () => {
