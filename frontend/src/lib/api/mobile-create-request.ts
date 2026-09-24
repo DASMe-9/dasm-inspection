@@ -1,5 +1,6 @@
 import { requireAdminClient } from "@/lib/supabase/admin";
 import { ensureDasmCarOnCore } from "@/lib/core/ensure-dasm-car-on-core";
+import { verifyOwnedCar } from "@/lib/core/verify-owned-car";
 import type { InspectionServiceMode } from "@/types";
 
 export type MobileCreateRequestInput = {
@@ -11,6 +12,8 @@ export type MobileCreateRequestInput = {
   preferredSlotAt?: string | null;
   fieldServiceAddress?: string | null;
   auctionReference?: string | null;
+  dasmCarId?: number | null;
+  platformToken?: string | null;
 };
 
 export type MobileCreateRequestResult =
@@ -25,9 +28,9 @@ export async function createMobileInspectionRequest(
   input: MobileCreateRequestInput
 ): Promise<MobileCreateRequestResult> {
   const title = input.title.trim();
-  const vehicleLabel = input.vehicleLabel.trim();
+  let vehicleLabel = input.vehicleLabel.trim();
   const userId = input.userId.trim();
-  if (!title || !vehicleLabel) {
+  if (!title || (!vehicleLabel && !input.dasmCarId)) {
     return {
       ok: false,
       status: 422,
@@ -36,6 +39,19 @@ export async function createMobileInspectionRequest(
   }
   if (!userId) {
     return { ok: false, status: 401, message: "معرّف المستخدم مطلوب" };
+  }
+
+  let selectedCarId: number | null = null;
+  if (input.dasmCarId != null) {
+    const owned = await verifyOwnedCar(
+      input.dasmCarId,
+      input.platformToken?.trim() || ""
+    );
+    if (!owned.ok) {
+      return { ok: false, status: owned.status, message: owned.message };
+    }
+    selectedCarId = owned.carId;
+    vehicleLabel = owned.vehicleLabel;
   }
 
   const serviceMode: InspectionServiceMode =
@@ -85,7 +101,7 @@ export async function createMobileInspectionRequest(
     .from("inspection_requests")
     .insert({
       title,
-      dasm_car_id: "pending",
+      dasm_car_id: selectedCarId ? String(selectedCarId) : "pending",
       vehicle_label: vehicleLabel,
       dasm_user_id: userId,
       auction_reference: input.auctionReference?.trim() || null,
@@ -107,7 +123,7 @@ export async function createMobileInspectionRequest(
   }
 
   const numericUserId = Number.parseInt(userId, 10);
-  if (Number.isFinite(numericUserId) && numericUserId > 0) {
+  if (!selectedCarId && Number.isFinite(numericUserId) && numericUserId > 0) {
     const carId = await ensureDasmCarOnCore({
       userId: numericUserId,
       vehicleLabel,
