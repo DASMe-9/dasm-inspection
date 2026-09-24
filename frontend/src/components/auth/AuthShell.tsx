@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { InspectionLogo, PUBLIC_BRAND } from "@/components/public-site";
 
 /**
- * قشرة صفحات الدخول — نفس خلفية بطل الصفحة العامة (كحلي + شبكة + توهّج أخضر/أزرق)
- * وبطاقة زجاجية في الوسط. تُستخدم في الدخول وعودة الدخول الاجتماعي وشاشة «غير مخوّل».
+ * قشرة صفحات الدخول — سطح كحلي هادئ يربط خدمة الفحص بهوية داسم.
+ * تُستخدم في الدخول وعودة الدخول الاجتماعي وشاشة «غير مخوّل».
  */
 export function AuthShell({
   children,
@@ -18,30 +18,27 @@ export function AuthShell({
     <div
       dir="rtl"
       className="relative isolate flex min-h-screen flex-col overflow-hidden text-white"
-      style={{
-        backgroundImage: `
-          radial-gradient(circle at 8% 16%, rgba(49,134,244,0.22), transparent 32%),
-          radial-gradient(circle at 88% 82%, rgba(44,203,102,0.16), transparent 34%),
-          linear-gradient(145deg, ${PUBLIC_BRAND.navyDeep} 0%, ${PUBLIC_BRAND.navy} 58%, #0c2e50 100%)
-        `,
-      }}
+      style={{ backgroundColor: PUBLIC_BRAND.navyDeep }}
     >
       <div className="inspection-grid absolute inset-0 -z-10 opacity-60" aria-hidden />
 
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center"
-          aria-label="فحص داسم — الصفحة الرئيسية"
-        >
-          <InspectionLogo compact />
-        </Link>
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center text-sm font-semibold text-white/70 transition hover:text-white"
-        >
-          الصفحة الرئيسية
-        </Link>
+      <header className="mx-auto flex w-full max-w-md flex-col items-center px-4 pb-5 pt-6 sm:px-6">
+        <InspectionLogo />
+        <div className="mt-4 flex h-10 w-full items-center rounded-lg border border-white/15 bg-white/[0.06] p-1">
+          <span
+            className="inline-flex h-8 shrink-0 items-center rounded-md px-3 text-xs font-bold text-white"
+            style={{ backgroundColor: PUBLIC_BRAND.green }}
+          >
+            أخبار الفحص
+          </span>
+          <span className="truncate px-3 text-xs text-white/70">
+            اطلب فحصاً في الورشة أو موقع المركبة وتابع التقرير
+          </span>
+        </div>
+        <p className="mt-4 text-xl font-extrabold" dir="rtl">
+          <span dir="ltr">DASM</span>{" "}
+          <span style={{ color: PUBLIC_BRAND.green }}>تجمعنا</span>
+        </p>
       </header>
 
       <main
@@ -72,10 +69,10 @@ export function AuthShell({
   );
 }
 
-/** بطاقة زجاجية موحّدة داخل القشرة. */
+/** بطاقة دخول موحّدة داخل القشرة. */
 export function AuthCard({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-[1.75rem] border border-white/15 bg-[#071a30]/85 p-6 shadow-[0_28px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:p-8">
+    <div className="rounded-xl border border-white/15 bg-[#071a30] p-6 shadow-[0_18px_48px_rgba(0,0,0,0.26)] sm:p-8">
       {children}
     </div>
   );

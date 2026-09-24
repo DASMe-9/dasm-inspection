@@ -4,13 +4,10 @@ import { useState, FormEvent, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
-  CarFront,
   Eye,
   EyeOff,
-  FileCheck2,
   Loader2,
   LockKeyhole,
-  ShieldCheck,
 } from "lucide-react";
 
 import { AuthCard, AuthShell } from "@/components/auth/AuthShell";
@@ -108,44 +105,6 @@ function sanitizeReturnTo(raw: string | null): string {
   }
   if (raw === "/") return "/dashboard";
   return raw;
-}
-
-const FEATURES = [
-  { Icon: ShieldCheck, text: "فحص شامل موثّق عبر الورش المعتمدة" },
-  { Icon: FileCheck2, text: "تقارير فنية فورية مع الصور والبيانات" },
-  { Icon: CarFront, text: "سجل فني موثّق دائم لكل مركبة" },
-];
-
-function BrandAside() {
-  return (
-    <div className="max-w-md">
-      <h2 className="text-balance text-4xl font-black leading-[1.25] tracking-tight">
-        الفحص الفني
-        <span className="block" style={{ color: PUBLIC_BRAND.green }}>
-          للمركبات الرقمي
-        </span>
-      </h2>
-      <p className="mt-4 text-base leading-8 text-white/70">
-        بوابة الورش المعتمدة وفريق الفحص وعملاء داسم — طلبات، تقارير، وسجل فني موثّق في مكان واحد.
-      </p>
-      <ul className="mt-8 space-y-3">
-        {FEATURES.map(({ Icon, text }) => (
-          <li
-            key={text}
-            className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.055] p-3.5"
-          >
-            <span
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10"
-              style={{ color: PUBLIC_BRAND.green }}
-            >
-              <Icon className="h-5 w-5" aria-hidden />
-            </span>
-            <span className="text-sm font-semibold text-white/80">{text}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 }
 
 const INPUT =
@@ -246,13 +205,8 @@ function LoginPageInner() {
   };
 
   return (
-    <AuthShell aside={<BrandAside />}>
+    <AuthShell>
       <AuthCard>
-        <h1 className="text-2xl font-extrabold sm:text-3xl">تسجيل الدخول</h1>
-        <p className="mb-6 mt-1.5 text-sm text-white/60">
-          منصة الفحص الفني للمركبات — للورش والفريق والعملاء.
-        </p>
-
         <SocialLoginButtons
           onGoogle={onGoogle}
           onApple={() => void onApple()}
@@ -340,7 +294,7 @@ function LoginPageInner() {
                 جارٍ التحقق…
               </>
             ) : (
-              "دخول"
+              "الدخول بحساب داسم"
             )}
           </button>
         </form>

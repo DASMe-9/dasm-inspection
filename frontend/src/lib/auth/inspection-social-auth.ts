@@ -37,6 +37,14 @@ export type SocialApplyResult =
   | { ok: true }
   | { ok: false; denied?: string; linkRequired?: boolean; error?: string };
 
+export function buildGoogleRedirectUrl(
+  returnOrigin: string,
+  coreUrl = CORE_URL,
+): string {
+  const params = new URLSearchParams({ return: returnOrigin });
+  return `${coreUrl.replace(/\/$/, "")}/api/auth/google/redirect?${params.toString()}`;
+}
+
 /** Google: leave the SPA for Core's consent redirect, stashing the returnTo. */
 export function startGoogleRedirectLogin(returnTo?: string): void {
   if (typeof window === "undefined") return;
@@ -45,8 +53,7 @@ export function startGoogleRedirectLogin(returnTo?: string): void {
   } catch {
     /* sessionStorage may be unavailable */
   }
-  const params = new URLSearchParams({ return: window.location.origin });
-  window.location.assign(`${CORE_URL}/api/auth/google/redirect?${params.toString()}`);
+  window.location.assign(buildGoogleRedirectUrl(window.location.origin));
 }
 
 export function readStashedReturn(): string {
