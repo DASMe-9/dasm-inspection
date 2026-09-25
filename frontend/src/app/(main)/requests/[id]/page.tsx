@@ -137,7 +137,7 @@ export default async function RequestDetailPage({
             {req.fieldServiceAddress}
           </p>
         )}
-        {/* نقل المركبة إلى الورشة أو منها. يفتح جسر داسم الأم بطلب سطحة معبّأ
+        {/* نقل المركبة إلى الورشة أو منها. يفتح جسر DASM الأم بطلب سطحة معبّأ
             بوصف المركبة، ويصل الكابتن ومعه رابط رجوع إلى طلب الفحص. */}
         <a
           href={getShipmentLaunchUrl({

@@ -1,6 +1,6 @@
 const trimSlash = (url: string) => url.replace(/\/+$/, "");
 
-/** منصة داسم الأم — روابط عامة (ليست لوحة مسؤول). */
+/** منصة DASM الأم — روابط عامة (ليست لوحة مسؤول). */
 export function getDasmPlatformBaseUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_DASM_PLATFORM_URL?.trim();
   return trimSlash(fromEnv && fromEnv.length > 0 ? fromEnv : "https://www.dasm.com.sa");
@@ -29,10 +29,10 @@ function toShipmentRef(value: unknown): string | null {
 }
 
 /**
- * رابط طلب شحن عبر جسر داسم الأم.
+ * رابط طلب شحن عبر جسر DASM الأم.
  *
  * لا يبني الفحص رابطاً خاماً إلى نطاق الشحن ولا يولّد رمز عبور: يرسل المستخدم
- * إلى `/shipping/launch` في داسم، وهي تولّد الرمز وتُكمل الانتقال — البند 4-1
+ * إلى `/shipping/launch` في DASM، وهي تولّد الرمز وتُكمل الانتقال — البند 4-1
  * من عقد إطلاق لوحات الخدمات. وهو أيضاً الطريق الوحيد الممكن من هنا، لأن
  * إصدار رمز العبور صار صلاحية أوّلية والفحص يحمل توكن جلسة مشتقّاً.
  *

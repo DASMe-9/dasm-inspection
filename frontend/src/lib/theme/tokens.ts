@@ -7,7 +7,7 @@ export type AppRole = "customer" | "workshop" | "admin";
 
 export const TOKENS = {
   colors: {
-    // هوية داسم البصرية (من الشعار): كحلي غامق + تدرّج أزرق→أخضر.
+    // هوية DASM البصرية (من الشعار): كحلي غامق + تدرّج أزرق→أخضر.
     brand: {
       navy: "#0B1E3A",
       navyDeep: "#071528",

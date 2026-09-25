@@ -115,7 +115,7 @@ export async function insertInspectionRequestSubmitted(
   const { error: histErr } = await sb.from("inspection_status_history").insert({
     request_id: row.id,
     status: "submitted",
-    note: `طلب فحص من منصّة داسم — ${user.name ?? user.id}`,
+    note: `طلب فحص من منصّة DASM — ${user.name ?? user.id}`,
     actor_role: "dasm_user",
   });
   if (histErr) {

@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { unstable_cache } from "next/cache";
 import { WorkshopCard } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
 import { listWorkshopsForDirectory } from "@/lib/data/inspection";
-import { TOKENS } from "@/lib/theme";
 
 /**
  * دليل الورش المعتمدة — داخل اللوحة (مجموعة (main)، القشرة الداكنة).
@@ -26,22 +24,16 @@ export default async function WorkshopsDirectoryPage() {
   const verified = list.filter((w) => w.isVerified).length;
   const cities = new Set(list.map((w) => w.city?.trim()).filter(Boolean)).size;
 
-  const { primary, accent } = TOKENS.colors.roles.workshop;
-
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 md:px-6 md:py-10" dir="rtl">
+    <div className="space-y-5" dir="rtl">
       <section
-        className="relative overflow-hidden rounded-3xl border border-violet-100/90 bg-gradient-to-bl from-white via-violet-50/50 to-white px-5 py-8 shadow-sm ring-1 ring-violet-100/60 dark:border-slate-700/70 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 md:px-10 md:py-10"
+        className="rounded-xl border border-slate-200 bg-white px-5 py-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 md:px-6"
         aria-labelledby="workshops-directory-title"
       >
-        <div
-          className="pointer-events-none absolute -left-20 -top-20 h-56 w-56 rounded-full opacity-40 blur-3xl"
-          style={{ background: `linear-gradient(135deg, ${primary}44, ${accent}33)` }}
-        />
-        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl space-y-3">
             <p className="text-xs font-semibold text-[#1857b8]/90 dark:text-blue-300/90">
-              شبكة داسم للفحص الفني
+              شبكة DASM للفحص الفني
             </p>
             <h1
               id="workshops-directory-title"
@@ -50,24 +42,16 @@ export default async function WorkshopsDirectoryPage() {
               مراكز الفحص المعتمدة
             </h1>
             <p className="text-sm leading-relaxed text-gray-600 dark:text-slate-400 md:text-base">
-              شركاء الفحص المعتمدون من داسم — قارن مراكز الفحص بالتقييمات الموثقة واربط طلبك بمركز ضمن منظومة
+              شركاء الفحص المعتمدون من DASM. قارن المراكز بالتقييمات الموثقة واربط طلبك بمركز ضمن منظومة
               واحدة.
             </p>
-          </div>
-          <div className="flex flex-wrap gap-2 md:justify-end">
-            <Link
-              href="/requests"
-              className="inline-flex items-center justify-center rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-500"
-            >
-              طلب فحص جديد
-            </Link>
           </div>
         </div>
 
         {list.length > 0 && (
-          <dl className="relative mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <dl className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <StatBox label="مراكز مسجّلة" value={String(list.length)} />
-            <StatBox label="معتمدة داسم" value={String(verified)} />
+            <StatBox label="معتمدة DASM" value={String(verified)} />
             <StatBox label="مدن تغطية" value={String(cities || "—")} />
             <StatBox label="تحديث القائمة" value="مباشر" hint="من Supabase" />
           </dl>
@@ -77,7 +61,7 @@ export default async function WorkshopsDirectoryPage() {
       {list.length === 0 ? (
         <SectionCard>
           <EmptyState
-            title="لا ورش"
+            title="لا توجد مراكز فحص"
             description="طبّق الهجرة والبذور في Supabase (انظر supabase/migrations)."
           />
         </SectionCard>
@@ -102,7 +86,7 @@ function StatBox({
   hint?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-sm ring-1 ring-violet-100/50 dark:border-slate-700/70 dark:bg-slate-800/60 dark:ring-slate-700/50">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800/60">
       <dt className="text-xs font-medium text-gray-500 dark:text-slate-400">{label}</dt>
       <dd className="mt-1 text-lg font-bold tabular-nums text-gray-900 dark:text-slate-100">
         {value}

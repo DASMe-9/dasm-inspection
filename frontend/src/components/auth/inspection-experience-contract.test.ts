@@ -11,7 +11,10 @@ describe("inspection login and booking experience", () => {
 
     expect(login).toContain('fetch("/api/auth/login"');
     expect(login).toContain("setInspectionBrowserSession(token, user)");
-    expect(login).not.toContain("هوية داسم المركزية");
+    expect(login).toContain('"تسجيل الدخول"');
+    expect(login).not.toContain("الدخول بحساب DASM");
+    expect(shell).not.toContain(">\n            أخبار الفحص\n");
+    expect(shell).toContain("inspection-news-ticker");
     expect(shell).not.toContain("الصفحة الرئيسية");
     expect(callback).toContain("router.replace(back)");
   });

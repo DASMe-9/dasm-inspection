@@ -55,7 +55,7 @@ export function WorkshopInviteCreateForm() {
       </label>
       <label className="block">
         <span className="text-slate-600 dark:text-slate-400">
-          معرّف مالك داسم (اختياري — يُربط تلقائياً عند التقديم)
+          معرّف مالك DASM (اختياري — يُربط تلقائياً عند التقديم)
         </span>
         <input name="dasm_user_id" dir="ltr" className={inputClass} placeholder="322" />
       </label>

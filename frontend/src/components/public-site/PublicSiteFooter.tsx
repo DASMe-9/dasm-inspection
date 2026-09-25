@@ -22,7 +22,7 @@ export function PublicSiteFooter() {
             <InspectionLogo compact />
             <p className="mt-4 text-sm leading-7 text-white/60">
               شبكة معتمدة للفحص الفني للمركبات — طلبات، تقارير، وسجل فني موثّق ضمن
-              منظومة داسم.
+              منظومة DASM.
             </p>
           </div>
 
@@ -43,7 +43,7 @@ export function PublicSiteFooter() {
         </div>
 
         <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
-          <p>فحص داسم الفني — جميع الحقوق محفوظة.</p>
+          <p>فحص DASM الفني — جميع الحقوق محفوظة.</p>
           <p className="flex items-center gap-2" dir="ltr">
             <Mail className="h-4 w-4" aria-hidden />
             <a

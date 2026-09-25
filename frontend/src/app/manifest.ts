@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 /** PWA manifest — لوحة الورشة (خطوة 36) */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "داسم — لوحة الورشة",
+    name: "DASM — لوحة الورشة",
     short_name: "ورشتي",
     description: "إدارة فحوصات الورشة — inspect.dasm.com.sa",
     start_url: "/workshop",

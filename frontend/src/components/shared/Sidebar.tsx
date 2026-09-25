@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import {
   filterSidebarNavGroups,
@@ -25,7 +24,7 @@ export function Sidebar({
           <span className="text-white font-extrabold text-sm">DE</span>
         </div>
         <div>
-          <h1 className="font-bold text-white text-sm">فحص داسم</h1>
+          <h1 className="font-bold text-white text-sm">فحص DASM</h1>
           <p className="text-[10px] text-slate-400">الفحص الفني للمركبات</p>
         </div>
       </div>
@@ -38,6 +37,7 @@ export function Sidebar({
             </p>
             <div className="space-y-1">
               {group.items.map((item) => {
+                const Icon = item.icon;
                 const isActive =
                   item.href === "/dashboard" || item.href === "/workshop"
                     ? pathname === item.href
@@ -53,7 +53,7 @@ export function Sidebar({
                         : "text-slate-300 hover:bg-white/5 hover:text-white"
                     }`}
                   >
-                    <span className="text-base">{item.icon}</span>
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden />
                     <span>{item.label}</span>
                   </Link>
                 );
@@ -63,10 +63,9 @@ export function Sidebar({
         ))}
       </nav>
 
-      <div className="px-4 py-3 border-t border-white/10 space-y-2">
-        <ThemeToggle />
+      <div className="px-4 py-3 border-t border-white/10">
         <p className="text-[10px] text-slate-500 text-center">
-          فحص داسم — منصة الفحص الفني
+          فحص DASM — منصة الفحص الفني
         </p>
       </div>
     </aside>

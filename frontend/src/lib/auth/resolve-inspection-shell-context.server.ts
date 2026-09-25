@@ -6,7 +6,6 @@ import {
   type DasmProfileUser,
 } from "@/lib/api/inspection-http-auth";
 import type { InspectionShellContext } from "@/lib/auth/inspection-shell-context";
-import { getDasmProfileSecurityUrl } from "@/lib/platform-urls";
 import { resolveInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
 import { isWorkshopDashboardRole } from "@/lib/auth/workshop-dashboard";
 import { resolveWorkshopSidebarProfileLink } from "@/lib/auth/resolve-workshop-sidebar-link.server";
@@ -53,6 +52,9 @@ export async function resolveInspectionShellContext(): Promise<InspectionShellCo
     lastName: null,
     name: undefined,
     email: null,
+    phone: null,
+    emailVerified: false,
+    phoneVerified: false,
     userCode: null,
     displayLocation: null,
     address: null,
@@ -61,10 +63,16 @@ export async function resolveInspectionShellContext(): Promise<InspectionShellCo
   return {
     personDisplayName: profile ? formatPersonName(profile) : "مستخدم",
     email: baseProfile.email?.trim() || null,
+    phone: baseProfile.phone?.trim() || null,
+    emailVerified: baseProfile.emailVerified === true,
+    phoneVerified: baseProfile.phoneVerified === true,
     userCode: baseProfile.userCode?.trim() || null,
     areaLabel: profile ? pickAreaLabel(profile) : null,
     city: profile ? pickCity(profile, workshopLink?.city) : workshopLink?.city ?? null,
-    coreProfileUrl: getDasmProfileSecurityUrl(),
+    district: baseProfile.address?.district?.trim() || null,
+    primaryLocationConfirmed: baseProfile.address?.confirmed === true,
+    nationalAddressShort: baseProfile.address?.nationalAddressShort?.trim() || null,
+    nationalAddressStatus: baseProfile.address?.nationalAddressStatus?.trim() || null,
     workshopProfileHref: workshopLink?.profileHref ?? null,
     workshopPublicHref: workshopLink?.publicHref ?? null,
     workshopWelcome:

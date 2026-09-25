@@ -65,22 +65,22 @@ export default async function DashboardPage() {
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     )
-    .slice(0, 5);
+    .slice(0, 3);
 
   const heroEyebrow = isCustomer
-    ? "منصّة داسم للفحص الفني"
+    ? "فحص DASM"
     : isInspector
       ? "غرفة عمليات الفحص"
-      : "لوحة التحكم";
+      : "نظرة عامة";
 
   const heroTitle = isCustomer
-    ? "مركباتي وطلباتي"
+    ? "ملخص الفحص"
     : isInspector
       ? "مهام الفحص اليوم"
-      : "لوحة تحكم الفحص الفني";
+      : "نظرة عامة على الفحص الفني";
 
   const heroDescription = isCustomer
-    ? "تابع طلبات الفحص، رصيد المحفظة، والملف الفني لمركباتك — ضمن منظومة داسم الموحّدة."
+    ? "تابع حالة مركباتك ونتائج الفحص من حساب DASM الموحّد."
     : isInspector
       ? "قائمة الطلبات المُسندة إليك والجاهزة للتنفيذ الميداني أو في الورشة."
       : "إدارة طلبات الفحص والورش والتقارير — بيانات حية من قاعدة البيانات.";
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
           { label: "بانتظار المراجعة", value: String(kpi.pendingReview) },
           { label: "فحوص مكتملة", value: String(kpi.closedSuccessful) },
           {
-            label: isCustomer ? "ورش معتمدة" : "إجمالي الطلبات",
+            label: isCustomer ? "مراكز معتمدة" : "إجمالي الطلبات",
             value: isCustomer ? String(kpi.workshops) : String(all.length),
           },
         ]}
@@ -124,13 +124,6 @@ export default async function DashboardPage() {
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 md:gap-4">
         {isCustomer ? (
           <>
-            <QuickActionCard
-              href="/requests"
-              title="طلب فحص جديد"
-              description={`${all.length} طلب مرتبط بحسابك`}
-              icon={ClipboardList}
-              accent="blue"
-            />
             <QuickActionCard
               href="/my-inspections"
               title="طلباتي ومركباتي"
@@ -147,8 +140,8 @@ export default async function DashboardPage() {
             />
             <QuickActionCard
               href="/directory"
-              title="الورش المعتمدة"
-              description={`${workshops.length} ورشة في الشبكة`}
+              title="مراكز الفحص"
+              description={`${workshops.length} مركز في الشبكة`}
               icon={Wrench}
               accent="slate"
             />
@@ -164,8 +157,8 @@ export default async function DashboardPage() {
             />
             <QuickActionCard
               href="/directory"
-              title="الورش المعتمدة"
-              description={`${workshops.length} ورشة مسجّلة`}
+              title="مراكز الفحص"
+              description={`${workshops.length} مركز مسجّل`}
               icon={Wrench}
               accent="emerald"
             />
@@ -187,17 +180,10 @@ export default async function DashboardPage() {
               title="لا توجد طلبات فحص بعد"
               description={
                 isCustomer
-                  ? "ابدأ بطلب فحص لمركبتك من الورش المعتمدة في شبكة داسم."
+                  ? "ابدأ من الزر الرئيسي أعلاه لاختيار مركز الفحص المناسب."
                   : "ستظهر الطلبات هنا عند إنشائها أو إسنادها."
               }
-              action={
-                <Link
-                  href="/requests"
-                  className="inline-flex min-h-[44px] items-center rounded-xl bg-[#1E74E8] px-5 text-sm font-semibold text-white hover:bg-[#1857b8]"
-                >
-                  {isCustomer ? "إنشاء طلب فحص" : "عرض الطلبات"}
-                </Link>
-              }
+              action={isCustomer ? undefined : <Link href="/requests" className="text-sm font-semibold text-[#1E74E8] hover:underline">عرض الطلبات</Link>}
             />
           ) : (
             <>

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "من نحن — فحص داسم",
-  description: "منصّة فحص داسم الفني للمركبات — من نحن.",
+  title: "من نحن — فحص DASM",
+  description: "منصّة فحص DASM الفني للمركبات — من نحن.",
 };
 
 export default function AboutPage() {
@@ -13,7 +13,7 @@ export default function AboutPage() {
 
       <div className="mt-8 space-y-6 text-sm leading-relaxed text-gray-700">
         <p>
-          «فحص داسم» منصّة الفحص الفني للمركبات ضمن منظومة داسم. نربط أصحاب
+          «فحص DASM» منصّة الفحص الفني للمركبات ضمن منظومة DASM. نربط أصحاب
           المركبات بشبكة ورش معتمدة لإجراء فحوص موثوقة — في الورشة أو ميدانياً —
           مع تقارير واضحة وسجل فني دائم لكل مركبة.
         </p>

@@ -158,7 +158,7 @@ function PublicReportDocument({ report }: { report: PublicReportView }) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.eyebrow}>فحص داسم — تقرير معتمد</Text>
+          <Text style={styles.eyebrow}>فحص DASM — تقرير معتمد</Text>
           <Text style={styles.title}>{report.workshopName ?? "ورشة معتمدة"}</Text>
           <Text style={styles.meta}>اعتُمد في {fmtDate(report.approvedAt)}</Text>
         </View>
@@ -207,7 +207,7 @@ function PublicReportDocument({ report }: { report: PublicReportView }) {
         ))}
 
         <Text style={styles.footer}>
-          منصة داسم للفحص — هذا التقرير معتمد ومشارَك عبر رابط خاص.
+          منصة DASM للفحص — هذا التقرير معتمد ومشارَك عبر رابط خاص.
         </Text>
       </Page>
     </Document>

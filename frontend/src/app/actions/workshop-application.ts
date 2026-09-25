@@ -67,7 +67,7 @@ export async function submitWorkshopApplicationAction(
     if (!ownerUserId) {
       return {
         ok: false,
-        message: "سجّل الدخول بحساب داسم أولاً لإكمال الدعوة.",
+        message: "سجّل الدخول أولاً لإكمال الدعوة.",
       };
     }
   }

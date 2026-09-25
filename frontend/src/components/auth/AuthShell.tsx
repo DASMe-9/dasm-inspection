@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { InspectionLogo, PUBLIC_BRAND } from "@/components/public-site";
 
 /**
- * قشرة صفحات الدخول — سطح كحلي هادئ يربط خدمة الفحص بهوية داسم.
+ * قشرة صفحات الدخول — سطح كحلي هادئ يربط خدمة الفحص بهوية DASM.
  * تُستخدم في الدخول وعودة الدخول الاجتماعي وشاشة «غير مخوّل».
  */
 export function AuthShell({
@@ -24,15 +24,12 @@ export function AuthShell({
 
       <header className="mx-auto flex w-full max-w-md flex-col items-center px-4 pb-5 pt-6 sm:px-6">
         <InspectionLogo />
-        <div className="mt-4 flex h-10 w-full items-center rounded-lg border border-white/15 bg-white/[0.06] p-1">
-          <span
-            className="inline-flex h-8 shrink-0 items-center rounded-md px-3 text-xs font-bold text-white"
-            style={{ backgroundColor: PUBLIC_BRAND.green }}
-          >
-            أخبار الفحص
-          </span>
-          <span className="truncate px-3 text-xs text-white/70">
-            اطلب فحصاً في الورشة أو موقع المركبة وتابع التقرير
+        <div
+          className="mt-4 h-10 w-full overflow-hidden rounded-lg border border-white/15 bg-white/[0.06]"
+          aria-label="آخر أخبار الفحص"
+        >
+          <span className="inspection-news-ticker block w-max whitespace-nowrap px-3 py-2.5 text-xs text-white/70">
+            اطلب فحصاً في مركز الفحص أو موقع المركبة وتابع التقرير المعتمد من حسابك
           </span>
         </div>
         <p className="mt-4 text-xl font-extrabold" dir="rtl">
@@ -52,12 +49,12 @@ export function AuthShell({
 
       <footer className="mx-auto w-full max-w-6xl px-4 pb-6 text-center text-xs text-white/45 sm:px-6">
         <p>
-          فحص داسم — منظومة{" "}
+          فحص DASM — منظومة{" "}
           <a
             href="https://www.dasm.com.sa"
             className="font-semibold text-white/65 underline-offset-4 hover:text-white hover:underline"
           >
-            داسم
+            DASM
           </a>
           {" · "}
           <Link href="/privacy" className="hover:text-white">الخصوصية</Link>

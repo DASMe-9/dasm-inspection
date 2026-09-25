@@ -26,8 +26,8 @@ export default async function WorkshopApplyPage({ searchParams }: Props) {
           انضم كورشة شريكة
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-          قدّم طلب انضمام لشبكة فحص داسم. يُراجع الفريق الطلب ويتواصل معكم — عند
-          الاعتماد يُربط حساب داسم نفسه بلوحة الورشة تلقائياً.
+          قدّم طلب انضمام لشبكة فحص DASM. يُراجع الفريق الطلب ويتواصل معكم — عند
+          الاعتماد يُربط حساب DASM نفسه بلوحة الورشة تلقائياً.
         </p>
         {inviteToken && !invite ? (
           <p className="mt-4 rounded-xl border border-red-300 bg-red-50 px-3.5 py-2.5 text-xs font-medium leading-relaxed text-red-900 dark:border-red-500/40 dark:bg-red-950/70 dark:text-red-100">
@@ -42,14 +42,14 @@ export default async function WorkshopApplyPage({ searchParams }: Props) {
               href="/auth/login?returnTo=/workshops/apply"
               className="font-bold text-emerald-800 underline decoration-2 underline-offset-2 dark:text-emerald-300"
             >
-              تسجيل الدخول بحساب داسم
+              تسجيل الدخول
             </Link>{" "}
             قبل التقديم لربط الورشة بحسابك مباشرة بعد الاعتماد.
           </p>
         ) : null}
         {dasmUserId ? (
           <p className="mt-4 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2.5 text-xs font-medium leading-relaxed text-emerald-950 dark:border-emerald-400/35 dark:bg-emerald-950/55 dark:text-emerald-50">
-            أنت مسجّل بحساب داسم — سيُربط تلقائياً كمالك للورشة عند الاعتماد.
+            أنت مسجّل بحساب DASM — سيُربط تلقائياً كمالك للورشة عند الاعتماد.
           </p>
         ) : null}
       </div>

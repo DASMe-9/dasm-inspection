@@ -49,7 +49,7 @@ export function resolveRequestListScope(
       showWorkshopFilter: workshops.length > 0,
       showServiceModeFilter: true,
       scopedNote:
-        "تعرض هذه القائمة طلباتك المرتبطة بحساب منصّة داسم فقط.",
+        "تعرض هذه القائمة طلباتك المرتبطة بحساب منصّة DASM فقط.",
       usePlatformUserScope: true,
       platformUserId: persona.platformUserId,
     };

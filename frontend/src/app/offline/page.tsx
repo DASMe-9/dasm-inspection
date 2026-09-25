@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "غير متصل — داسم الفحص",
+  title: "غير متصل — DASM الفحص",
 };
 
 export default function OfflinePage() {

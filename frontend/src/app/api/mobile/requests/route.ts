@@ -10,7 +10,7 @@ import type { InspectionServiceMode } from "@/types";
 /**
  * GET /api/mobile/requests
  *
- * قائمة طلبات الفحص حسب دور المستخدم (Sanctum Bearer من منصّة داسم).
+ * قائمة طلبات الفحص حسب دور المستخدم (Sanctum Bearer من منصّة DASM).
  */
 export async function GET(request: NextRequest) {
   const auth = await authenticateMobileRequest(request);
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: "forbidden",
-        message: "إنشاء الطلب متاح لحساب مستخدم داسم (الزبون) فقط",
+        message: "إنشاء الطلب متاح لحساب مستخدم DASM (الزبون) فقط",
       },
       { status: 403 }
     );

@@ -58,7 +58,7 @@ export function buildReviewsCsv(reviews: WorkshopReview[]): string {
 }
 
 export function buildFollowersCsv(followers: WorkshopFollower[]): string {
-  const header = ["معرف المتابع", "معرف مستخدم داسم", "تاريخ المتابعة"];
+  const header = ["معرف المتابع", "معرف مستخدم DASM", "تاريخ المتابعة"];
   const rows = followers.map((f) => [f.id, f.dasmUserId, f.createdAt]);
   return rowsToCsv([header, ...rows]);
 }

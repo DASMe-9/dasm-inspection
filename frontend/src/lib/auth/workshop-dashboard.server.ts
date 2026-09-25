@@ -60,7 +60,7 @@ export async function getWorkshopDashboardAccess(
       workshopId: null,
       persona,
       reason:
-        "لم يُربط حسابك بورشة بعد. تأكد من اعتماد طلب الانضمام بحساب داسم نفسه أو تواصل مع الإدارة.",
+        "لم يُربط حسابك بورشة بعد. تأكد من اعتماد طلب الانضمام بحساب DASM نفسه أو تواصل مع الإدارة.",
     };
   }
 

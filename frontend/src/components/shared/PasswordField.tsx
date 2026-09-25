@@ -8,7 +8,7 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
 };
 
 /**
- * حقل كلمة مرور مع العين الكاشفة — عادة واجهة داسم في كل حقول الباسوورد.
+ * حقل كلمة مرور مع العين الكاشفة — عادة واجهة DASM في كل حقول الباسوورد.
  */
 export function PasswordField({
   label,

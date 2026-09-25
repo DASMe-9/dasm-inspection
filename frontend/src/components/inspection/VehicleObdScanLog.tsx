@@ -87,7 +87,7 @@ export function VehicleObdScanLog({ scans }: { scans: VehicleObdScan[] }) {
         </label>
         <label className="block">
           <span className="text-xs font-medium text-gray-600">
-            رقم السيارة في داسم
+            رقم السيارة في DASM
           </span>
           <input
             name="dasm_car_id"

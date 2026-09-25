@@ -48,7 +48,7 @@ export async function createVehicleMaintenanceRecordAction(
   if (!dasmUserId) {
     return {
       ok: false,
-      message: "افتح الصفحة من بوابة داسم أولاً حتى نربط الصيانة بحسابك.",
+      message: "افتح الصفحة من بوابة DASM أولاً حتى نربط الصيانة بحسابك.",
     };
   }
 

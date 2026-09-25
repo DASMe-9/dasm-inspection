@@ -88,7 +88,7 @@ export default async function PublicReportPage({
     >
       <header className="bg-[#26215C] text-[#EEEDFE]">
         <div className="mx-auto max-w-3xl px-4 py-5">
-          <p className="text-xs font-medium text-[#AFA9EC]">فحص داسم — تقرير معتمد</p>
+          <p className="text-xs font-medium text-[#AFA9EC]">فحص DASM — تقرير معتمد</p>
           <h1 className="mt-1 text-xl font-medium">{report.workshopName ?? "ورشة معتمدة"}</h1>
           <p className="mt-1 text-sm text-[#AFA9EC]">اعتُمد في {fmtDate(report.approvedAt)}</p>
         </div>
@@ -118,7 +118,7 @@ export default async function PublicReportPage({
                 مسار البيع: {TRACK_LABEL[report.harajTrack]}
               </span>
             )}
-            <span className="text-[11px] text-gray-500 dark:text-gray-400">درجة موزونة حسب معيار داسم</span>
+            <span className="text-[11px] text-gray-500 dark:text-gray-400">درجة موزونة حسب معيار DASM</span>
           </section>
         )}
 
@@ -157,7 +157,7 @@ export default async function PublicReportPage({
         ))}
 
         <footer className="pt-2 text-center text-xs text-gray-400 dark:text-gray-500">
-          منصة داسم للفحص — هذا التقرير معتمد ومشارَك عبر رابط خاص. لا يُفهرَس.
+          منصة DASM للفحص — هذا التقرير معتمد ومشارَك عبر رابط خاص. لا يُفهرَس.
         </footer>
       </div>
     </main>

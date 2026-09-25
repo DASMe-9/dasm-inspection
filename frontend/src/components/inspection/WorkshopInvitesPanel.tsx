@@ -8,7 +8,7 @@ export async function WorkshopInvitesPanel() {
   return (
     <SectionCard title="دعوات انضمام الورش">
       <p className="mb-4 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-        أنشئ رابط دعوة مسبق الإعداد — عند فتحه يُعبَّأ النموذج ويُربط حساب داسم
+        أنشئ رابط دعوة مسبق الإعداد — عند فتحه يُعبَّأ النموذج ويُربط حساب DASM
         تلقائياً بعد تسجيل الدخول والتقديم.
       </p>
       <WorkshopInviteCreateForm />
