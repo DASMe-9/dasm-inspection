@@ -52,12 +52,16 @@ export function WorkshopCard({
             <MapPin className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
             <span>{workshop.city}</span>
           </p>
-          {rating && (
+          {rating ? (
             <p className="flex items-center gap-1 text-xs font-semibold text-amber-700">
               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" aria-hidden />
               {rating.average}
-              <span className="font-normal text-gray-500">({rating.count})</span>
+              <span className="font-normal text-gray-500">
+                ({rating.count} تقييم فحص موثق)
+              </span>
             </p>
+          ) : (
+            <p className="text-xs text-gray-500">لا تقييمات فحص موثقة بعد</p>
           )}
           {workshop.isFeatured && (
             <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 ring-1 ring-emerald-100">
@@ -75,7 +79,7 @@ export function WorkshopCard({
           {workshop.isVerified ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-100">
               <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
-              معتمد داسم
+              مركز معتمد
             </span>
           ) : (
             <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-900 ring-1 ring-amber-100">

@@ -100,6 +100,8 @@ export interface Workshop {
   phone?: string;
   email?: string;
   isVerified: boolean;
+  /** تقييمات منشورة مرتبطة بطلبات فحص معتمدة فقط. */
+  ratingSummary?: { average: number; count: number } | null;
   isSuspended: boolean;
   suspendedAt?: string;
   suspendedBy?: string;

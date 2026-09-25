@@ -2,14 +2,10 @@ import Link from "next/link";
 import { WorkshopCard } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
 import { listWorkshopsForDirectory } from "@/lib/data/inspection";
-import { getWorkshopRatingAveragesMap } from "@/lib/data/workshop-reviews-data";
 import { PUBLIC_BRAND } from "@/components/public-site/brand-tokens";
 
 export default async function WorkshopsPage() {
-  const [list, ratingMap] = await Promise.all([
-    listWorkshopsForDirectory(),
-    getWorkshopRatingAveragesMap(),
-  ]);
+  const list = await listWorkshopsForDirectory();
   const verified = list.filter((w) => w.isVerified).length;
   const cities = new Set(list.map((w) => w.city?.trim()).filter(Boolean)).size;
 
@@ -37,10 +33,10 @@ export default async function WorkshopsPage() {
               id="workshops-hub-title"
               className="text-2xl font-bold leading-tight text-gray-900 md:text-3xl"
             >
-              اختر ورشتك وابدأ طلب الفحص
+              اختر مركز الفحص وابدأ طلبك
             </h1>
             <p className="text-sm leading-relaxed text-gray-600 md:text-base">
-              قارن الموقع والسعر، ثم اختر الورشة المناسبة. سنفتح نموذج الطلب والورشة محددة مسبقاً لتضيف
+              قارن الموقع والسعر والتقييمات الموثقة، ثم اختر المركز المناسب. سنفتح نموذج الطلب والمركز محدداً مسبقاً لتضيف
               بيانات المركبة وموعدك المفضّل.
             </p>
           </div>
@@ -49,21 +45,21 @@ export default async function WorkshopsPage() {
               href="#available-workshops"
               className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0A2342] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
             >
-              اختر ورشة الآن
+              اختر مركزاً الآن
             </Link>
             <Link
               href="/requests"
               className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 bg-white px-4 text-sm font-bold shadow-sm transition hover:bg-emerald-50"
               style={{ borderColor: primary, color: primary }}
             >
-              طلب دون تفضيل ورشة
+              طلب دون تفضيل مركز
             </Link>
           </div>
         </div>
 
         {list.length > 0 && (
           <dl className="relative mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatBox label="ورش مسجّلة" value={String(list.length)} />
+            <StatBox label="مراكز مسجّلة" value={String(list.length)} />
             <StatBox label="معتمدة داسم" value={String(verified)} />
             <StatBox label="مدن تغطية" value={String(cities || "—")} />
             <StatBox label="تحديث القائمة" value="مباشر" hint="من Supabase" />
@@ -74,7 +70,7 @@ export default async function WorkshopsPage() {
       {list.length === 0 ? (
         <SectionCard>
           <EmptyState
-            title="لا توجد ورش متاحة حالياً"
+            title="لا توجد مراكز فحص متاحة حالياً"
             description="نعمل على تحديث قائمة الشركاء. حاول مرة أخرى لاحقاً أو تواصل مع خدمة العملاء."
           />
         </SectionCard>
@@ -88,7 +84,7 @@ export default async function WorkshopsPage() {
             <div>
               <p className="text-xs font-bold text-emerald-400">اختر ثم أكمل الطلب</p>
               <h2 id="available-workshops-title" className="mt-1 text-xl font-bold text-white">
-                الورش المتاحة للحجز
+                مراكز الفحص المتاحة للحجز
               </h2>
             </div>
             <p className="text-sm text-slate-300">اختيارك يظل قابلاً للتعديل داخل نموذج الطلب.</p>
@@ -98,7 +94,7 @@ export default async function WorkshopsPage() {
               <WorkshopCard
                 key={w.id}
                 workshop={w}
-                rating={ratingMap.get(w.id) ?? null}
+                rating={w.ratingSummary}
               />
             ))}
           </div>

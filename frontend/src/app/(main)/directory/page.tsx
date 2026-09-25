@@ -47,10 +47,10 @@ export default async function WorkshopsDirectoryPage() {
               id="workshops-directory-title"
               className="text-2xl font-bold leading-tight text-gray-900 dark:text-slate-100 md:text-3xl"
             >
-              الورش المعتمدة
+              مراكز الفحص المعتمدة
             </h1>
             <p className="text-sm leading-relaxed text-gray-600 dark:text-slate-400 md:text-base">
-              شركاء الفحص المعتمدون من داسم — تصفّح الورش الموثوقة واربط طلباتك بورشة ضمن منظومة
+              شركاء الفحص المعتمدون من داسم — قارن مراكز الفحص بالتقييمات الموثقة واربط طلبك بمركز ضمن منظومة
               واحدة.
             </p>
           </div>
@@ -66,7 +66,7 @@ export default async function WorkshopsDirectoryPage() {
 
         {list.length > 0 && (
           <dl className="relative mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatBox label="ورش مسجّلة" value={String(list.length)} />
+            <StatBox label="مراكز مسجّلة" value={String(list.length)} />
             <StatBox label="معتمدة داسم" value={String(verified)} />
             <StatBox label="مدن تغطية" value={String(cities || "—")} />
             <StatBox label="تحديث القائمة" value="مباشر" hint="من Supabase" />
@@ -84,7 +84,7 @@ export default async function WorkshopsDirectoryPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {list.map((w) => (
-            <WorkshopCard key={w.id} workshop={w} />
+            <WorkshopCard key={w.id} workshop={w} rating={w.ratingSummary} />
           ))}
         </div>
       )}
