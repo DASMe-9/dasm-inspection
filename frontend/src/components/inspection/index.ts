@@ -15,3 +15,4 @@ export { RequestListFilters } from "./RequestListFilters";
 export { ExternalReportVault } from "./ExternalReportVault";
 export { VehicleMaintenanceLog } from "./VehicleMaintenanceLog";
 export { VehicleObdScanLog } from "./VehicleObdScanLog";
+export { PurchaseDecisionBanner } from "./PurchaseDecisionBanner";

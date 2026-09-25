@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ReportChecklistRow, RequestStatusBadge } from "@/components/inspection";
+import {
+  PurchaseDecisionBanner,
+  ReportChecklistRow,
+  RequestStatusBadge,
+} from "@/components/inspection";
 import { ReportPrintToolbar } from "@/components/inspection/ReportPrintToolbar";
 import { SectionCard } from "@/components/shared";
 import { canAccessInspectionResource } from "@/lib/auth/resource-ownership.server";
@@ -11,6 +15,7 @@ import {
   getWorkshop,
 } from "@/lib/data/inspection";
 import { TOKENS } from "@/lib/theme";
+import { derivePurchaseDecision } from "@/lib/inspection/purchase-decision";
 import type { AppRole } from "@/types";
 import "@/styles/report-print.css";
 
@@ -44,6 +49,7 @@ export default async function ReportDetailPage({
 
   const workshop = await getWorkshop(report.workshopId);
   const inspector = await getInspector(report.inspectorId);
+  const purchaseDecision = derivePurchaseDecision(report.items);
 
   return (
     <div className="space-y-6" dir="rtl">
@@ -65,6 +71,12 @@ export default async function ReportDetailPage({
           </p>
         )}
       </div>
+
+      {report.approvedAt && (
+        <SectionCard title="قرار الشراء">
+          <PurchaseDecisionBanner decision={purchaseDecision} />
+        </SectionCard>
+      )}
 
       <SectionCard title="ملخص">
         <p className="text-sm text-gray-800">{report.overallSummary}</p>

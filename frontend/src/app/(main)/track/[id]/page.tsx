@@ -4,6 +4,7 @@ import {
   StatusTimeline,
   ReportChecklistRow,
   InspectionFeePayPanel,
+  PurchaseDecisionBanner,
 } from "@/components/inspection";
 import { SectionCard, EmptyState } from "@/components/shared";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/lib/data/inspection";
 import { TOKENS } from "@/lib/theme";
 import { formatInspectionPriceSar } from "@/lib/inspection-pricing";
+import { derivePurchaseDecision } from "@/lib/inspection/purchase-decision";
 
 const STATUS_AR: Record<string, string> = {
   draft: "مسودة",
@@ -161,6 +163,8 @@ export default async function CustomerTrackingPage({
       {/* Report summary - only when approved */}
       {isApproved && report && (
         <SectionCard title="ملخص تقرير الفحص">
+          <PurchaseDecisionBanner decision={derivePurchaseDecision(report.items)} />
+          <div className="h-4" />
           <p className="text-sm text-gray-800 mb-3">{report.overallSummary}</p>
           {report.approvedAt && (
             <p className="text-xs text-gray-500 mb-4">
