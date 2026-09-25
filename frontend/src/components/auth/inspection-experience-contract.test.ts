@@ -19,9 +19,11 @@ describe("inspection login and booking experience", () => {
   it("shows the same four-stage request journey as the mobile app", () => {
     const form = read("src/components/inspection/NewInspectionRequestForm.tsx");
 
-    for (const label of ["المركبة", "الخدمة", "الورشة", "الإرسال"]) {
+    for (const label of ["المركبة", "الخدمة", "المركز", "الموعد", "الإرسال"]) {
       expect(form).toContain(label);
     }
     expect(form).toContain('aria-label="مسار طلب الفحص"');
+    expect(form).toContain('name="preferred_slot_at"');
+    expect(form).toContain("required");
   });
 });

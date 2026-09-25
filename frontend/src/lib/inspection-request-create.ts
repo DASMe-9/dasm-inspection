@@ -81,15 +81,18 @@ export function normalizeCreateRequestInput(input: {
     };
   }
 
-  let preferredSlotAt: string | null = null;
   const preferredSlotRaw = input.preferredSlotAt.trim();
-  if (preferredSlotRaw) {
-    const parsed = new Date(preferredSlotRaw);
-    if (Number.isNaN(parsed.getTime())) {
-      return { ok: false, message: "موعد التفضيل غير صالح." };
-    }
-    preferredSlotAt = parsed.toISOString();
+  if (!preferredSlotRaw) {
+    return { ok: false, message: "اختر تاريخ ووقت الموعد." };
   }
+  const parsed = new Date(preferredSlotRaw);
+  if (Number.isNaN(parsed.getTime())) {
+    return { ok: false, message: "موعد الفحص غير صالح." };
+  }
+  if (parsed.getTime() <= Date.now()) {
+    return { ok: false, message: "اختر موعداً مستقبلياً للفحص." };
+  }
+  const preferredSlotAt = parsed.toISOString();
 
   return {
     ok: true,

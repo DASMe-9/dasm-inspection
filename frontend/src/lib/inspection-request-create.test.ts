@@ -37,7 +37,7 @@ describe("normalizeCreateRequestInput", () => {
       vehicleLabel: "تويوتا كامري 2022",
       preferredServiceMode: "workshop",
       fieldServiceAddress: "",
-      preferredSlotAt: "",
+      preferredSlotAt: "2099-06-12T10:30:00.000Z",
     });
 
     expect(result).toEqual({
@@ -47,9 +47,31 @@ describe("normalizeCreateRequestInput", () => {
         vehicleLabel: "تويوتا كامري 2022",
         serviceMode: "workshop",
         fieldServiceAddress: null,
-        preferredSlotAt: null,
+        preferredSlotAt: "2099-06-12T10:30:00.000Z",
       },
     });
+  });
+
+  it("requires a specific future appointment", () => {
+    expect(
+      normalizeCreateRequestInput({
+        title: "",
+        vehicleLabel: "تويوتا كامري 2022",
+        preferredServiceMode: "workshop",
+        fieldServiceAddress: "",
+        preferredSlotAt: "",
+      })
+    ).toEqual({ ok: false, message: "اختر تاريخ ووقت الموعد." });
+
+    expect(
+      normalizeCreateRequestInput({
+        title: "",
+        vehicleLabel: "تويوتا كامري 2022",
+        preferredServiceMode: "workshop",
+        fieldServiceAddress: "",
+        preferredSlotAt: "2020-01-01T10:00:00.000Z",
+      })
+    ).toEqual({ ok: false, message: "اختر موعداً مستقبلياً للفحص." });
   });
 
   it("requires an address for field inspection", () => {
@@ -57,9 +79,9 @@ describe("normalizeCreateRequestInput", () => {
       normalizeCreateRequestInput({
         title: "",
         vehicleLabel: "كيا كادينزا",
-        preferredServiceMode: "field",
-        fieldServiceAddress: "",
-        preferredSlotAt: "",
+      preferredServiceMode: "field",
+      fieldServiceAddress: "",
+      preferredSlotAt: "2099-06-12T10:30:00.000Z",
       })
     ).toEqual({
       ok: false,
@@ -73,7 +95,7 @@ describe("normalizeCreateRequestInput", () => {
       vehicleLabel: "هيونداي سوناتا",
       preferredServiceMode: "workshop",
       fieldServiceAddress: "الرياض",
-      preferredSlotAt: "",
+      preferredSlotAt: "2099-06-12T10:30:00.000Z",
     });
 
     expect(result.ok && result.value.fieldServiceAddress).toBeNull();
