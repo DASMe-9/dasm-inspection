@@ -27,7 +27,7 @@ export default async function VehicleFilePage({
       <SectionCard>
         <EmptyState
           title="لم نعثر على حسابك"
-          description="افتح الرابط من منصّة داسم لعرض ملف سيارتك الفني."
+          description="افتح الرابط من منصّة DASM لعرض ملف سيارتك الفني."
         />
       </SectionCard>
     );

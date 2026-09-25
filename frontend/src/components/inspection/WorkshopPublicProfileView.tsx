@@ -299,11 +299,11 @@ export function WorkshopPublicProfileView({
             {profile.isVerified ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 ring-1 ring-emerald-100">
                 <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
-                معتمد في منظومة داسم
+                معتمد في منظومة DASM
               </span>
             ) : (
               <span className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-900 ring-1 ring-amber-100">
-                قيد اعتماد داسم — التفاصيل محدودة
+                قيد اعتماد DASM — التفاصيل محدودة
               </span>
             )}
             {profile.isFeatured && (
@@ -418,7 +418,7 @@ export function WorkshopPublicProfileView({
             <SectionCard title="جهات الاتصال">
               {!profile.isVerified ? (
                 <p className="text-sm text-gray-600">
-                  تُعرض بيانات الاتصال بعد اعتماد الورشة في منظومة داسم.
+                  تُعرض بيانات الاتصال بعد اعتماد الورشة في منظومة DASM.
                 </p>
               ) : (
                 <ul className="space-y-4 text-sm">
@@ -553,7 +553,7 @@ export function WorkshopPublicProfileView({
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-violet-200 bg-violet-50/30 px-4 py-3 text-sm text-gray-700">
-        <span>لطلب فحص أو متابعة طلباتك سجّل الدخول بحساب داسم.</span>
+        <span>لطلب فحص أو متابعة طلباتك سجّل الدخول.</span>
         <Link
           href="/auth/login"
           className="inline-flex min-h-11 items-center gap-1 font-semibold transition hover:opacity-90"

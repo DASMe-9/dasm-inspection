@@ -45,7 +45,7 @@ export function PersonaPageHero({
 
   return (
     <section
-      className="relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] p-6 shadow-md md:p-8"
+      className="relative overflow-hidden rounded-xl border border-white/10 bg-[linear-gradient(135deg,#0B1E3A_0%,#12294a_100%)] p-4 shadow-sm md:p-5"
       aria-labelledby="persona-page-hero-title"
     >
       <div className={ACCENT_BAR} aria-hidden />
@@ -54,13 +54,13 @@ export function PersonaPageHero({
           <p className={`text-xs font-semibold ${eyebrowTone}`}>{eyebrow}</p>
           <h1
             id="persona-page-hero-title"
-            className="mt-1 flex items-center gap-2 text-2xl font-bold text-white md:text-3xl"
+            className="mt-1 flex items-center gap-2 text-xl font-bold text-white md:text-2xl"
           >
             {Icon ? <Icon className="h-7 w-7 shrink-0 text-[#2FBF4E]" aria-hidden /> : null}
             {title}
           </h1>
           {description ? (
-            <p className="mt-2 text-sm leading-relaxed text-slate-300 md:text-base">
+            <p className="mt-1.5 text-sm leading-6 text-slate-300">
               {description}
             </p>
           ) : null}
@@ -84,14 +84,14 @@ export function PersonaPageHero({
         ) : null}
       </div>
       {stats.length > 0 ? (
-        <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <dl className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
             >
               <dt className="text-[11px] text-slate-400">{stat.label}</dt>
-              <dd className="mt-0.5 text-lg font-bold text-white">{stat.value}</dd>
+              <dd className="mt-0.5 text-base font-bold text-white">{stat.value}</dd>
             </div>
           ))}
         </dl>

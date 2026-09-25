@@ -27,7 +27,7 @@ export function PublicSiteHeader() {
         <Link
           href="/"
           className="inline-flex min-h-11 min-w-0 shrink items-center"
-          aria-label="فحص داسم — الصفحة الرئيسية"
+          aria-label="فحص DASM — الصفحة الرئيسية"
           onClick={() => setOpen(false)}
         >
           <InspectionLogo compact />

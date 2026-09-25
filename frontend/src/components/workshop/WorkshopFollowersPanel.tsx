@@ -9,7 +9,7 @@ export function WorkshopFollowersPanel({
   return (
     <div className="space-y-4">
       <p className="text-sm text-slate-600 dark:text-slate-400">
-        مستخدمون داسم يتابعون تحديثات ورشتك (إشعارات داخل التطبيق عند نشر
+        مستخدمون DASM يتابعون تحديثات ورشتك (إشعارات داخل التطبيق عند نشر
         تقييمات معتمدة أو تحديثات).
       </p>
 
@@ -25,7 +25,7 @@ export function WorkshopFollowersPanel({
             <table className="w-full text-right text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                  <th className="py-2 font-semibold">معرف مستخدم داسم</th>
+                  <th className="py-2 font-semibold">معرف مستخدم DASM</th>
                   <th className="py-2 font-semibold">تاريخ المتابعة</th>
                 </tr>
               </thead>

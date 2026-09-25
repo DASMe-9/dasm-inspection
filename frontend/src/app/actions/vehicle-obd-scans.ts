@@ -81,7 +81,7 @@ export async function createVehicleObdScanAction(
   if (!dasmUserId) {
     return {
       ok: false,
-      message: "افتح الصفحة من بوابة داسم أولًا حتى نربط فحص الكمبيوتر بحسابك.",
+      message: "افتح الصفحة من بوابة DASM أولًا حتى نربط فحص الكمبيوتر بحسابك.",
     };
   }
 

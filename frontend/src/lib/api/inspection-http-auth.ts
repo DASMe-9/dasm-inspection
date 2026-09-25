@@ -32,11 +32,18 @@ export type DasmProfileUser = {
   firstName?: string | null;
   lastName?: string | null;
   email?: string | null;
+  phone?: string | null;
+  emailVerified?: boolean;
+  phoneVerified?: boolean;
   userCode?: string | null;
   displayLocation?: string | null;
   address?: {
     areaLabel?: string | null;
     city?: string | null;
+    district?: string | null;
+    confirmed?: boolean;
+    nationalAddressShort?: string | null;
+    nationalAddressStatus?: string | null;
   } | null;
   /** نوع حساب DASM (مثل admin، venue_owner، user). */
   type?: string | null;
@@ -44,7 +51,7 @@ export type DasmProfileUser = {
   inspectionRole?: string | null;
 };
 
-function mapProfilePayload(u: Record<string, unknown>): DasmProfileUser | null {
+export function mapProfilePayload(u: Record<string, unknown>): DasmProfileUser | null {
   if (u?.id == null) return null;
   const rawRole =
     (typeof u.inspection_role === "string" && u.inspection_role) ||
@@ -65,6 +72,9 @@ function mapProfilePayload(u: Record<string, unknown>): DasmProfileUser | null {
     firstName: typeof u.first_name === "string" ? u.first_name : null,
     lastName: typeof u.last_name === "string" ? u.last_name : null,
     email: typeof u.email === "string" ? u.email : null,
+    phone: typeof u.phone === "string" ? u.phone : null,
+    emailVerified: typeof u.email_verified_at === "string",
+    phoneVerified: typeof u.phone_verified_at === "string",
     userCode: typeof u.user_code === "string" ? u.user_code : null,
     displayLocation:
       typeof u.display_location === "string" ? u.display_location : null,
@@ -73,6 +83,16 @@ function mapProfilePayload(u: Record<string, unknown>): DasmProfileUser | null {
           areaLabel:
             typeof addr.area_label === "string" ? addr.area_label : null,
           city: typeof addr.city === "string" ? addr.city : null,
+          district: typeof addr.district === "string" ? addr.district : null,
+          confirmed: addr.confirmed === true,
+          nationalAddressShort:
+            typeof addr.national_address_short === "string"
+              ? addr.national_address_short
+              : null,
+          nationalAddressStatus:
+            typeof addr.national_address_status === "string"
+              ? addr.national_address_status
+              : null,
         }
       : null,
     type: rawType?.trim() ? rawType.trim() : null,

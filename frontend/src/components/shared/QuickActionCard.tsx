@@ -26,17 +26,17 @@ export function QuickActionCard({
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-gray-200/90 bg-white p-5 shadow-sm ring-1 ring-black/[0.04] transition-all hover:border-[#1E74E8]/40 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:ring-white/5 dark:hover:border-blue-500/40"
+      className="group flex items-center gap-3 rounded-xl border border-gray-200/90 bg-white p-3.5 shadow-sm transition hover:border-[#1E74E8]/40 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-500/40"
     >
       <span
-        className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl ${ACCENT_STYLES[accent]}`}
+        className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${ACCENT_STYLES[accent]}`}
       >
         <Icon className="h-5 w-5" aria-hidden />
       </span>
-      <p className="font-semibold text-gray-900 dark:text-slate-100">{title}</p>
-      <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-slate-400">
-        {description}
-      </p>
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold text-gray-900 dark:text-slate-100">{title}</span>
+        <span className="mt-0.5 block truncate text-xs text-gray-500 dark:text-slate-400">{description}</span>
+      </span>
     </Link>
   );
 }

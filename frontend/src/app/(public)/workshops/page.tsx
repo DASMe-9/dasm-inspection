@@ -60,7 +60,7 @@ export default async function WorkshopsPage() {
         {list.length > 0 && (
           <dl className="relative mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatBox label="مراكز مسجّلة" value={String(list.length)} />
-            <StatBox label="معتمدة داسم" value={String(verified)} />
+            <StatBox label="معتمدة DASM" value={String(verified)} />
             <StatBox label="مدن تغطية" value={String(cities || "—")} />
             <StatBox label="تحديث القائمة" value="مباشر" hint="من Supabase" />
           </dl>
@@ -104,7 +104,7 @@ export default async function WorkshopsPage() {
               href="/workshops/apply"
               className="inline-flex min-h-11 items-center font-bold text-emerald-400 hover:text-emerald-300"
             >
-              انضم إلى شبكة داسم
+              انضم إلى شبكة DASM
             </Link>
             <span className="mx-2 text-slate-600">•</span>
             <Link

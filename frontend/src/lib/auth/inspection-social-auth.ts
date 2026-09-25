@@ -84,7 +84,7 @@ function applySocialResponse(body: CoreAuthBody): SocialApplyResult {
       linkRequired: true,
       error:
         body?.message ||
-        "يوجد حساب بهذا البريد. اربطه من منصة داسم الرئيسية ثم عُد.",
+        "يوجد حساب بهذا البريد. اربطه من منصة DASM الرئيسية ثم عُد.",
     };
   }
 

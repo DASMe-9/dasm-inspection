@@ -165,7 +165,7 @@ export async function createInspectionRequestAction(formData: FormData): Promise
     if (!dasm_car_id && !dasm_user_id) {
       return {
         ok: false,
-        message: "أدخل dasm_car_id أو اربط الطلب بحساب داسم (dasm_user_id).",
+        message: "أدخل dasm_car_id أو اربط الطلب بحساب DASM (dasm_user_id).",
       };
     }
 

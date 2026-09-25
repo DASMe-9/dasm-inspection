@@ -152,7 +152,7 @@ export function NewInspectionRequestForm({
           className="rounded-lg border border-sky-200 bg-sky-50/90 px-3 py-2.5 text-xs text-sky-950 space-y-1"
           role="status"
         >
-          <p className="font-semibold">بيانات السيارة من لوحة داسم</p>
+          <p className="font-semibold">بيانات السيارة من لوحة DASM</p>
           <p>
             رُبط الطلب بسيارة المنصّة رقم{" "}
             <span className="font-mono font-semibold">{prefilledCarId}</span>
@@ -180,8 +180,8 @@ export function NewInspectionRequestForm({
       ) : (
         <input
           name="dasm_car_id"
-          placeholder="معرّف السيارة في داسم"
-          aria-label="معرّف السيارة في داسم"
+          placeholder="معرّف السيارة في DASM"
+          aria-label="معرّف السيارة في DASM"
           required
           inputMode="numeric"
           className="min-h-12 w-full rounded-xl border border-slate-300 px-3.5 py-3 text-base"
@@ -208,13 +208,13 @@ export function NewInspectionRequestForm({
 
       {defaultDasmUserId ? (
         <p className="rounded-lg border border-emerald-100 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
-          سيُحفظ الطلب تلقائياً في حسابك لدى داسم.
+          سيُحفظ الطلب تلقائياً في حسابك لدى DASM.
         </p>
       ) : (
         <input
           name="dasm_user_id"
-          placeholder="رقم حساب داسم (اختياري)"
-          aria-label="رقم حساب داسم"
+          placeholder="رقم حساب DASM (اختياري)"
+          aria-label="رقم حساب DASM"
           inputMode="numeric"
           className="min-h-12 w-full rounded-xl border border-slate-300 px-3.5 py-3 text-base"
         />

@@ -61,7 +61,7 @@ export default async function WalletPage() {
         <SectionCard>
           <EmptyState
             title="لم نعثر على حسابك"
-            description="افتح رابط الدخول من منصّة داسم لعرض رصيد محفظتك وحركاتها."
+            description="افتح رابط الدخول من منصّة DASM لعرض رصيد محفظتك وحركاتها."
           />
         </SectionCard>
       </div>
@@ -191,7 +191,7 @@ function WorkshopWalletView({
         variant="workshop"
         eyebrow="محفظة الورشة"
         title="الأرباح والصرف"
-        description="رصيد محفظة الفحص وحركاتها المالية — من ليدجر داسم."
+        description="رصيد محفظة الفحص وحركاتها المالية — من ليدجر DASM."
         icon={WalletIcon}
         actions={[{ href: "/workshop", label: "لوحة الورشة", primary: true }]}
         stats={[
@@ -224,7 +224,7 @@ function WorkshopWalletView({
       </SectionCard>
 
       <p className="text-xs text-gray-400 dark:text-slate-500">
-        الصرف والسحب يتمّان عبر منصّة داسم.{" "}
+        الصرف والسحب يتمّان عبر منصّة DASM.{" "}
         <Link href="/dashboard" className="text-[#1E74E8] hover:underline">
           العودة للوحة
         </Link>

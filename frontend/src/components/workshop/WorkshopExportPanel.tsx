@@ -20,7 +20,7 @@ const EXPORT_ITEMS: {
   {
     dataset: "followers",
     title: "المتابعون",
-    description: "قائمة معرفات مستخدمي داسم الذين يتابعون الورشة.",
+    description: "قائمة معرفات مستخدمي DASM الذين يتابعون الورشة.",
   },
 ];
 

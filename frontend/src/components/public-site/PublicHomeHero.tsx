@@ -79,7 +79,7 @@ export function PublicHomeHero() {
             <div className="inspection-scan-line absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--inspection-accent)] to-transparent" aria-hidden />
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">رحلة فحص داسم</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">رحلة فحص DASM</p>
                 <p className="mt-1 text-lg font-extrabold text-white">كل شيء أمامك بوضوح</p>
               </div>
               <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--inspection-accent)] text-[#052015] shadow-lg">
@@ -110,7 +110,7 @@ export function PublicHomeHero() {
 
             <div className="mt-5 flex items-center justify-between rounded-2xl bg-[var(--inspection-accent)]/10 px-4 py-3 text-xs font-bold text-white/70">
               <span>من الحجز إلى التقرير</span>
-              <span className="inline-flex items-center gap-1 text-[var(--inspection-accent)]"><span className="h-2 w-2 rounded-full bg-current" />متصل بمنظومة داسم</span>
+              <span className="inline-flex items-center gap-1 text-[var(--inspection-accent)]"><span className="h-2 w-2 rounded-full bg-current" />متصل بمنظومة DASM</span>
             </div>
           </div>
         </div>

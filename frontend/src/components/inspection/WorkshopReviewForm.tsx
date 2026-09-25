@@ -24,7 +24,7 @@ export function WorkshopReviewForm({
   if (!dasmUserId) {
     return (
       <p className="text-sm text-gray-600">
-        بعد تسجيل الدخول عبر داسم يمكنك تقييم الورشة إذا كان لديك فحص معتمد هنا.
+        بعد تسجيل الدخول عبر DASM يمكنك تقييم الورشة إذا كان لديك فحص معتمد هنا.
       </p>
     );
   }

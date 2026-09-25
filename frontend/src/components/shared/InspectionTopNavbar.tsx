@@ -18,7 +18,6 @@ import type { InspectionShellContext } from "@/lib/auth/inspection-shell-context
 type Props = Pick<
   InspectionShellContext,
   | "personDisplayName"
-  | "coreProfileUrl"
   | "workshopProfileHref"
   | "workshopPublicHref"
   | "workshopWelcome"
@@ -36,7 +35,6 @@ function initials(name: string): string {
 
 export function InspectionTopNavbar({
   personDisplayName,
-  coreProfileUrl,
   workshopProfileHref,
   workshopPublicHref,
   workshopWelcome,
@@ -110,7 +108,7 @@ export function InspectionTopNavbar({
         ) : (
           <div className="min-w-0 lg:hidden">
             <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
-              فحص داسم
+              فحص DASM
             </p>
             <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
               لوحة الفحص الفني
@@ -183,17 +181,15 @@ export function InspectionTopNavbar({
                   <ExternalLink className="ms-auto h-3.5 w-3.5 text-slate-400" aria-hidden />
                 </Link>
               ) : null}
-              <a
-                href={coreProfileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/settings#account"
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 <UserRound className="h-4 w-4 text-slate-500" aria-hidden />
-                ملفي على داسم
-              </a>
+                حسابي في فحص DASM
+              </Link>
               <div className="my-1 border-t border-slate-100 dark:border-slate-700" />
               <a
                 href="/api/auth/logout"

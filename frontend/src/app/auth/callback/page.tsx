@@ -38,7 +38,7 @@ function AccessDenied({ type }: { type: string }) {
           غير مخوّل
         </h2>
         <p style={{ margin: "0 0 1.5rem", color: "rgba(255,255,255,0.4)", fontSize: "0.875rem" }}>
-          حسابك ({type}) لا يملك صلاحية دخول منصة فحص داسم عبر SSO.
+          حسابك ({type}) لا يملك صلاحية دخول منصة فحص DASM عبر SSO.
         </p>
         <a
           href="https://www.dasm.com.sa/dashboard"
@@ -53,7 +53,7 @@ function AccessDenied({ type }: { type: string }) {
             fontSize: "0.875rem",
           }}
         >
-          العودة لمنصة داسم
+          العودة لمنصة DASM
         </a>
       </div>
     </div>
@@ -74,7 +74,7 @@ function CallbackInner() {
 
     if (!ssoToken) {
       setStatus("error");
-      setErrorMsg("رابط الدخول من داسم غير مكتمل أو انتهت صلاحيته.");
+      setErrorMsg("رابط الدخول من DASM غير مكتمل أو انتهت صلاحيته.");
       return;
     }
 
@@ -188,7 +188,7 @@ function CallbackInner() {
         }}
       />
       <p style={{ margin: 0, fontSize: "0.9375rem" }}>
-        {status === "error" ? errorMsg : "جارٍ إكمال الدخول من منصة داسم…"}
+        {status === "error" ? errorMsg : "جارٍ إكمال الدخول من منصة DASM…"}
       </p>
       {status === "error" ? (
         <div
@@ -210,7 +210,7 @@ function CallbackInner() {
               fontWeight: 700,
             }}
           >
-            إعادة الدخول عبر داسم
+            إعادة الدخول عبر DASM
           </a>
           <a
             href="https://www.dasm.com.sa/dashboard"
@@ -222,7 +222,7 @@ function CallbackInner() {
               textDecoration: "none",
             }}
           >
-            العودة إلى داسم
+            العودة إلى DASM
           </a>
         </div>
       ) : null}

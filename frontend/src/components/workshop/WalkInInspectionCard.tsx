@@ -107,7 +107,7 @@ export function WalkInInspectionCard({
 
             <label className="block">
               <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                معرف مستخدم داسم (اختياري)
+                معرف مستخدم DASM (اختياري)
               </span>
               <input
                 name="dasm_user_id"

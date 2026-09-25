@@ -76,9 +76,9 @@ function SocialCallbackInner() {
             </span>
             <h1 className="text-xl font-extrabold">غير مخوّل</h1>
             <p className="mt-2 text-sm leading-7 text-white/60">
-              حسابك ({deniedType || "unknown"}) لا يملك صلاحية دخول منصة فحص داسم.
+              حسابك ({deniedType || "unknown"}) لا يملك صلاحية دخول منصة فحص DASM.
               <br />
-              تواصل مع إدارة داسم لتفعيل الصلاحية.
+              تواصل مع إدارة DASM لتفعيل الصلاحية.
             </p>
             <button type="button" onClick={() => router.replace("/auth/login")} className={BACK_BTN}>
               العودة لتسجيل الدخول

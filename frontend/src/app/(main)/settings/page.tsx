@@ -2,6 +2,7 @@ import { WorkshopAdminModerationPanel } from "@/components/inspection/WorkshopAd
 import { WorkshopApplicationsPanel } from "@/components/inspection/WorkshopApplicationsPanel";
 import { WorkshopInvitesPanel } from "@/components/inspection/WorkshopInvitesPanel";
 import { WorkshopReviewModerationPanel } from "@/components/inspection/WorkshopReviewModerationPanel";
+import { InspectionAccountPanel } from "@/components/account/InspectionAccountPanel";
 import { SectionCard } from "@/components/shared";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { WorkshopProfileHub } from "@/components/workshop/WorkshopProfileHub";
@@ -9,16 +10,8 @@ import { getInspectionAuthContext } from "@/lib/auth/inspection-context.server";
 import { resolveInspectionPersona } from "@/lib/auth/resolve-inspection-persona";
 import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
 import { resolveWorkshopPage } from "@/lib/auth/resolve-workshop-page.server";
-import type { AppRole } from "@/types";
+import { resolveInspectionShellContext } from "@/lib/auth/resolve-inspection-shell-context.server";
 import { cookies, headers } from "next/headers";
-
-const ROLES: { id: AppRole; label: string }[] = [
-  { id: "super_admin", label: "مشرف عام" },
-  { id: "inspection_admin", label: "إدارة الفحص" },
-  { id: "workshop_manager", label: "مدير ورشة" },
-  { id: "inspector", label: "مفتش" },
-  { id: "viewer", label: "عرض فقط" },
-];
 
 type Props = { searchParams: Promise<{ workshop_id?: string }> };
 
@@ -40,9 +33,19 @@ export default async function SettingsPage({ searchParams }: Props) {
   const workshopResolved = isWorkshopOp
     ? await resolveWorkshopPage(sp.workshop_id)
     : null;
+  const accountProfile = await resolveInspectionShellContext();
 
   return (
     <div className="space-y-6" dir="rtl">
+      <div>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-slate-100">الإعدادات</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          حساب الفحص وتفضيلات هذه الخدمة
+        </p>
+      </div>
+
+      <InspectionAccountPanel profile={accountProfile} />
+
       {workshopResolved ? (
         <WorkshopProfileHub
           workshopId={workshopResolved.workshopId}
@@ -52,10 +55,7 @@ export default async function SettingsPage({ searchParams }: Props) {
         />
       ) : (
         <>
-          <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100">
-            الإعدادات
-          </h2>
-          <SectionCard title="المظهر">
+          <SectionCard title="مظهر التطبيق">
             <div className="flex items-center justify-between gap-3">
               <span className="text-sm text-gray-700 dark:text-slate-300">
                 الوضع الداكن / الفاتح
@@ -75,32 +75,6 @@ export default async function SettingsPage({ searchParams }: Props) {
         </>
       )}
 
-      {!isWorkshopOp && (
-        <>
-          <SectionCard title="الأدوار (V1)">
-            <ul className="text-sm space-y-2">
-              {ROLES.map((r) => (
-                <li key={r.id} className="flex justify-between gap-2">
-                  <span>{r.label}</span>
-                  <code className="text-xs text-gray-500">{r.id}</code>
-                </li>
-              ))}
-            </ul>
-            <p className="text-xs text-gray-500 mt-3">
-              الصلاحيات الفعلية تُفرض عبر DASM / JWT عند الربط.
-            </p>
-          </SectionCard>
-
-          <SectionCard title="التكامل">
-            <p className="text-sm text-gray-600">
-              هذا التطبيق مستقل في الريبو ويستهلك معرفات DASM (
-              <code className="text-xs">dasm_car_id</code>،{" "}
-              <code className="text-xs">dasm_user_id</code>
-              ). راجع <code className="text-xs">docs/DASM_INTEGRATION.md</code>.
-            </p>
-          </SectionCard>
-        </>
-      )}
     </div>
   );
 }

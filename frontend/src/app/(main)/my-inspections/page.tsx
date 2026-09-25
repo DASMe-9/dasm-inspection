@@ -60,14 +60,11 @@ export default async function MyInspectionsPage({
     <div className="space-y-5 md:space-y-6" dir="rtl">
       <PersonaPageHero
         variant="customer"
-        eyebrow="ملفك الفني في داسم"
+        eyebrow="ملفك الفني في DASM"
         title="طلباتي ومركباتي"
-        description="الطلبات المرتبطة بحسابك عند الدخول عبر منصّة داسم — مع الملف الفني والتذكيرات."
+        description="الطلبات المرتبطة بحسابك عند الدخول عبر منصّة DASM — مع الملف الفني والتذكيرات."
         icon={Car}
-        actions={[
-          { href: "/requests", label: "طلب فحص جديد", primary: true },
-          { href: "/wallet", label: "محفظتي" },
-        ]}
+        actions={[{ href: "/wallet", label: "محفظتي" }]}
         stats={[
           { label: "طلبات نشطة", value: String(stats.active) },
           { label: "معتمدة", value: String(stats.approved) },
@@ -80,7 +77,7 @@ export default async function MyInspectionsPage({
         <SectionCard>
           <EmptyState
             title="لم نعثر على حسابك"
-            description="افتح رابط الدخول من منصّة داسم (GET /api/gateway?token=…) لعرض الطلبات المرتبطة بك."
+            description="افتح رابط الدخول من منصّة DASM (GET /api/gateway?token=…) لعرض الطلبات المرتبطة بك."
             action={
               <Link
                 href="/requests"
@@ -115,15 +112,7 @@ export default async function MyInspectionsPage({
             <SectionCard>
               <EmptyState
                 title="لا طلبات بهذه الحالة"
-                description="غيّر الفلتر أو أنشئ طلب فحص جديد من صفحة الطلبات ليرتبط بحسابك."
-                action={
-                  <Link
-                    href="/requests"
-                    className="inline-flex min-h-[44px] items-center rounded-xl bg-[#1E74E8] px-5 text-sm font-medium text-white hover:bg-[#1857b8]"
-                  >
-                    إنشاء طلب فحص
-                  </Link>
-                }
+                description="غيّر الفلتر لعرض طلبات مرتبطة بحالة أخرى."
               />
             </SectionCard>
           ) : (

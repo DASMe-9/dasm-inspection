@@ -35,7 +35,7 @@ const TRUST_POINTS = [
   {
     icon: ShieldCheck,
     title: "شبكة موثّقة",
-    text: "شركاء فحص ضمن منظومة داسم.",
+    text: "شركاء فحص ضمن منظومة DASM.",
   },
   {
     icon: CalendarCheck2,
@@ -60,7 +60,7 @@ const FAQ = [
   },
   {
     q: "من يمكنه تسجيل الدخول؟",
-    a: "مالكو المركبات المصرّح لهم، ومالكو الورش، والمفتشون، وفريق داسم.",
+    a: "مالكو المركبات المصرّح لهم، ومالكو الورش، والمفتشون، وفريق DASM.",
   },
 ] as const;
 
@@ -144,11 +144,11 @@ export function PublicHomeSections() {
             </span>
             <div>
               <h2 className="text-xl font-black text-white sm:text-2xl">تحتاج مساعدة قبل الحجز؟</h2>
-              <p className="mt-2 text-sm leading-7 text-white/65">فريق خدمة العملاء في منظومة داسم يساعدك في الاستفسارات التشغيلية.</p>
+              <p className="mt-2 text-sm leading-7 text-white/65">فريق خدمة العملاء في منظومة DASM يساعدك في الاستفسارات التشغيلية.</p>
             </div>
           </div>
           <Link href="https://www.dasm.com.sa" className="inline-flex min-h-14 w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-6 text-sm font-extrabold text-[#0A2342] transition hover:-translate-y-0.5 md:w-auto">
-            تواصل عبر منصة داسم
+            تواصل عبر منصة DASM
             <ArrowLeft className="h-5 w-5" aria-hidden />
           </Link>
         </div>

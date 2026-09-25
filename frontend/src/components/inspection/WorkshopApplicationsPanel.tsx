@@ -52,8 +52,8 @@ export async function WorkshopApplicationsPanel() {
                       }`}
                     >
                       {linked
-                        ? `حساب داسم مربوط: ${a.dasmUserId}`
-                        : "بدون حساب داسم — أدخل المالك يدوياً عند الاعتماد"}
+                        ? `حساب DASM مربوط: ${a.dasmUserId}`
+                        : "بدون حساب DASM — أدخل المالك يدوياً عند الاعتماد"}
                     </p>
                   </div>
                   <div className="flex w-full flex-col gap-2 sm:w-auto">

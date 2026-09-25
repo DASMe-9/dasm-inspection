@@ -23,7 +23,7 @@ export async function submitWorkshopReviewAction(
 ): Promise<WorkshopReviewActionResult> {
   const dasmUserId = await resolveDasmUserId();
   if (!dasmUserId) {
-    return { ok: false, message: "سجّل الدخول عبر منصّة داسم لإرسال تقييم." };
+    return { ok: false, message: "سجّل الدخول عبر منصّة DASM لإرسال تقييم." };
   }
 
   const workshopId = String(formData.get("workshop_id") ?? "").trim();

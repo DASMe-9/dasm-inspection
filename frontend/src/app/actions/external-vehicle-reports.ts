@@ -36,7 +36,7 @@ export async function uploadExternalVehicleReportAction(
   if (!dasmUserId) {
     return {
       ok: false,
-      message: "افتح الصفحة من بوابة داسم أولاً حتى نربط التقرير بحسابك.",
+      message: "افتح الصفحة من بوابة DASM أولاً حتى نربط التقرير بحسابك.",
     };
   }
 

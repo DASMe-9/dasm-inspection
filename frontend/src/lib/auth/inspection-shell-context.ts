@@ -3,13 +3,18 @@ export type InspectionShellContext = {
   /** اسم الشخص (first + last) */
   personDisplayName: string;
   email: string | null;
+  phone: string | null;
+  emailVerified: boolean;
+  phoneVerified: boolean;
   userCode: string | null;
   /** المنطقة من التسجيل */
   areaLabel: string | null;
   /** المدينة من التسجيل أو الورشة */
   city: string | null;
-  /** ملف الشخص على منصة داسم الأم */
-  coreProfileUrl: string;
+  district: string | null;
+  primaryLocationConfirmed: boolean;
+  nationalAddressShort: string | null;
+  nationalAddressStatus: string | null;
   /** إعدادات الورشة (كانت ملف الورشة) — مالك/مدير ورشة */
   workshopProfileHref: string | null;
   /** الصفحة العامة للورشة على inspect */

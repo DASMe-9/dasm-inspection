@@ -127,7 +127,7 @@ export async function approveWorkshopApplicationAction(
     return {
       ok: false,
       message:
-        "لا يوجد حساب داسم مربوط بالطلب. اطلب من مقدّم الطلب تسجيل الدخول قبل التقديم، أو أدخل معرّف المالك (owner_user_id) يدوياً.",
+        "لا يوجد حساب DASM مربوط بالطلب. اطلب من مقدّم الطلب تسجيل الدخول قبل التقديم، أو أدخل معرّف المالك (owner_user_id) يدوياً.",
     };
   }
 

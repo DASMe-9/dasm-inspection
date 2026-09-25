@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   ArrowLeft,
   BadgeCheck,
-  Bell,
   Building2,
   Camera,
-  ExternalLink,
   Images,
   Landmark,
   MapPin,
@@ -22,7 +20,6 @@ import { WorkshopLocationFields } from "@/components/workshop/WorkshopLocationFi
 import { WorkshopMediaUploadField } from "@/components/workshop/WorkshopMediaUploadField";
 import { WorkshopPasswordChangeForm } from "@/components/workshop/WorkshopPasswordChangeForm";
 import { WorkshopShowcaseEditor } from "@/components/workshop/WorkshopShowcaseEditor";
-import { getDasmProfileSecurityUrl } from "@/lib/platform-urls";
 import type { Workshop } from "@/types";
 import { useRouter } from "next/navigation";
 
@@ -30,15 +27,13 @@ type TabId =
   | "branding"
   | "showcase"
   | "verification"
-  | "security"
-  | "notifications";
+  | "security";
 
 const TABS: { id: TabId; label: string; icon: typeof Building2 }[] = [
   { id: "branding", label: "البروفايل والشعار", icon: Building2 },
   { id: "showcase", label: "معرض الأعمال", icon: Images },
   { id: "verification", label: "التوثيق", icon: Landmark },
   { id: "security", label: "الأمان", icon: Shield },
-  { id: "notifications", label: "الإشعارات", icon: Bell },
 ];
 
 function tabButtonClass(active: boolean) {
@@ -89,7 +84,6 @@ export function WorkshopProfileHub({
     setCoverUrl(workshop.coverUrl ?? "");
   }, [workshop.logoUrl, workshop.coverUrl]);
 
-  const coreProfileUrl = useMemo(() => getDasmProfileSecurityUrl(), []);
   const dashboardHref = `/workshop?workshop_id=${workshopId}`;
 
   function selectTab(next: TabId) {
@@ -111,7 +105,7 @@ export function WorkshopProfileHub({
             لوحة تشغيل الورشة
           </Link>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            إدارة ملف الورشة — منفصل عن لوحة المعرض على منصة داسم الأم
+            إدارة ملف الورشة — منفصل عن لوحة المعرض على منصة DASM الأم
           </p>
         </div>
       ) : null}
@@ -400,25 +394,6 @@ export function WorkshopProfileHub({
 
         {tab === "security" && <WorkshopPasswordChangeForm />}
 
-        {tab === "notifications" && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">إشعارات الحساب</h2>
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-              تفضيلات البريد والرسائل النصية للحساب الشخصي تُعدّل من منصة داسم الأم. إشعارات
-              طلبات الفحص داخل هذه اللوحة ستُضاف في تحديث لاحق.
-            </p>
-            <a
-              href={coreProfileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              <Bell className="h-4 w-4" aria-hidden />
-              إعدادات الإشعارات على داسم
-              <ExternalLink className="h-4 w-4" aria-hidden />
-            </a>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ export function WorkshopTeamPanel({
             />
           </label>
           <label className="block sm:col-span-2">
-            <span className={workshopUi.label}>معرف مستخدم داسم (اختياري)</span>
+            <span className={workshopUi.label}>معرف مستخدم DASM (اختياري)</span>
             <input
               name="dasm_user_id"
               className={workshopUi.input}

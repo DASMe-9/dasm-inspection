@@ -10,7 +10,7 @@
   --customer-primary: #2563eb;
   --workshop-primary: #7c3aed;
   --admin-primary: #dc2626;
-  /* الواجهة العامة — مُوائمة مع هوية شعار داسم (كحلي + أخضر) */
+  /* الواجهة العامة — مُوائمة مع هوية شعار DASM (كحلي + أخضر) */
   --inspection-navy: #0B1E3A;
   --inspection-accent: #2CCB66;
   --inspection-green-dark: #178847;
@@ -23,7 +23,7 @@ html {
   color-scheme: light;
 }
 
-/* الوضع الداكن — هوية داسم: كانفس كحلي + نص فاتح. body يستخدم هذه المتغيّرات
+/* الوضع الداكن — هوية DASM: كانفس كحلي + نص فاتح. body يستخدم هذه المتغيّرات
    فينقلب الكانفس كلّه؛ والمكوّنات تضيف dark: لأسطحها. */
 .dark {
   --background: #0a1626;
@@ -76,11 +76,20 @@ textarea:focus-visible {
   .inspection-scan-line {
     animation: inspection-scan 4.8s ease-in-out infinite;
   }
+
+  .inspection-news-ticker {
+    animation: inspection-news-ticker 14s linear infinite;
+  }
 }
 
 @keyframes inspection-scan {
   0%, 100% { opacity: 0.25; transform: translateY(0); }
   50% { opacity: 0.9; transform: translateY(18rem); }
+}
+
+@keyframes inspection-news-ticker {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
 }
 
 @media (prefers-reduced-motion: reduce) {

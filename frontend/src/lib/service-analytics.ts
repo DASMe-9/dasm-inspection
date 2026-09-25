@@ -8,7 +8,7 @@ export function safeAnalyticsPage(hostname: string, pathname: string | null) {
   if (!HOSTS.has(hostname) || !pathname) return null;
   const path = pathname.split(/[?#]/, 1)[0].replace(/\/$/, "") || "/";
   const route = ROUTES.has(path) ? path : new RegExp("^/workshops/(?!apply$)[^/]+$").test(path) ? "/workshops/:slug" : null;
-  return route ? { page_location: `https://${hostname}${route}`, page_title: "داسم الفحص", dasm_service: SERVICE } : null;
+  return route ? { page_location: `https://${hostname}${route}`, page_title: "DASM الفحص", dasm_service: SERVICE } : null;
 }
 
 export function safeReferrer(referrer: string) {

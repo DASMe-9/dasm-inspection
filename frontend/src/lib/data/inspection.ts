@@ -157,7 +157,7 @@ export async function getInspector(id: string): Promise<Inspector | null> {
   return mapInspector(data as Parameters<typeof mapInspector>[0]);
 }
 
-/** ربط حساب منصّة داسم بسجل مفتش (تطبيق الجوال — خطوة 39). */
+/** ربط حساب منصّة DASM بسجل مفتش (تطبيق الجوال — خطوة 39). */
 export async function findInspectorByDasmUserId(
   dasmUserId: string
 ): Promise<Inspector | null> {

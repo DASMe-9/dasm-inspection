@@ -17,7 +17,7 @@ export async function verifyOwnedCar(
     return { ok: false, status: 422, message: "معرّف المركبة غير صالح." };
   }
   if (!platformToken.trim()) {
-    return { ok: false, status: 401, message: "جلسة داسم مطلوبة." };
+    return { ok: false, status: 401, message: "جلسة DASM مطلوبة." };
   }
 
   try {
@@ -33,7 +33,7 @@ export async function verifyOwnedCar(
         return {
           ok: false,
           status: 503,
-          message: "تعذّر الاتصال بمنصة داسم للتحقق من المركبة.",
+          message: "تعذّر الاتصال بمنصة DASM للتحقق من المركبة.",
         };
       }
 
@@ -73,6 +73,6 @@ export async function verifyOwnedCar(
       vehicleLabel: label || `مركبة #${carId}`,
     };
   } catch {
-    return { ok: false, status: 503, message: "تعذّر الاتصال بمنصة داسم للتحقق من المركبة." };
+    return { ok: false, status: 503, message: "تعذّر الاتصال بمنصة DASM للتحقق من المركبة." };
   }
 }

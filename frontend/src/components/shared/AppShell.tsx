@@ -5,6 +5,7 @@ import { MOBILE_BOTTOM_NAV_ITEMS } from "@/components/shared/nav-config";
 import { SupabaseSetupWarning } from "@/components/shared/SupabaseSetupWarning";
 import type { InspectionShellContext } from "@/lib/auth/inspection-shell-context";
 import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
+import type { LucideIcon } from "lucide-react";
 
 /**
  * قشرة التطبيق الموحّدة — شريط جانبي (سطح المكتب) + شريط علوي بهوية الورشة.
@@ -28,12 +29,11 @@ export function AppShell({
     >
       <Sidebar allowedNavKeys={allowedNavKeys} />
       <main className="flex-1 min-h-screen lg:mr-64">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
+        <div className="mx-auto max-w-[1440px] px-4 py-4 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] md:px-6 md:py-5 lg:pb-8">
           {!configured && <SupabaseSetupWarning />}
           {shellContext ? (
             <InspectionTopNavbar
               personDisplayName={shellContext.personDisplayName}
-              coreProfileUrl={shellContext.coreProfileUrl}
               workshopProfileHref={shellContext.workshopProfileHref}
               workshopPublicHref={shellContext.workshopPublicHref}
               workshopWelcome={shellContext.workshopWelcome}
@@ -83,15 +83,16 @@ function NavLink({
 }: {
   href: string;
   label: string;
-  icon: string;
+  icon: LucideIcon;
 }) {
+  const Icon = icon;
   return (
     <Link
       href={href}
       prefetch
       className="flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg py-1 px-0.5 text-[9px] font-medium text-slate-300 hover:bg-white/5 hover:text-white active:bg-white/10 min-h-[52px] justify-center sm:text-[10px]"
     >
-      <span className="text-base leading-none">{icon}</span>
+      <Icon className="h-4 w-4" aria-hidden />
       <span className="truncate w-full text-center leading-tight">{label}</span>
     </Link>
   );
