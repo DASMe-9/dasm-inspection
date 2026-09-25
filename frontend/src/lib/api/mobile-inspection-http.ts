@@ -29,9 +29,10 @@ import { isWorkshopOperatorRole } from "@/lib/auth/workshop-dashboard";
 import { authenticateDasmToken } from "@/lib/auth/authenticate-dasm-token";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import type { AppRole } from "@/types";
-import type { InspectionReportItem, InspectionRequest, Workshop } from "@/types";
+import type { InspectionReportItem, InspectionRequest } from "@/types";
 import { getBearerToken } from "@/lib/api/inspection-http-auth";
 import type { NextRequest } from "next/server";
+import { toMobileWorkshopRow } from "@/lib/api/mobile-workshop-row";
 
 export { toMobileApprovedReportSummary } from "@/lib/api/mobile-approved-report-summary";
 
@@ -63,18 +64,6 @@ export async function authenticateMobileRequest(request: NextRequest) {
   }
 
   return { ok: true as const, normalized, source: auth.source };
-}
-
-export function toMobileWorkshopRow(workshop: Workshop) {
-  return {
-    id: workshop.id,
-    slug: workshop.slug,
-    name: workshop.name,
-    city: workshop.city,
-    is_verified: workshop.isVerified,
-    phone: workshop.phone?.trim() || null,
-    pricing: workshop.pricing ?? null,
-  };
 }
 
 export function toMobileRequestRow(request: InspectionRequest) {

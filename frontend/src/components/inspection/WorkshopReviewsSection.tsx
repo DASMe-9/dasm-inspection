@@ -6,7 +6,7 @@ import {
   listEligibleReviewRequests,
 } from "@/lib/data/workshop-reviews-data";
 import { averageWorkshopRating } from "@/lib/workshop-reviews";
-import { Star } from "lucide-react";
+import { BadgeCheck, Star } from "lucide-react";
 
 export async function WorkshopReviewsSection({
   workshopId,
@@ -57,6 +57,10 @@ export async function WorkshopReviewsSection({
                 )}
                 <p className="mt-1 text-[10px] text-gray-400">
                   {new Date(r.createdAt).toLocaleDateString("ar-SA")}
+                </p>
+                <p className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                  <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
+                  تجربة فحص موثقة بتقرير معتمد
                 </p>
               </li>
             ))}

@@ -58,15 +58,21 @@ export async function listWorkshopsForDirectory(): Promise<Workshop[]> {
     getWorkshopRatingAveragesMap(),
   ]);
 
-  return workshops.filter((w) => !w.isSuspended).sort((a, b) => {
-    if (a.isVerified !== b.isVerified) {
-      return a.isVerified ? -1 : 1;
-    }
-    const ra = ratingMap.get(a.id)?.average ?? 0;
-    const rb = ratingMap.get(b.id)?.average ?? 0;
-    if (rb !== ra) return rb - ra;
-    return a.name.localeCompare(b.name, "ar");
-  });
+  return workshops
+    .filter((w) => !w.isSuspended)
+    .map((workshop) => ({
+      ...workshop,
+      ratingSummary: ratingMap.get(workshop.id) ?? null,
+    }))
+    .sort((a, b) => {
+      if (a.isVerified !== b.isVerified) {
+        return a.isVerified ? -1 : 1;
+      }
+      const ra = a.ratingSummary?.average ?? 0;
+      const rb = b.ratingSummary?.average ?? 0;
+      if (rb !== ra) return rb - ra;
+      return a.name.localeCompare(b.name, "ar");
+    });
 }
 
 async function attachWorkshopPricing(w: Workshop): Promise<Workshop> {
