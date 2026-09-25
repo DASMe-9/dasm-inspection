@@ -66,14 +66,18 @@ export async function createMobileInspectionRequest(
     };
   }
 
-  let preferredSlotAt: string | null = null;
-  if (input.preferredSlotAt?.trim()) {
-    const parsed = new Date(input.preferredSlotAt.trim());
-    if (Number.isNaN(parsed.getTime())) {
-      return { ok: false, status: 422, message: "موعد التفضيل غير صالح." };
-    }
-    preferredSlotAt = parsed.toISOString();
+  const preferredSlotRaw = input.preferredSlotAt?.trim() || "";
+  if (!preferredSlotRaw) {
+    return { ok: false, status: 422, message: "اختر تاريخ ووقت الموعد." };
   }
+  const parsedSlot = new Date(preferredSlotRaw);
+  if (Number.isNaN(parsedSlot.getTime())) {
+    return { ok: false, status: 422, message: "موعد الفحص غير صالح." };
+  }
+  if (parsedSlot.getTime() <= Date.now()) {
+    return { ok: false, status: 422, message: "اختر موعداً مستقبلياً للفحص." };
+  }
+  const preferredSlotAt = parsedSlot.toISOString();
 
   const sb = requireAdminClient();
 

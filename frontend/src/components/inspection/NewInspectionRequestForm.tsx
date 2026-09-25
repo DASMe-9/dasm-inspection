@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, CarFront, Send, Wrench } from "lucide-react";
+import { Building2, CalendarClock, CarFront, Send, Wrench } from "lucide-react";
 import { createInspectionRequestAction } from "@/app/actions/inspection-workflow";
 import { WorkshopPricingBadges } from "@/components/inspection/WorkshopPricingBadges";
 import { useTheme } from "@/hooks";
@@ -22,7 +22,8 @@ export type CreateRequestWorkshopOption = Pick<
 const REQUEST_STEPS = [
   { Icon: CarFront, label: "المركبة" },
   { Icon: Wrench, label: "الخدمة" },
-  { Icon: Building2, label: "الورشة" },
+  { Icon: Building2, label: "المركز" },
+  { Icon: CalendarClock, label: "الموعد" },
   { Icon: Send, label: "الإرسال" },
 ] as const;
 
@@ -127,7 +128,7 @@ export function NewInspectionRequestForm({
         </p>
       </div>
 
-      <div aria-label="مسار طلب الفحص" className="grid grid-cols-4 gap-2 py-2">
+      <div aria-label="مسار طلب الفحص" className="grid grid-cols-5 gap-2 py-2">
         {REQUEST_STEPS.map(({ Icon, label }, index) => (
           <div key={label} className="min-w-0 text-center">
             <span
@@ -226,11 +227,11 @@ export function NewInspectionRequestForm({
         <p className="font-semibold">قبل إرسال الطلب — يُرجى العلم:</p>
         <ul className="list-disc pr-4 space-y-1 text-amber-900/90">
           <li>
-            الأسعار المعروضة مرجعية من كتالوج الورشة/المنصّة؛ الرسوم النهائية
-            تُثبَّت عند إسناد الورشة للطلب.
+            الأسعار المعروضة مرجعية من كتالوج مركز الفحص/المنصّة؛ الرسوم النهائية
+            تُثبَّت عند إسناد المركز للطلب.
           </li>
           <li>
-            اختيار الورشة أدناه تفضيل للعميل ويساعد الإسناد؛ لا يضمن القبول
+            اختيار مركز الفحص أدناه تفضيل للعميل ويساعد الإسناد؛ لا يضمن القبول
             الفوري.
           </li>
           <li>
@@ -243,7 +244,7 @@ export function NewInspectionRequestForm({
       {verifiedWorkshops.length > 0 ? (
         <fieldset className="space-y-2">
           <legend className="text-xs font-medium text-gray-700">
-            مقارنة الورش المعتمدة
+            مقارنة مراكز الفحص المعتمدة
           </legend>
           <input
             type="hidden"
@@ -291,7 +292,7 @@ export function NewInspectionRequestForm({
             })}
           </div>
           <p className="text-[11px] text-slate-500">
-            مرتبة حسب السعر المرجعي لنوع الخدمة المختار. اضغط الورشة مرة أخرى لإلغاء التفضيل.
+            مرتبة حسب السعر المرجعي لنوع الخدمة المختار. اضغط المركز مرة أخرى لإلغاء التفضيل.
           </p>
         </fieldset>
       ) : null}
@@ -307,7 +308,7 @@ export function NewInspectionRequestForm({
               checked={serviceMode === "workshop"}
               onChange={() => setServiceMode("workshop")}
             />
-            <span>فحص في الورشة</span>
+            <span>فحص في المركز</span>
           </label>
           <label className="inline-flex items-center gap-2 cursor-pointer">
             <input
@@ -339,23 +340,24 @@ export function NewInspectionRequestForm({
             className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base"
           />
           <p className="text-[11px] text-gray-500">
-            تستخدمه الورشة لتأكيد إمكانية الوصول والموعد.
+            يستخدمه المركز لتأكيد إمكانية الوصول والموعد.
           </p>
         </div>
       ) : null}
 
       <div className="space-y-1.5">
         <label className="block text-xs font-medium text-gray-700" htmlFor="preferred_slot_at">
-          الموعد المفضّل (اختياري)
+          تاريخ ووقت الموعد
         </label>
         <input
           id="preferred_slot_at"
           name="preferred_slot_at"
           type="datetime-local"
-          className="w-full border rounded-lg px-3 py-2 bg-white"
+          required
+          className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base"
         />
         <p className="text-[11px] text-gray-500">
-          تفضيل زمني للعميل — ليس حجزاً نهائياً. للفحص الميداني قد يُنسخ إلى تقويم الورشة عند الإسناد.
+          يُرسل الموعد إلى مركز الفحص، وتظهر حالته بانتظار التأكيد حتى يعتمدها المركز.
         </p>
       </div>
 
@@ -366,7 +368,7 @@ export function NewInspectionRequestForm({
             <p className="text-xs font-medium text-sky-950">
               {selectedWorkshop
                 ? `أسعار مرجعية — ${selectedWorkshop.name}`
-                : "أسعار مرجعية للمنصّة (قبل اختيار الورشة)"}
+                : "أسعار مرجعية للمنصّة (قبل اختيار المركز)"}
             </p>
             <WorkshopPricingBadges pricing={displayPricing} compact />
             {selectedAmount != null && (

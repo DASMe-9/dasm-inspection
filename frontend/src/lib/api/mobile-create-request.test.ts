@@ -60,6 +60,7 @@ describe("createMobileInspectionRequest", () => {
         vehicleLabel: "قيمة لا يعتمد عليها",
         dasmCarId: 42,
         platformToken: "platform-token",
+        preferredSlotAt: "2099-06-12T10:30:00.000Z",
       })
     ).resolves.toEqual({ ok: true, requestId: "request-1" });
 
@@ -71,6 +72,22 @@ describe("createMobileInspectionRequest", () => {
     });
     expect(mocks.ensureDasmCarOnCore).not.toHaveBeenCalled();
     expect(historyInsert).toHaveBeenCalledOnce();
+  });
+
+  it("rejects a request without a future appointment before database access", async () => {
+    await expect(
+      createMobileInspectionRequest({
+        userId: "88",
+        title: "طلب فحص",
+        vehicleLabel: "Toyota Camry 2024",
+      })
+    ).resolves.toEqual({
+      ok: false,
+      status: 422,
+      message: "اختر تاريخ ووقت الموعد.",
+    });
+
+    expect(mocks.requireAdminClient).not.toHaveBeenCalled();
   });
 
   it("stops before database access when Core rejects ownership", async () => {
