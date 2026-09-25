@@ -1,4 +1,5 @@
 import { computeGradeFromReportItems } from "@/lib/inspection/section-grade-from-items";
+import { derivePurchaseDecision } from "@/lib/inspection/purchase-decision";
 import type { InspectionReport } from "@/types";
 
 const PUBLIC_BASE =
@@ -28,6 +29,7 @@ export function toMobileApprovedReportSummary(
   }
 
   const token = report.publicToken?.trim() || null;
+  const purchaseDecision = derivePurchaseDecision(report.items);
   return {
     final_score: finalScore,
     letter_grade: letterGrade,
@@ -37,5 +39,6 @@ export function toMobileApprovedReportSummary(
     public_token: token,
     public_url: token ? `${PUBLIC_BASE}/r/${token}` : null,
     section_scores: sectionScores,
+    purchase_decision: purchaseDecision,
   };
 }

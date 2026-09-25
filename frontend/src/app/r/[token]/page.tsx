@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ReportPrintToolbar } from "@/components/inspection/ReportPrintToolbar";
+import { PurchaseDecisionBanner } from "@/components/inspection/PurchaseDecisionBanner";
 import {
   getPublicReportByToken,
   type PublicReportItem,
 } from "@/lib/data/inspection";
 import type { ReportItemStatus } from "@/types";
+import { derivePurchaseDecision } from "@/lib/inspection/purchase-decision";
 import "@/styles/report-print.css";
 
 // Public report pages must never be indexed by search engines.
@@ -77,6 +79,7 @@ export default async function PublicReportPage({
   if (!report) notFound();
 
   const sections = groupBySection(report.items);
+  const purchaseDecision = derivePurchaseDecision(report.items);
 
   return (
     <main
@@ -93,6 +96,7 @@ export default async function PublicReportPage({
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-6">
         <ReportPrintToolbar pdfHref={`/api/r/${params.token}/pdf`} />
+        <PurchaseDecisionBanner decision={purchaseDecision} />
         {typeof report.finalScore === "number" && (
           <section className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
             <div

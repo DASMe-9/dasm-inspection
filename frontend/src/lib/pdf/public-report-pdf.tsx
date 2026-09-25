@@ -12,6 +12,7 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import type { PublicReportItem, PublicReportView } from "@/lib/data/inspection";
+import { derivePurchaseDecision } from "@/lib/inspection/purchase-decision";
 
 const FONT_DIR = path.join(process.cwd(), "public", "fonts");
 let fontsRegistered = false;
@@ -73,6 +74,16 @@ const styles = StyleSheet.create({
   scoreValue: { fontSize: 22, fontWeight: "bold" },
   scoreGrade: { fontSize: 14, fontWeight: "bold" },
   trackBadge: { fontSize: 9, color: "#4a3f7a" },
+  decision: {
+    marginBottom: 12,
+    padding: 10,
+    backgroundColor: "#f5f7fa",
+    border: "1 solid #d9dee7",
+    textAlign: "right",
+  },
+  decisionLabel: { fontSize: 15, fontWeight: "bold", marginBottom: 3 },
+  decisionSummary: { fontSize: 9.5, lineHeight: 1.5 },
+  decisionNotice: { fontSize: 8, color: "#666666", marginTop: 4 },
   summary: {
     marginBottom: 12,
     paddingBottom: 10,
@@ -141,6 +152,7 @@ function fmtDate(iso: string): string {
 
 function PublicReportDocument({ report }: { report: PublicReportView }) {
   const sections = groupBySection(report.items);
+  const purchaseDecision = derivePurchaseDecision(report.items);
 
   return (
     <Document>
@@ -149,6 +161,16 @@ function PublicReportDocument({ report }: { report: PublicReportView }) {
           <Text style={styles.eyebrow}>فحص داسم — تقرير معتمد</Text>
           <Text style={styles.title}>{report.workshopName ?? "ورشة معتمدة"}</Text>
           <Text style={styles.meta}>اعتُمد في {fmtDate(report.approvedAt)}</Text>
+        </View>
+
+        <View style={styles.decision}>
+          <Text style={styles.decisionLabel}>
+            قرار الشراء: {purchaseDecision.label}
+          </Text>
+          <Text style={styles.decisionSummary}>{purchaseDecision.summary}</Text>
+          <Text style={styles.decisionNotice}>
+            قرار إرشادي مبني على التقرير المعتمد، وليس ضماناً لحالة المركبة أو سعراً نهائياً.
+          </Text>
         </View>
 
         {typeof report.finalScore === "number" && (

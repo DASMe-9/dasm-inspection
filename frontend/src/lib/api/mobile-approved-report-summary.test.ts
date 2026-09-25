@@ -56,6 +56,19 @@ describe("toMobileApprovedReportSummary", () => {
       public_token: "11111111-1111-4111-8111-111111111111",
       public_url:
         "https://inspect.dasm.com.sa/r/11111111-1111-4111-8111-111111111111",
+      purchase_decision: {
+        code: "suitable",
+        label: "مناسب",
+      },
     });
+  });
+
+  it("exposes a high-risk decision when an approved item failed", () => {
+    const summary = toMobileApprovedReportSummary(
+      baseReport({ items: [{ id: "i2", section: "المحرك", label: "تسريب", status: "fail" }] }),
+      "approved"
+    );
+
+    expect(summary?.purchase_decision.code).toBe("high_risk");
   });
 });
