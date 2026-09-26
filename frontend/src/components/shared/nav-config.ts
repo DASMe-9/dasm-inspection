@@ -2,6 +2,7 @@ import type { InspectionNavKey } from "@/lib/auth/resolve-inspection-persona";
 import {
   BadgeDollarSign,
   Building2,
+  CarFront,
   ClipboardList,
   Gauge,
   LayoutDashboard,
@@ -67,7 +68,18 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     label: "إدارة الفحص",
     items: [
       { key: "requests", href: "/requests", label: "طلبات الفحص", icon: ClipboardList },
-      { key: "my_inspections", href: "/my-inspections", label: "طلباتي", icon: UserRound },
+      {
+        key: "my_inspections",
+        href: "/my-inspections",
+        label: "طلبات الفحص",
+        icon: UserRound,
+      },
+      {
+        key: "my_vehicles",
+        href: "/my-vehicles",
+        label: "مركباتي",
+        icon: CarFront,
+      },
       { key: "workshops", href: "/directory", label: "مراكز الفحص", icon: Wrench },
     ],
   },
@@ -104,6 +116,12 @@ export const MOBILE_BOTTOM_NAV_ITEMS: SidebarNavItem[] = [
     href: "/my-inspections",
     label: "طلباتي",
     icon: UserRound,
+  },
+  {
+    key: "my_vehicles",
+    href: "/my-vehicles",
+    label: "مركباتي",
+    icon: CarFront,
   },
   { key: "workshops", href: "/directory", label: "المراكز", icon: Wrench },
   { key: "wallet", href: "/wallet", label: "المحفظة", icon: WalletCards },

@@ -1,27 +1,18 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Car } from "lucide-react";
 import {
-  ExternalReportVault,
   RequestCard,
   RequestListFilters,
-  VehicleMaintenanceLog,
-  VehicleObdScanLog,
 } from "@/components/inspection";
-import { EmptyState, PersonaPageHero, SectionCard } from "@/components/shared";
+import { EmptyState, SectionCard } from "@/components/shared";
 import { resolveDasmUserId } from "@/lib/auth/resolve-dasm-user-id.server";
 import { buildRequestListScope } from "@/lib/auth/request-list-scope.server";
 import { InspectionNotificationsPanel } from "@/components/inspection/InspectionNotificationsPanel";
-import { MaintenanceReminders } from "@/components/inspection/MaintenanceReminders";
 import {
   listInspectionRequestsForDasmUser,
   listWorkshops,
 } from "@/lib/data/inspection";
-import { listExternalVehicleReportsForUser } from "@/lib/data/external-vehicle-reports";
-import { listVehicleMaintenanceRecordsForUser } from "@/lib/data/vehicle-maintenance-records";
-import { listVehicleObdScansForUser } from "@/lib/data/vehicle-obd-scans";
 import { listNotificationsForUser } from "@/lib/data/workshop-follows-data";
-import { requestListHeroStats } from "@/lib/inspection-request-hero-stats";
 
 export default async function MyInspectionsPage({
   searchParams,
@@ -33,45 +24,23 @@ export default async function MyInspectionsPage({
   const workshopOptions = workshops.map((w) => ({ id: w.id, name: w.name }));
   const scope = await buildRequestListScope(searchParams, workshopOptions);
 
-  const [list, notifications, externalReports, maintenanceRecords, obdScans] = uid
+  const [list, notifications] = uid
     ? await Promise.all([
         listInspectionRequestsForDasmUser(uid, scope.listOpts),
         listNotificationsForUser(uid),
-        listExternalVehicleReportsForUser(uid),
-        listVehicleMaintenanceRecordsForUser(uid),
-        listVehicleObdScansForUser(uid),
       ])
-    : [[], [], [], [], []];
-
-  // فهرس مركبات العميل (لملف فني لكل سيارة).
-  const carFileMap = new Map<string, string>();
-  const noteCar = (id: string | undefined, label: string | undefined) => {
-    if (!id) return;
-    carFileMap.set(id, label ?? carFileMap.get(id) ?? id);
-  };
-  for (const r of list) noteCar(r.dasm_car_id, r.vehicleLabel ?? undefined);
-  for (const m of maintenanceRecords) noteCar(m.dasmCarId, m.vehicleLabel);
-  for (const o of obdScans) noteCar(o.dasmCarId, o.vehicleLabel);
-  for (const e of externalReports) noteCar(e.dasmCarId, e.vehicleLabel);
-  const cars = Array.from(carFileMap.entries());
-  const stats = requestListHeroStats(list);
-
+    : [[], []];
   return (
-    <div className="space-y-5 md:space-y-6" dir="rtl">
-      <PersonaPageHero
-        variant="customer"
-        eyebrow="ملفك الفني في DASM"
-        title="طلباتي ومركباتي"
-        description="الطلبات المرتبطة بحسابك عند الدخول عبر منصّة DASM — مع الملف الفني والتذكيرات."
-        icon={Car}
-        actions={[{ href: "/wallet", label: "محفظتي" }]}
-        stats={[
-          { label: "طلبات نشطة", value: String(stats.active) },
-          { label: "معتمدة", value: String(stats.approved) },
-          { label: "مركبات", value: String(cars.length) },
-          { label: "إجمالي الطلبات", value: String(stats.total) },
-        ]}
-      />
+    <div className="space-y-5" dir="rtl">
+      <header className="border-b border-gray-200 pb-5 dark:border-slate-800">
+        <p className="text-sm font-bold text-[#178847]">خدمات الفحص</p>
+        <h1 className="mt-2 text-2xl font-bold text-gray-950 dark:text-white">
+          طلبات الفحص
+        </h1>
+        <p className="mt-1 text-sm text-gray-600 dark:text-slate-400">
+          فحوص الشراء والبيع والخدمات المرتبطة بحسابك في DASM.
+        </p>
+      </header>
 
       {!uid ? (
         <SectionCard>
@@ -127,30 +96,6 @@ export default async function MyInspectionsPage({
 
           <InspectionNotificationsPanel notifications={notifications} />
 
-          {cars.length > 0 && (
-            <SectionCard title="مركباتي">
-              <ul className="grid gap-2 sm:grid-cols-2">
-                {cars.map(([id, lbl]) => (
-                  <li key={id}>
-                    <Link
-                      href={`/my-inspections/vehicle/${encodeURIComponent(id)}`}
-                      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm transition hover:border-[#1E74E8]/40 dark:border-slate-700 dark:bg-slate-900"
-                    >
-                      <span className="font-medium text-gray-900 dark:text-slate-100">
-                        {lbl}
-                      </span>
-                      <span className="text-xs text-[#1E74E8]">الملف الفني ←</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </SectionCard>
-          )}
-
-          <MaintenanceReminders records={maintenanceRecords} />
-          <VehicleMaintenanceLog records={maintenanceRecords} />
-          <VehicleObdScanLog scans={obdScans} />
-          <ExternalReportVault reports={externalReports} />
         </>
       )}
     </div>

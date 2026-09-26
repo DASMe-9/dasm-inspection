@@ -96,6 +96,7 @@ describe("resolveInspectionPersona", () => {
     expect(keys.has("wallet")).toBe(true); // customer prepaid spend wallet
     expect(keys.has("requests")).toBe(true);
     expect(keys.has("my_inspections")).toBe(true);
+    expect(keys.has("my_vehicles")).toBe(true);
     expect(keys.has("workshops")).toBe(true);
   });
 
@@ -145,7 +146,7 @@ describe("resolveInspectionPersona", () => {
   // Per-persona nav snapshot — locks each role's intended sidebar so a future
   // change to visibleNavKeys can't silently regress role scoping.
   it.each([
-    ["dasm_user", ["dashboard", "requests", "my_inspections", "workshops", "wallet", "settings"]],
+    ["dasm_user", ["dashboard", "requests", "my_inspections", "my_vehicles", "workshops", "wallet", "settings"]],
     ["inspector", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["mechanic", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],
     ["viewer", ["dashboard", "requests", "my_inspections", "workshops", "settings"]],

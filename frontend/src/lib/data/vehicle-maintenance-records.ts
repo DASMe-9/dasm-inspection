@@ -64,3 +64,29 @@ export async function listVehicleMaintenanceRecordsForUser(
   if (error || !data) return [];
   return (data as VehicleMaintenanceRecordRow[]).map(mapMaintenanceRecord);
 }
+
+/**
+ * Permanent technical history for a Core vehicle across successive owners.
+ * Callers must first prove that the signed-in user currently owns the car via
+ * Core `/api/me/garage`; this function intentionally does not expose raw files.
+ */
+export async function listVehicleMaintenanceRecordsForCar(
+  dasmCarId: string
+): Promise<VehicleMaintenanceRecord[]> {
+  const key = dasmCarId.trim();
+  if (!key) return [];
+
+  const sb = getAdminClient();
+  if (!sb) return [];
+
+  const { data, error } = await sb
+    .from("inspection_vehicle_maintenance_records")
+    .select("*")
+    .eq("dasm_car_id", key)
+    .order("service_date", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  if (error || !data) return [];
+  return (data as VehicleMaintenanceRecordRow[]).map(mapMaintenanceRecord);
+}

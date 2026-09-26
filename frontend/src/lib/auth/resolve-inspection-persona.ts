@@ -28,6 +28,7 @@ export type InspectionNavKey =
   | "workshop_areas"
   | "requests"
   | "my_inspections"
+  | "my_vehicles"
   | "workshops"
   | "wallet"
   | "subscription"
@@ -148,6 +149,7 @@ export function visibleNavKeys(
       "dashboard",
       "requests",
       "my_inspections",
+      "my_vehicles",
       "workshops",
       "wallet",
       "settings",
