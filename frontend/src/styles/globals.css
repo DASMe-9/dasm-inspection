@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Almarai";
+  src: url("/fonts/almarai/Almarai-Light.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Almarai";
+  src: url("/fonts/almarai/Almarai-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Almarai";
+  src: url("/fonts/almarai/Almarai-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Almarai";
+  src: url("/fonts/almarai/Almarai-ExtraBold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
 /* Design tokens - Dasm Inspection */
 :root {
   --background: #ffffff;
@@ -34,7 +66,7 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-tajawal), system-ui, -apple-system, sans-serif;
+  font-family: "Almarai", system-ui, -apple-system, sans-serif;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   overflow-x: clip;

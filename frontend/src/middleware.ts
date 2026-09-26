@@ -128,6 +128,8 @@ export const config = {
     "/dashboard/:path*",
     "/requests/:path*",
     "/my-inspections",
+    "/my-vehicles",
+    "/my-vehicles/:path*",
     "/track/:path*",
     "/workshops/:path*",
     "/reports/:path*",

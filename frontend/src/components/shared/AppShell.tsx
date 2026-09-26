@@ -57,7 +57,18 @@ function MobileNav({
   allowedNavKeys: InspectionNavKey[];
 }) {
   const allowed = new Set(allowedNavKeys);
-  const items = MOBILE_BOTTOM_NAV_ITEMS.filter((x) => allowed.has(x.key));
+  const customerMobileKeys = new Set<InspectionNavKey>([
+    "requests",
+    "my_inspections",
+    "my_vehicles",
+    "workshops",
+    "settings",
+  ]);
+  const isCustomer = allowed.has("my_vehicles");
+  const items = MOBILE_BOTTOM_NAV_ITEMS.filter(
+    (item) =>
+      allowed.has(item.key) && (!isCustomer || customerMobileKeys.has(item.key))
+  );
 
   return (
     <nav

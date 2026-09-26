@@ -79,3 +79,25 @@ export async function listVehicleObdScansForUser(
   if (error || !data) return [];
   return (data as VehicleObdScanRow[]).map(mapVehicleObdScan);
 }
+
+/** Read-only technical history after the caller verifies current Core ownership. */
+export async function listVehicleObdScansForCar(
+  dasmCarId: string
+): Promise<VehicleObdScan[]> {
+  const key = dasmCarId.trim();
+  if (!key) return [];
+
+  const sb = getAdminClient();
+  if (!sb) return [];
+
+  const { data, error } = await sb
+    .from("inspection_vehicle_obd_scans")
+    .select("*")
+    .eq("dasm_car_id", key)
+    .order("scan_date", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(60);
+
+  if (error || !data) return [];
+  return (data as VehicleObdScanRow[]).map(mapVehicleObdScan);
+}
